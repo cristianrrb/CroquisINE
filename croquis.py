@@ -35,6 +35,7 @@ def obtieneToken(usuario, clave, urlPortal):
                 mensaje('Error en obtieneToken: ' + detail)
     except:
         mensaje('** Error en obtieneToken.')
+    return None
 
 def obtieneInfoManzana(urlManzanas, codigoManzana, token):
     try:
