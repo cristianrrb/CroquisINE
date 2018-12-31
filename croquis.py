@@ -530,6 +530,9 @@ def intersectaAreaRechazo(poligono):
     mensaje('No intersecta con areas.')
     return ""
 
+def detectaDestacados(datosManzana):
+    pass
+    
 def escribeCSV(registros):
     try:
         f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
