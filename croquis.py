@@ -238,11 +238,7 @@ def zoom(mxd, extent, escala):
         mensaje('** No se ajusto el extent del mapa.')
         return False
 
-def generarCodigoBarra():
-    codigo = "qwertyu"
-    return codigo
-
-def limpiaMapa(mxd, manzana):
+def limpiaMapaManzana(mxd, manzana):
     try:
         mensaje("limpiaMapa INICIO")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -290,25 +286,30 @@ def cortaEtiqueta(mxd, elLyr, poly):
         del lyr
         del lyrU
         mensaje("cortaEtiqueta CORRECTO")
+        return True
     except Exception:
         e = sys.exc_info()[1]
         mensaje(e.args[0])
+    return False
+
+def preparaMapaManzana(mxd, extent, escala, datosManzana):
+    actualizaVinetaManzanas(mxd, datosManzana)
+    if zoom(mxd, extent, escala):
+        poligono = limpiaMapaManzana(mxd, datosManzana[0])
+        if poligono != None:
+            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                return True
+    return False
 
 def procesaManzana(codigoManzana):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
         datosManzana, extent = obtieneInfoManzana(urlManzanas, codigoManzana, token)
-
         if datosManzana != None:
             intersecta = intersectaAreaRechazo(datosManzana[0])
             mxd, infoMxd, escala = buscaTemplateManzana(extent)
             if mxd != None:
-                if zoom(mxd, extent, escala):
-                    poligono = limpiaMapa(mxd,datosManzana[0])
-                    if poligono != None:
-                        resultado = cortaEtiqueta(mxd,"Eje_Vial", poligono)
-
-                    actualizaVinetaManzanas(mxd, datosManzana)
+                if preparaMapaManzana(mxd, extent, escala, datosManzana):
                     return mxd, infoMxd, datosManzana, intersecta, escala
     except:
         pass
@@ -568,6 +569,10 @@ def comprime(registros, rutaCSV):
     except:
         return None
 
+def generarCodigoBarra():
+    codigo = "qwertyu"
+    return codigo
+
 arcpy.env.overwriteOutput = True
 
 urlManzanas    = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
@@ -627,11 +632,11 @@ for codigo in listaCodigos:
         reg[6] = infoMxd['orientacion']
         reg[7] = escala
         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-
         if nombrePDF != None:
             rutaPDF = generaPDF(mxd, nombrePDF, datos)
             if rutaPDF != None:
                 reg[3] = rutaPDF
+                
     registros.append(reg)
 
     if reg[3] == "":
