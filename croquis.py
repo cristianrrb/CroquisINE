@@ -1,9 +1,12 @@
+# -*- coding: iso-8859-1 -*-
+
 import arcpy
 import os, urllib, urllib2, json, sys
 import datetime
 import csv
 import uuid
 import zipfile
+import shutil
 from arcpy import env
 
 def mensaje(m):
@@ -310,7 +313,7 @@ def procesaManzana(codigoManzana):
     except:
         pass
     mensaje("** Error: datosManzana")
-    return None, None, None, None, None
+    return None, None, None, "", None
 
 def procesaRAU(codigoRAU):
     try:
@@ -494,11 +497,16 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizaVinetaSeccionRural")
 
-def generaPDF(mxd, nombrePDF):
-    config['rutabase']
-    ruta = os.path.join(config['rutabase'], 'PDF', nombrePDF)
+def generaPDF(mxd, nombrePDF, datos):
+
+    id_region = int(datos[2])
+    id_comuna = int(datos[4])
+    dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
+    
+    ruta = os.path.join("D:\CROQUIS\MUESTRAS_PDF\ENE",dict_region[id_region], nombrePDF)
+    mensaje(ruta)
     arcpy.mapping.ExportToPDF(mxd, ruta)
-    mensaje('Se genero PDF: {}'.format(ruta))
+    mensaje("Exportado a pdf")
     return ruta
 
 def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
@@ -619,16 +627,17 @@ for codigo in listaCodigos:
         reg[6] = infoMxd['orientacion']
         reg[7] = escala
         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+
         if nombrePDF != None:
-            rutaPDF = generaPDF(mxd, nombrePDF)
+            rutaPDF = generaPDF(mxd, nombrePDF, datos)
             if rutaPDF != None:
                 reg[3] = rutaPDF
     registros.append(reg)
 
     if reg[3] == "":
-        mensajeEstado(codigo, intersecta, "ERROR")
+        mensajeEstado(codigo, intersecta, "No Existe")
     else:
-        mensajeEstado(codigo, intersecta, "CORRECTO")
+        mensajeEstado(codigo, intersecta, "Correcto")
 
     mensaje("-------------------------------------------------\n")
 
