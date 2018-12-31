@@ -305,17 +305,17 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 def procesaManzana(codigoManzana):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
-        datosManzana, extent = obtieneInfoManzana(urlManzanas, codigoManzana, token)
-        if datosManzana != None:
-            intersecta = intersectaAreaRechazo(datosManzana[0])
-            mxd, infoMxd, escala = buscaTemplateManzana(extent)
-            if mxd != None:
-                if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                    mensaje("Se procesó la manzana correctamente.")
-                    return mxd, infoMxd, datosManzana, intersecta, escala
+        if token != None:
+            datosManzana, extent = obtieneInfoManzana(urlManzanas, codigoManzana, token)
+            if datosManzana != None:
+                intersecta = intersectaAreaRechazo(datosManzana[0])
+                mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                if mxd != None:
+                    if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                        mensaje("Se procesó la manzana correctamente.")
+                        return mxd, infoMxd, datosManzana, intersecta, escala
     except:
         mensaje("** Error: procesaManzana.")
-    
     mensaje("No se completó el proceso de manzana.")
     return None, None, None, "", None
 
