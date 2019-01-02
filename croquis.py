@@ -312,10 +312,10 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         mensaje("Limpieza de esquicio correcta.")
-        return true
+        return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de esquicio.")
+        mensaje("Error en limpieza de escicio.")
     return None
 
 def limpiaMapaRAU(mxd, RAU):
@@ -342,11 +342,12 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
-        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
-            if poligono != None:
+
+        if poligono != None:
+            if limpiaMapaManzanaEsquicio:
                 if cortaEtiqueta(mxd, "Eje_Vial", poligono):
                     return True
-    mensaje("No se completo la preparación del mapa para manzana.")
+        mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
