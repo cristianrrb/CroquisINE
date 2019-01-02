@@ -270,6 +270,9 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
+def limpiaMapaRAU(mxd, RAU):
+    pass
+
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         mensaje("Inicio preparación de etiquetas.")
@@ -302,6 +305,16 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
+def preparaMapaRAU(mxd, extent, escala, datosRAU):
+    actualizaVinetaSeccionRAU(mxd, datosRAU)
+    if zoom(mxd, extent, escala):
+        poligono = limpiaMapaRAU(mxd, datosRAU[0])
+        if poligono != None:
+            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                return True
+    mensaje("No se completo la preparación del mapa para sección RAU.")
+    return False
+
 def procesaManzana(codigoManzana):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
@@ -322,20 +335,19 @@ def procesaManzana(codigoManzana):
 def procesaRAU(codigoRAU):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
-
-        if datosRAU != None:
-            intersecta = intersectaAreaRechazo(datosRAU[0])
-            mxd, infoMxd, escala = buscaTemplateRAU(extent)
-            if mxd != None:
-                if zoom(mxd, extent, escala):
-                    #limpiaMapa(mxd,datosRAU[0])
-                    actualizaVinetaSeccionRAU(mxd, datosRAU)
-                    return mxd, infoMxd, datosRAU, intersecta, escala
+        if token != None:
+            datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
+            if datosRAU != None:
+                intersecta = intersectaAreaRechazo(datosRAU[0])
+                mxd, infoMxd, escala = buscaTemplateRAU(extent)
+                if mxd != None:
+                    if preparaMapaRAU(mxd, extent, escala, datosRAU):
+                        mensaje("Se procesó la sección RAU correctamente.")
+                        return mxd, infoMxd, datosRAU, intersecta, escala
     except:
-        pass
-    mensaje("** Error: datosRAU")
-    return None, None, None, None, None
+        mensaje("** Error: procesaRAU.")
+    mensaje("No se completó el proceso de sección RAU.")
+    return None, None, None, "", None
 
 def procesaRural(codigoRural):
     try:
@@ -541,7 +553,7 @@ def intersectaAreaRechazo(poligono):
     mensaje('No intersecta con areas.')
     return ""
 
-def detectaDestacados(datosManzana):
+def detectaDestacados(datosRAU):
     pass
     
 def escribeCSV(registros):
