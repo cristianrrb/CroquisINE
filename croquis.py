@@ -20,6 +20,7 @@ def mensajeEstado(codigo, intersecta, estado):
     print(s)
     arcpy.AddMessage(s)
 
+# COMENTARIO
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
     urlToken = urlPortal + '/sharing/rest/generateToken?'
@@ -65,7 +66,7 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones, token, codigoRAU))
-        
+
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
@@ -87,7 +88,7 @@ def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones, token, codigoRural))
-        
+
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
@@ -404,7 +405,7 @@ def actualizaVinetaManzanas(mxd,datosManzana):
                 elm.text = cod_manzan
             #if elm.name == "barcode":
                 #elm.text = codigo_barra
-            
+
             # actualiza vista (opcional)
             # arcpy.RefreshActiveView()
         mensaje("Se actualizaron las viñetas para manzana.")
@@ -415,7 +416,7 @@ def actualizaVinetaManzanas(mxd,datosManzana):
 def actualizaVinetaSeccionRAU(mxd,datosRAU):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
-        
+
         nombre_muestra = parametroEncuesta+" "+parametroMarco
         name_region = datosRAU[2]
         name_provincia = datosRAU[3]
@@ -448,7 +449,7 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
                 elm.text = cod_seccion
             #if elm.name == "barcode":
                 #elm.text = codigo_barra
-            
+
             # actualiza vista (opcional)
             # arcpy.RefreshActiveView()
 
@@ -459,7 +460,7 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
 def actualizaVinetaSeccionRural(mxd,datosRural):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
-    
+
         nombre_muestra = parametroEncuesta+" "+parametroMarco
         name_region = datosRural[2]
         name_provincia = datosRural[3]
@@ -492,7 +493,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
                 elm.text = cod_carto
             #if elm.name == "barcode":
                 #elm.text = codigo_barra
-            
+
             # actualiza vista (opcional)
             # arcpy.RefreshActiveView()
 
@@ -505,7 +506,7 @@ def generaPDF(mxd, nombrePDF, datos):
     id_region = int(datos[2])
     id_comuna = int(datos[4])
     dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
-    
+
     ruta = os.path.join("D:\CROQUIS\MUESTRAS_PDF\ENE",dict_region[id_region], nombrePDF)
     mensaje(ruta)
     arcpy.mapping.ExportToPDF(mxd, ruta)
@@ -593,7 +594,7 @@ config = leeJsonConfiguracion()
 parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
 parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
-parametroCodigos = arcpy.GetParameterAsText(3) 
+parametroCodigos = arcpy.GetParameterAsText(3)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
@@ -634,7 +635,7 @@ for codigo in listaCodigos:
             rutaPDF = generaPDF(mxd, nombrePDF, datos)
             if rutaPDF != None:
                 reg[3] = rutaPDF
-                
+
     registros.append(reg)
 
     if reg[3] == "":
@@ -693,7 +694,7 @@ for mxd in mxd_list:
 
         os.remove(page_pdf)  # delete the file
 
- 
+
 
     pdfDoc.saveAndClose()  # save the pdf for the mxd
 """
