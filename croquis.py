@@ -82,6 +82,28 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
+def obtieneInfoAreaDestacada(urlAreaDestacada, codigoRAU, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlSecciones, token, codigoRAU))
+        
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
+
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        if lista != None and len(lista) == 1:
+            metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
+            extent = calculaExtent(fs, metrosBuffer)
+            return lista[0], extent
+        else:
+            mensaje("Error: El registro RAU no existe")
+            return None
+    except:
+        mensaje("Error URL servicio_RAU")
+        return None
+
 def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
