@@ -345,10 +345,10 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaRural(mxd, datosRural[0])
-        if poligono != None:
-            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                return True
+        #poligono = limpiaMapaRural(mxd, datosRural[0])
+        #if poligono != None:
+            #if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+        return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
