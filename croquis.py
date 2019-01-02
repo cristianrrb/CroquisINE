@@ -269,7 +269,7 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje(sys.exc_info()[1].args[0])
         mensaje("Error en limpieza de mapa.")
     return None
-
+# asdads
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         mensaje("Inicio preparación de etiquetas.")
