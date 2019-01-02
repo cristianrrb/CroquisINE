@@ -14,20 +14,6 @@
             "mxds":
             [
                 {
-                    "ancho": 33.888,
-                    "alto": 25.896,
-                    "formato": "Carta",
-                    "orientacion": "Horizontal",
-                    "ruta": "Mz\\Mz_DCA_H"
-                },
-                {
-                    "ancho": 25.903,
-                    "alto": 33.893,
-                    "formato": "Carta",
-                    "orientacion": "Vertical",
-                    "ruta": "Mz\\Mz_DCA_V"
-                },
-                {
                     "ancho": 24.500,
                     "alto": 20.565,
                     "formato": "Oficio",
@@ -40,6 +26,20 @@
                     "formato": "Oficio",
                     "orientacion": "Vertical",
                     "ruta": "Mz\\Mz_of_V"
+                },
+                {
+                    "ancho": 33.888,
+                    "alto": 25.896,
+                    "formato": "Carta",
+                    "orientacion": "Horizontal",
+                    "ruta": "Mz\\Mz_DCA_H"
+                },
+                {
+                    "ancho": 25.903,
+                    "alto": 33.893,
+                    "formato": "Carta",
+                    "orientacion": "Vertical",
+                    "ruta": "Mz\\Mz_DCA_V"
                 },
                 {
                     "ancho": 60.492,
@@ -62,20 +62,6 @@
             "mxds":
             [
                 {
-                    "ancho": 32.000,
-                    "alto": 25.897,
-                    "formato": "Carta",
-                    "orientacion": "Horizontal",
-                    "ruta": "RAU\\Rau_DCA_H"
-                },
-                {
-                    "ancho": 25.903,
-                    "alto": 33.893,
-                    "formato": "Carta",
-                    "orientacion": "Vertical",
-                    "ruta": "RAU\\Rau_DCA_V"
-                },
-                {
                     "ancho": 22.493,
                     "alto": 20.593,
                     "formato": "Oficio",
@@ -88,6 +74,20 @@
                     "formato": "Oficio",
                     "orientacion": "Vertical",
                     "ruta": "RAU\\Rau_Oficio_V"
+                },
+                {
+                    "ancho": 32.000,
+                    "alto": 25.897,
+                    "formato": "Carta",
+                    "orientacion": "Horizontal",
+                    "ruta": "RAU\\Rau_DCA_H"
+                },
+                {
+                    "ancho": 25.903,
+                    "alto": 33.893,
+                    "formato": "Carta",
+                    "orientacion": "Vertical",
+                    "ruta": "RAU\\Rau_DCA_V"
                 },
                 {
                     "ancho": 48.500,
@@ -109,13 +109,7 @@
             "nombre": "Rural",
             "mxds":
             [
-                {
-                    "ancho": 58.501,
-                    "alto": 57.999,
-                    "formato": "Anexos70x60",
-                    "orientacion": "Horizontal",
-                    "ruta": "Rural\\Anexos_70x60"
-                },
+                
                 {
                     "ancho": 31.900,
                     "alto": 25.900,
@@ -143,6 +137,13 @@
                     "formato": "P1",
                     "orientacion": "Vertical",
                     "ruta": "Rural\\Sec_P1_V"
+                },
+                {
+                    "ancho": 58.501,
+                    "alto": 57.999,
+                    "formato": "Anexos70x60",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Anexos_70x60"
                 },
                 {
                     "ancho": 67.865,
