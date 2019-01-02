@@ -278,13 +278,8 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        tm_layer = arcpy.mapping.Layer(lyr_sal)
-        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        lyrU = arcpy.mapping.ListLayers(mxd, tm_layer.name, df)[0]
-        arcpy.mapping.UpdateLayer(df, lyrU, lyr, False)
-        lyr.visible = False
-        del lyr
-        del lyrU
+        arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
+        lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
         mensaje("Preparación de etiquetas correcta.")
         return True
     except Exception:
