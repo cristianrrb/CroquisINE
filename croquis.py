@@ -292,8 +292,6 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
-
-
 def limpiaMapaRAU(mxd, RAU):
     pass
 
