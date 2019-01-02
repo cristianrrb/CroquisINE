@@ -87,7 +87,7 @@ def obtieneInfoAreaDestacada(urlAreaDestacada, codigoRAU, token):
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones, token, codigoRAU))
-        
+
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
@@ -303,13 +303,8 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        tm_layer = arcpy.mapping.Layer(lyr_sal)
-        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        lyrU = arcpy.mapping.ListLayers(mxd, tm_layer.name, df)[0]
-        arcpy.mapping.UpdateLayer(df, lyrU, lyr, False)
-        lyr.visible = False
-        del lyr
-        del lyrU
+        arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
+        lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
         mensaje("Preparación de etiquetas correcta.")
         return True
     except Exception:
@@ -549,7 +544,7 @@ def generaPDF(mxd, nombrePDF, datos):
     id_comuna = int(datos[4])
     dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
 
-    ruta = os.path.join("D:\CROQUIS\MUESTRAS_PDF\ENE",dict_region[id_region], nombrePDF)
+    ruta = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",dict_region[id_region], nombrePDF)
     mensaje(ruta)
     arcpy.mapping.ExportToPDF(mxd, ruta)
     mensaje("Exportado a pdf")
@@ -586,7 +581,7 @@ def intersectaAreaRechazo(poligono):
 
 def detectaDestacados(datosRAU):
     pass
-    
+
 def escribeCSV(registros):
     try:
         f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
