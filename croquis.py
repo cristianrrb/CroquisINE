@@ -20,7 +20,6 @@ def mensajeEstado(codigo, intersecta, estado):
     print(s)
     arcpy.AddMessage(s)
 
-# COMENTARIO2
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
     urlToken = urlPortal + '/sharing/rest/generateToken?'
@@ -38,7 +37,6 @@ def obtieneToken(usuario, clave, urlPortal):
         mensaje('** Error en obtieneToken.')
     return None
 
-#Comentario 3
 def obtieneInfoManzana(urlManzanas, codigoManzana, token):
     try:
         url = '{}/query?token={}&where=MANZENT+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
