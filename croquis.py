@@ -82,6 +82,28 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
+def obtieneInfoAreaDestacada(urlAreaDestacada, codigoRAU, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlSecciones, token, codigoRAU))
+        
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
+
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        if lista != None and len(lista) == 1:
+            metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
+            extent = calculaExtent(fs, metrosBuffer)
+            return lista[0], extent
+        else:
+            mensaje("Error: El registro RAU no existe")
+            return None
+    except:
+        mensaje("Error URL servicio_RAU")
+        return None
+
 def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
@@ -270,6 +292,9 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
+def limpiaMapaRAU(mxd, RAU):
+    pass
+
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         mensaje("Inicio preparación de etiquetas.")
@@ -302,6 +327,26 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
+def preparaMapaRAU(mxd, extent, escala, datosRAU):
+    actualizaVinetaSeccionRAU(mxd, datosRAU)
+    if zoom(mxd, extent, escala):
+        poligono = limpiaMapaRAU(mxd, datosRAU[0])
+        if poligono != None:
+            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                return True
+    mensaje("No se completo la preparación del mapa para sección RAU.")
+    return False
+
+def preparaMapaRural(mxd, extent, escala, datosRural):
+    actualizaVinetaSeccionRural(mxd, datosRural)
+    if zoom(mxd, extent, escala):
+        poligono = limpiaMapaRural(mxd, datosRural[0])
+        if poligono != None:
+            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                return True
+    mensaje("No se completo la preparación del mapa para sección Rural.")
+    return False
+
 def procesaManzana(codigoManzana):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
@@ -322,20 +367,19 @@ def procesaManzana(codigoManzana):
 def procesaRAU(codigoRAU):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
-
-        if datosRAU != None:
-            intersecta = intersectaAreaRechazo(datosRAU[0])
-            mxd, infoMxd, escala = buscaTemplateRAU(extent)
-            if mxd != None:
-                if zoom(mxd, extent, escala):
-                    #limpiaMapa(mxd,datosRAU[0])
-                    actualizaVinetaSeccionRAU(mxd, datosRAU)
-                    return mxd, infoMxd, datosRAU, intersecta, escala
+        if token != None:
+            datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
+            if datosRAU != None:
+                intersecta = intersectaAreaRechazo(datosRAU[0])
+                mxd, infoMxd, escala = buscaTemplateRAU(extent)
+                if mxd != None:
+                    if preparaMapaRAU(mxd, extent, escala, datosRAU):
+                        mensaje("Se procesó la sección RAU correctamente.")
+                        return mxd, infoMxd, datosRAU, intersecta, escala
     except:
-        pass
-    mensaje("** Error: datosRAU")
-    return None, None, None, None, None
+        mensaje("** Error: procesaRAU.")
+    mensaje("No se completó el proceso de sección RAU.")
+    return None, None, None, "", None
 
 def procesaRural(codigoRural):
     try:
@@ -346,14 +390,13 @@ def procesaRural(codigoRural):
             intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
-                if zoom(mxd, extent, escala):
-                    #limpiaMapa(mxd,datosManzana[0])
-                    actualizaVinetaSeccionRural(mxd, datosRural)
+                if preparaMapaRAU(mxd, extent, escala, datosRural):
+                    mensaje("Se procesó la sección Rural correctamente.")
                     return mxd, infoMxd, datosRural, intersecta, escala
     except:
-        pass
-    mensaje("** Error: datosRural")
-    return None, None, None, None, None
+        mensaje("** Error: procesaRural.")
+    mensaje("No se completó el proceso de sección Rural.")
+    return None, None, None, "", None
 
 def generaListaCodigos(texto):
     try:
@@ -541,6 +584,9 @@ def intersectaAreaRechazo(poligono):
     mensaje('No intersecta con areas.')
     return ""
 
+def detectaDestacados(datosRAU):
+    pass
+    
 def escribeCSV(registros):
     try:
         f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
