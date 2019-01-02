@@ -82,28 +82,6 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
-def obtieneInfoAreaDestacada(urlAreaDestacada, codigo, token):
-    try:
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
-        fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones, token, codigo))
-        
-        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
-
-        with arcpy.da.SearchCursor(fs, fields) as rows:
-            lista = [r for r in rows]
-
-        if lista != None and len(lista) == 1:
-            metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
-            extent = calculaExtent(fs, metrosBuffer)
-            return lista[0], extent
-        else:
-            mensaje("Error: El registro RAU no existe")
-            return None
-    except:
-        mensaje("Error URL servicio_RAU")
-        return None
-
 def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
@@ -125,6 +103,23 @@ def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
     except:
         mensaje("Error URL servicio_Rural")
         return None
+
+def obtieneInfoAreaDestacada(urlAreaDestacada, codigo, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlAreaDestacada, token, codigo))
+        
+        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
+
+        lista = []
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        return lista
+    except:
+        mensaje("Error URL AreasDestacadas")
+        return []
 
 def listaMXDs(estrato, ancho):
 
@@ -196,6 +191,13 @@ def mejorEscalaMXDRural(mxd, alto, ancho):
             return e * 100
     return None
 
+def mejorEscalaMXD(mxd, alto, ancho):
+    escalas = [e for e in range(5, 1000)]
+    for e in escalas:
+        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
+            return e * 100
+    return None
+
 def buscaTemplateManzana(extent):
     try:
         ancho = extent.XMax - extent.XMin
@@ -225,6 +227,14 @@ def buscaTemplateRAU(extent):
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 mensaje('Se selecciono layout para RAU.')
                 return mxd, infoMxd, escala
+
+        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
+        escala = mejorEscalaMXD(infoMxd, alto, ancho)
+        if escala != None:
+            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+            mxd = arcpy.mapping.MapDocument(rutaMXD)
+            mensaje('Se selecciono layout para RAU.')
+            return mxd, infoMxd, escala
     except:
         pass
     mensaje('** Error: No se selecciono layout para RAU.')
@@ -325,10 +335,10 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaRAU(mxd, datosRAU[0])
-        if poligono != None:
-            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                return True
+        #poligono = limpiaMapaRAU(mxd, datosRAU[0])
+        #if poligono != None:
+            # if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+        return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
@@ -692,6 +702,11 @@ arcpy.SetParameterAsText(4, rutaZip)
 mensaje("El GeoProceso ha terminado correctamente")
 
 """
+
+parametroCodigos = "1101900003"    # codigo rau con areas destacadas
+
+
+
 parametroCodigos = "1101021004017"
 parametroCodigos = "5402051002042,5402051002031"
 parametroCodigos = "1101021002003,5109131002047,5109131002020,5109131003005"
