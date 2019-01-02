@@ -87,7 +87,7 @@ def obtieneInfoAreaDestacada(urlAreaDestacada, codigo, token):
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones, token, codigo))
-        
+
         fields = ['SHAPE@','SHAPE@AREA','NUMERO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
@@ -292,6 +292,32 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
+def limpiaMapaManzanaEsquicio(mxd, manzana):
+    try:
+        mensaje("Limpieza de esquicio iniciada.")
+        df = arcpy.mapping.ListDataFrames(mxd)[1]
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        arcpy.AddField_management(FC, "tipo", "LONG")
+        tm_path = os.path.join("in_memory", "graphic_lyr")
+        arcpy.MakeFeatureLayer_management(FC, tm_path)
+        tm_layer = arcpy.mapping.Layer(tm_path)
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+        mensaje("Proyectando")
+        ext = manzana.projectAs(df.spatialReference)
+        mensaje("Proyectado")
+        cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
+        cursor.insertRow([ext,2])
+        del cursor
+        del FC
+        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        mensaje("Limpieza de esquicio correcta.")
+        return true
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de esquicio.")
+    return None
+
 def limpiaMapaRAU(mxd, RAU):
     pass
 
@@ -316,9 +342,10 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
-        if poligono != None:
-            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                return True
+        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+            if poligono != None:
+                if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                    return True
     mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
