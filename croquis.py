@@ -315,6 +315,16 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
+def preparaMapaRural(mxd, extent, escala, datosRural):
+    actualizaVinetaSeccionRural(mxd, datosRural)
+    if zoom(mxd, extent, escala):
+        poligono = limpiaMapaRural(mxd, datosRural[0])
+        if poligono != None:
+            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+                return True
+    mensaje("No se completo la preparación del mapa para sección Rural.")
+    return False
+
 def procesaManzana(codigoManzana):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
@@ -358,14 +368,13 @@ def procesaRural(codigoRural):
             intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
-                if zoom(mxd, extent, escala):
-                    #limpiaMapa(mxd,datosManzana[0])
-                    actualizaVinetaSeccionRural(mxd, datosRural)
+                if preparaMapaRAU(mxd, extent, escala, datosRural):
+                    mensaje("Se procesó la sección Rural correctamente.")
                     return mxd, infoMxd, datosRural, intersecta, escala
     except:
-        pass
-    mensaje("** Error: datosRural")
-    return None, None, None, None, None
+        mensaje("** Error: procesaRural.")
+    mensaje("No se completó el proceso de sección Rural.")
+    return None, None, None, "", None
 
 def generaListaCodigos(texto):
     try:
