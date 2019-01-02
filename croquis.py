@@ -20,7 +20,7 @@ def mensajeEstado(codigo, intersecta, estado):
     print(s)
     arcpy.AddMessage(s)
 
-# COMENTARIO
+# COMENTARIO2
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
     urlToken = urlPortal + '/sharing/rest/generateToken?'
