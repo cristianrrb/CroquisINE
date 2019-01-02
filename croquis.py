@@ -344,7 +344,7 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
 
         if poligono != None:
-            if limpiaMapaManzanaEsquicio:
+            if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
                 if cortaEtiqueta(mxd, "Eje_Vial", poligono):
                     return True
         mensaje("No se completo la preparación del mapa para manzana.")
