@@ -404,7 +404,7 @@ def procesaManzana(codigo):
                         mensaje("Se procesó la manzana correctamente.")
     except:
         mensaje("** Error: procesaManzana.")
-    mensaje("No se completó el proceso de manzana.")
+        mensaje("No se completó el proceso de manzana.")
     #return None, None, None, "", None
 
 def procesaRAU(codigo):
