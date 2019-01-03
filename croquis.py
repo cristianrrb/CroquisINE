@@ -357,8 +357,49 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
-        mensaje("Limpieza de mapa iniciada.")
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
+        lyr.definitionQuery = sql_exp
+        lyr1 = arcpy.mapping.ListLayers(mxd, "Mz_Rau", df)[0]
+        lyr1.definitionQuery = sql_exp
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        arcpy.AddField_management(FC, "tipo", "LONG")
+        tm_path = os.path.join("in_memory", "graphic_lyr")
+        arcpy.MakeFeatureLayer_management(FC, tm_path)
+        tm_layer = arcpy.mapping.Layer(tm_path)
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+        #ext1 = manzana.extent.polygon
+        manzana = datosRAU[0]
+        mensaje("Proyectando")
+        ext = manzana.projectAs(df.spatialReference)
+        mensaje("Proyectado")
+        dist = calculaDistanciaBufferRAU(ext.area)
+        dist_buff = float(dist.replace(" Meters", ""))
+        polgrande = ext.buffer(dist_buff * 20)
+        polchico = ext.buffer(dist_buff)
+        poli = polgrande.difference(polchico)
+        cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
+        cursor.insertRow([poli,0])
+        del cursor
+        del FC
+        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        df1 = arcpy.mapping.ListDataFrames(mxd)[1]
+        lyr1 = arcpy.mapping.ListLayers(mxd, capa, df1)[0]
+        lyr1.definitionQuery = sql_exp
+        mensaje("Limpieza de mapa correcta.")
+        return polchico
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa.")
+    return None
+
+def limpiaMapaRural(mxd, datosRural, capa):
+    try:
+        mensaje("Limpieza de mapa iniciada.")
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        mensaje("Limpieza de mapa iniciada.")
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRural[10]))
         mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
@@ -369,7 +410,7 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         #ext1 = manzana.extent.polygon
-        manzana = datosRAU[0]
+        manzana = datosRural[0]
         mensaje("Proyectando")
         ext = manzana.projectAs(df.spatialReference)
         mensaje("Proyectado")
@@ -447,7 +488,7 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
         nombre = leeNombreCapa("Rural")
-        poligono = limpiaMapaRAU(mxd, datosRural, nombre)
+        poligono = limpiaMapaRural(mxd, datosRural, nombre)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Rural")
             mensaje("Inicio preparación de etiquetas.")
