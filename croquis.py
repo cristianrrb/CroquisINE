@@ -364,7 +364,8 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
                 lista_etiquetas = listaEtiquetas("Manzana")
                 mensaje("Inicio preparación de etiquetas.")
                 for capa in lista_etiquetas:
-                    cortaEtiqueta(mxd, capa, poligono):
+                    mensaje(capa)
+                    cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.")
                 return True
     mensaje("No se completo la preparación del mapa para manzana.")
