@@ -306,7 +306,7 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
     try:
         mensaje("Limpieza de esquicio iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
-        FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
@@ -322,7 +322,7 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         mensaje("Limpieza de esquicio correcta.")
-        return true
+        return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
         mensaje("Error en limpieza de mapa.")
@@ -336,7 +336,7 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        arcpy.CopyFeatures_management(lyr_sal, os.path.join(arcpy.env.scratchGDB, elLyr))
+        arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
         lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
         mensaje("Preparación de etiquetas correcta.")
         return True
