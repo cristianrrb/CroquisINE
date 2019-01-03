@@ -465,7 +465,7 @@ def procesaRural(codigo):
             registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
-                if preparaMapaRAU(mxd, extent, escala, datosRural):
+                if preparaMapaRural(mxd, extent, escala, datosRural):
                     mensaje("Registrando la operación.")
                     registro.formato = infoMxd['formato']
                     registro.orientacion = infoMxd['orientacion']
