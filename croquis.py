@@ -352,60 +352,102 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
-def procesaManzana(codigoManzana):
+def procesaManzana(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosManzana, extent = obtieneInfoManzana(urlManzanas, codigoManzana, token)
+            datosManzana, extent = obtieneInfoManzana(urlManzanas, codigo, token)
             if datosManzana != None:
-                intersecta = intersectaAreaRechazo(datosManzana[0])
+                registro.intersecta = intersectaAreaRechazo(datosManzana[0])
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
                     if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                        mensaje("Registrando la operación.")
+                        registro.formato = infoMxd['formato']
+                        registro.orientacion = infoMxd['orientacion']
+                        registro.escala = escala
+
+                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+                        registros.append(registro)
+
+                        if registro.rutaPDF == "":
+                            mensajeEstado(codigo, registro.intersecta, "No Existe")
+                        else:
+                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+
                         mensaje("Se procesó la manzana correctamente.")
-                        return mxd, infoMxd, datosManzana, intersecta, escala
     except:
         mensaje("** Error: procesaManzana.")
     mensaje("No se completó el proceso de manzana.")
-    return None, None, None, "", None
+    #return None, None, None, "", None
 
-def procesaRAU(codigoRAU):
+def procesaRAU(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token)
+            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones, codigo, token)
             if datosRAU != None:
-                intersecta = intersectaAreaRechazo(datosRAU[0])
+                registro.intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
-                        mensaje("Se procesó la sección RAU correctamente.")
-                        lista = obtieneListaAreasDestacadas(urlSecciones, codigoRAU, token)
+                        mensaje("Registrando la operación.")
+                        registro.formato = infoMxd['formato']
+                        registro.orientacion = infoMxd['orientacion']
+                        registro.escala = escala
+
+                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
+                        registros.append(registro)
+
+                        if registro.rutaPDF == "":
+                            mensajeEstado(codigo, registro.intersecta, "No Existe")
+                        else:
+                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                        
+                        lista = obtieneListaAreasDestacadas(urlSecciones, codigo, token)
                         if len(lista) > 0:
                             mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
 
-                        return mxd, infoMxd, datosRAU, intersecta, escala
+                        mensaje("Se procesó la sección RAU correctamente.")
+                        #return mxd, infoMxd, datosRAU, intersecta, escala
     except:
         mensaje("** Error: procesaRAU.")
     mensaje("No se completó el proceso de sección RAU.")
-    return None, None, None, "", None
+    #return None, None, None, "", None
 
-def procesaRural(codigoRural):
+def procesaRural(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRural, extent = obtieneInfoSeccionRural(urlSecciones, codigoRural, token)
-
+        datosRural, extent = obtieneInfoSeccionRural(urlSecciones, codigo, token)
         if datosRural != None:
-            intersecta = intersectaAreaRechazo(datosRural[0])
+            registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRAU(mxd, extent, escala, datosRural):
+                    mensaje("Registrando la operación.")
+                    registro.formato = infoMxd['formato']
+                    registro.orientacion = infoMxd['orientacion']
+                    registro.escala = escala
+
+                    nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                    registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
+                    registros.append(registro)
+
+                    if registro.rutaPDF == "":
+                        mensajeEstado(codigo, registro.intersecta, "No Existe")
+                    else:
+                        mensajeEstado(codigo, registro.intersecta, "Correcto")
                     mensaje("Se procesó la sección Rural correctamente.")
-                    return mxd, infoMxd, datosRural, intersecta, escala
+                    #return mxd, infoMxd, datosRural, intersecta, escala
     except:
         mensaje("** Error: procesaRural.")
     mensaje("No se completó el proceso de sección Rural.")
-    return None, None, None, "", None
+    #return None, None, None, "", None
 
 def generaListaCodigos(texto):
     try:
@@ -630,6 +672,16 @@ def generarCodigoBarra():
     codigo = "qwertyu"
     return codigo
 
+class Registro:
+    def __init__(self, codigo):
+        self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
+        self.codigo = codigo
+        self.rutaPDF = ""
+        self.intersecta = ""
+        self.formato = ""
+        self.orientacion = ""
+        self.escala = ""
+
 arcpy.env.overwriteOutput = True
 
 urlManzanas    = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
@@ -667,19 +719,22 @@ mensaje("Estrato: {}".format(parametroEstrato))
 
 for codigo in listaCodigos:
     #reg[hora, estrato, codigo, pdf, intersecta, formato, orientacion, escala]
-    reg = ["{}".format(datetime.datetime.now().strftime("%H:%M:%S")),parametroEstrato,codigo,"","","","",""]
+    #reg = ["{}".format(datetime.datetime.now().strftime("%H:%M:%S")),parametroEstrato,codigo,"","","","",""]
 
     if parametroEstrato == 'Manzana':
-        mxd, infoMxd, datos, intersecta, escala = procesaManzana(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaManzana(codigo)
+        procesaManzana(codigo)
     elif parametroEstrato == 'RAU':
-        mxd, infoMxd, datos, intersecta, escala = procesaRAU(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaRAU(codigo)
+        procesaRAU(codigo)
     elif parametroEstrato == 'Rural':
-        mxd, infoMxd, datos, intersecta, escala = procesaRural(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaRural(codigo)
+        procesaRural(codigo)
     else:
         mensaje("El estrato no existe")
         quit()
 
-    if mxd != None and infoMxd != None and datos != None:
+    """ if mxd != None and infoMxd != None and datos != None:
         reg[4] = intersecta
         reg[5] = infoMxd['formato']
         reg[6] = infoMxd['orientacion']
@@ -695,7 +750,7 @@ for codigo in listaCodigos:
     if reg[3] == "":
         mensajeEstado(codigo, intersecta, "No Existe")
     else:
-        mensajeEstado(codigo, intersecta, "Correcto")
+        mensajeEstado(codigo, intersecta, "Correcto") """
 
     mensaje("-------------------------------------------------\n")
 
@@ -711,7 +766,6 @@ parametroCodigos = "1101900003"    # codigo rau con areas destacadas
 
 
 
-parametroCodigos = "1101021004017"
 parametroCodigos = "5402051002042,5402051002031"
 parametroCodigos = "1101021002003,5109131002047,5109131002020,5109131003005"
 parametroCodigos = "5402051002042,5402051002031"
