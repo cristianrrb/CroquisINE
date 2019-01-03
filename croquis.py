@@ -109,7 +109,7 @@ def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
-        
+
         fields = ['SHAPE@','SHAPE@AREA','NUMERO']
 
         lista = []
@@ -132,6 +132,14 @@ def listaMXDs(estrato, ancho):
                 lista = [m for m in config['estratos'][d[estrato]]['mxds'] if m['ancho'] > m['alto']]
             else:
                 lista = [m for m in config['estratos'][d[estrato]]['mxds'] if m['ancho'] <= m['alto']]
+    return lista
+
+def listaEtiquetas(estrato):
+    d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = []
+    for e in config['estratos']:
+        if e['nombre'] == estrato:
+            lista = [m for m in config['estratos'][d[estrato]]['capas_labels']]
     return lista
 
 def calculaDistanciaBufferManzana(area):
@@ -330,15 +338,17 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
 
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
-        mensaje("Inicio preparación de etiquetas.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
-        lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
-        mensaje("Preparación de etiquetas correcta.")
+        if arcpy.GetCount_management(lyr_sal) > 0:
+            arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
+            lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
+            mensaje("Etiquetas correcta de {}".format(elLyr))
+        else:
+            mensaje("No hay registros de {}".format(elLyr))
         return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
@@ -351,8 +361,12 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
         if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
             if poligono != None:
-                if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                    return True
+                lista_etiquetas = listaEtiquetas("Manzana")
+                mensaje("Inicio preparación de etiquetas.")
+                for capa in lista_etiquetas:
+                    cortaEtiqueta(mxd, capa, poligono):
+                mensaje("Fin preparación de etiquetas.")
+                return True
     mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
@@ -431,7 +445,7 @@ def procesaRAU(codigo):
                             mensajeEstado(codigo, registro.intersecta, "No Existe")
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
-                        
+
                         lista = obtieneListaAreasDestacadas(urlSecciones, codigo, token)
                         if len(lista) > 0:
                             mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
