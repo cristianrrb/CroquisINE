@@ -11,6 +11,14 @@
     "estratos": [
         {
             "nombre": "Manzana",
+
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Etiquetas_Limites",
+                "Cursos_Hidricos_Marco"
+            ],
+
             "mxds":
             [
                 {
@@ -59,6 +67,16 @@
         },
         {
             "nombre": "RAU",
+
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Equipamiento",
+                "Cursos_Hidricos_Marco",
+                "Etiquetado_Auxiliar",
+                "Etiquetas_Limites"
+            ],
+
             "mxds":
             [
                 {
@@ -107,6 +125,21 @@
         },
         {
             "nombre": "Rural",
+
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Cursos_Hidricos",
+                "Equipamiento",
+                "etiquetado_auxiliar_mm2016",
+                "etiquetado_limites_mm2016",
+                "topónimos_mm2016 ",
+                "Etiquetado_Auxiliar",
+                "Etiquetado_Limites",
+                "Cuerpos_De_Agua",
+                "Cotas"
+            ],
+
             "mxds":
             [
 
