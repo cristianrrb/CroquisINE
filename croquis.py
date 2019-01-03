@@ -66,7 +66,7 @@ def obtieneInfoSeccionRAU(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones_RAU, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -88,7 +88,7 @@ def obtieneInfoSeccionRural(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones_Rural, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -357,14 +357,16 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
-        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[9]))
+        mensaje("Limpieza de mapa iniciada.")
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
+        mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\Desarrollo\INE\Aplicacion\graphic_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         #ext1 = manzana.extent.polygon
         manzana = datosRAU[0]
@@ -420,7 +422,7 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
                 lista_etiquetas = listaEtiquetas("Manzana")
                 mensaje("Inicio preparación de etiquetas.")
                 for capa in lista_etiquetas:
-                    cortaEtiqueta(mxd, capa, poligono):
+                    cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.")
                 return True
     mensaje("No se completo la preparación del mapa para manzana.")
@@ -435,7 +437,7 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
             lista_etiquetas = listaEtiquetas("RAU")
             mensaje("Inicio preparación de etiquetas.")
             for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono):
+                cortaEtiqueta(mxd, capa, poligono)
             mensaje("Fin preparación de etiquetas.")
             return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
@@ -444,10 +446,15 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        #poligono = limpiaMapaRural(mxd, datosRural[0])
-        #if poligono != None:
-            #if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-        return True
+        nombre = leeNombreCapa("Rural")
+        poligono = limpiaMapaRAU(mxd, datosRural, nombre)
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Rural")
+            mensaje("Inicio preparación de etiquetas.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
