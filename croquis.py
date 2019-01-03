@@ -228,7 +228,7 @@ def buscaTemplateRAU(extent):
             return mxd, infoMxd, escala
     except:
         pass
-    mensaje('** Error: No se selecciono layout para RAU.')
+    mensaje('** Error: No se selecciono layout para RAU. (Excede escala)')
     return None, None, None
 
 def buscaTemplateRural(extent):
@@ -243,6 +243,14 @@ def buscaTemplateRural(extent):
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 mensaje('Se selecciono layout para Rural.')
                 return mxd, infoMxd, escala
+
+        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
+        escala = mejorEscalaMXD(infoMxd, alto, ancho)
+        if escala != None:
+            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+            mxd = arcpy.mapping.MapDocument(rutaMXD)
+            mensaje('Se selecciono layout para Rural. (Excede escala)')
+            return mxd, infoMxd, escala
     except:
         pass
     mensaje('** Error: No se selecciono layout para Rural.')
@@ -430,7 +438,7 @@ def procesaRAU(codigo):
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
 
-                        #procesaAreasDestacadas(codigo, datosRAU, token)
+                        procesaAreasDestacadas(codigo, datosRAU, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
     except:
@@ -468,18 +476,19 @@ def procesaRural(codigo):
         #mensaje("** Error: procesaRural.")
         mensaje("No se completó el proceso de sección Rural.")
 
-def procesaAreasDestacadas(codigoSeccion, datosRural, token):
+def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     lista = obtieneListaAreasDestacadas(codigoSeccion, token)
     if len(lista) > 0:
-        mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+        mensaje("Se detectaron areas destacadas dentro de la sección.")
         for row in lista:
-            procesaAreaDestacada(row, datosRural)
+            procesaAreaDestacada(codigoSeccion, row, datosSeccion)
 
-def procesaAreaDestacada(codigoSeccion, area, datosRural):
+def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
+    registro = Registro(codigoSeccion)
     extent = area[0].extent
     mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
     if mxd != None:
-        if preparaMapaAreaDestacada(mxd, extent, escala, datosRural):
+        if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
             mensaje("Registrando la operación.")
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
@@ -488,7 +497,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosRural):
             codigo = "{}_{}".format(codigoSeccion, area[2])
 
             nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
 
             """ if registro.rutaPDF == "":
@@ -496,13 +505,13 @@ def procesaAreaDestacada(codigoSeccion, area, datosRural):
             else:
                 mensajeEstado(codigo, registro.intersecta, "Correcto") """
 
-            mensaje("Se procesó la manzana correctamente.")
+            mensaje("Se procesó el área destacada correctamente.")
 
-def preparaMapaAreaDestacada(mxd, extent, escala, datosRural):
-    actualizaVinetaManzanas(mxd, datosRural)   # Se actualiza viñeta de MXD de manzana con datos RAU
+def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
+    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU
     if zoom(mxd, extent, escala):
-        """ poligono = limpiaMapaManzana(mxd, datosRural[0])
-        if limpiaMapaManzanaEsquicio(mxd, datosRural[0]):
+        """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
+        if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas("Manzana")
                 mensaje("Inicio preparación de etiquetas.")
@@ -795,7 +804,7 @@ parametroEstrato = "Manzana"
 parametroCodigos = "1101900003"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
-parametroEstrato = "RAU"
+parametroEstrato = "Rural"
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
 
