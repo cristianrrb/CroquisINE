@@ -696,7 +696,7 @@ def comprime(registros, rutaCSV):
     nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
     rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
     mensaje("Ruta ZIP {}".format(rutaZip))
-    listaPDFs = [a[3] for a in registros if a[3 != ""]]
+    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]]
     try:
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
@@ -757,40 +757,15 @@ registros = []
 mensaje("Estrato: {}".format(parametroEstrato))
 
 for codigo in listaCodigos:
-    #reg[hora, estrato, codigo, pdf, intersecta, formato, orientacion, escala]
-    #reg = ["{}".format(datetime.datetime.now().strftime("%H:%M:%S")),parametroEstrato,codigo,"","","","",""]
-
     if parametroEstrato == 'Manzana':
-        #mxd, infoMxd, datos, intersecta, escala = procesaManzana(codigo)
         procesaManzana(codigo)
     elif parametroEstrato == 'RAU':
-        #mxd, infoMxd, datos, intersecta, escala = procesaRAU(codigo)
         procesaRAU(codigo)
     elif parametroEstrato == 'Rural':
-        #mxd, infoMxd, datos, intersecta, escala = procesaRural(codigo)
         procesaRural(codigo)
     else:
         mensaje("El estrato no existe")
         quit()
-
-    """ if mxd != None and infoMxd != None and datos != None:
-        reg[4] = intersecta
-        reg[5] = infoMxd['formato']
-        reg[6] = infoMxd['orientacion']
-        reg[7] = escala
-        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-        if nombrePDF != None:
-            rutaPDF = generaPDF(mxd, nombrePDF, datos)
-            if rutaPDF != None:
-                reg[3] = rutaPDF
-
-    registros.append(reg)
-
-    if reg[3] == "":
-        mensajeEstado(codigo, intersecta, "No Existe")
-    else:
-        mensajeEstado(codigo, intersecta, "Correcto") """
-
     mensaje("-------------------------------------------------\n")
 
 rutaCSV = escribeCSV(registros)
