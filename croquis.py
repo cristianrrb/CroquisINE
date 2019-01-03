@@ -104,23 +104,6 @@ def obtieneInfoSeccionRural(urlManzanas, codigoRural, token):
         mensaje("Error URL servicio_Rural")
         return None
 
-def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
-    try:
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
-        fs = arcpy.FeatureSet()
-        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
-
-        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
-
-        lista = []
-        with arcpy.da.SearchCursor(fs, fields) as rows:
-            lista = [r for r in rows]
-
-        return lista
-    except:
-        mensaje("Error URL AreasDestacadas")
-        return []
-
 def listaMXDs(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
@@ -446,9 +429,7 @@ def procesaRAU(codigo):
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
 
-                        lista = obtieneListaAreasDestacadas(urlAreaDestacada, codigo, token)
-                        if len(lista) > 0:
-                            mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+                        procesaAreasDestacadas(codigo, datosRAU, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
     except:
@@ -482,6 +463,70 @@ def procesaRural(codigo):
     except:
         #mensaje("** Error: procesaRural.")
         mensaje("No se completó el proceso de sección Rural.")
+
+def procesaAreasDestacadas(codigoSeccion, datosRAU, token):
+    lista = obtieneListaAreasDestacadas(codigoSeccion, token)
+    if len(lista) > 0:
+        mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+        for row in lista:
+            procesaAreaDestacada(row, datosRAU)
+
+def procesaAreaDestacada(codigoSeccion, area, datosRAU):
+    extent = area[0].extent
+    mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
+    if mxd != None:
+        if preparaMapaAreaDestacada(mxd, extent, escala, datosRAU):
+            mensaje("Registrando la operación.")
+            registro.formato = infoMxd['formato']
+            registro.orientacion = infoMxd['orientacion']
+            registro.escala = escala
+
+            codigo = "{}_{}".format(codigoSeccion, area[2])
+
+            nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
+            registros.append(registro)
+
+            """ if registro.rutaPDF == "":
+                mensajeEstado(codigo, registro.intersecta, "No Existe")
+            else:
+                mensajeEstado(codigo, registro.intersecta, "Correcto") """
+
+            mensaje("Se procesó la manzana correctamente.")
+
+def preparaMapaAreaDestacada(mxd, extent, escala, datosRAU):
+    actualizaVinetaManzanas(mxd, datosRAU)   # Se actualiza viñeta de MXD de manzana con datos RAU
+    if zoom(mxd, extent, escala):
+        """ poligono = limpiaMapaManzana(mxd, datosRAU[0])
+        if limpiaMapaManzanaEsquicio(mxd, datosRAU[0]):
+            if poligono != None:
+                lista_etiquetas = listaEtiquetas("Manzana")
+                mensaje("Inicio preparación de etiquetas.")
+                for capa in lista_etiquetas:
+                    mensaje(capa)
+                    cortaEtiqueta(mxd, capa, poligono)
+                mensaje("Fin preparación de etiquetas.") """
+        return True
+    mensaje("No se completo la preparación del mapa para manzana.")
+    return False
+
+
+def buscaTemplateAreaDestacada(extent)
+    # Por el momento se usan los mismos que para manzanas
+    return buscaTemplateManzana(extent)
+
+def obtieneListaAreasDestacadas(codigoSeccion, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
+        #lista = []
+        with arcpy.da.SearchCursor(fs, ['SHAPE@', 'SHAPE@AREA', 'NUMERO']) as rows:
+            lista = [r for r in rows]
+        return lista
+    except:
+        mensaje("Error obtieneListaAreasDestacadas")
+        return []
 
 def generaListaCodigos(texto):
     try:
@@ -668,9 +713,6 @@ def intersectaAreaRechazo(poligono):
         mensaje('** Error en intersecta.')
     mensaje('No intersecta con areas.')
     return ""
-
-def detectaDestacados(datosRAU):
-    pass
 
 def escribeCSV(registros):
     try:
