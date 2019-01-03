@@ -66,7 +66,7 @@ def obtieneInfoSeccionRAU(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones_RAU, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -88,7 +88,7 @@ def obtieneInfoSeccionRural(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones_Rural, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -102,7 +102,24 @@ def obtieneInfoSeccionRural(codigo, token):
             return None, None
     except:
         mensaje("Error URL servicio_Rural")
-        return None, None
+        return None
+
+def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
+
+        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
+
+        lista = []
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        return lista
+    except:
+        mensaje("Error URL AreasDestacadas")
+        return []
 
 def listaMXDs(estrato, ancho):
 
@@ -123,6 +140,14 @@ def listaEtiquetas(estrato):
     for e in config['estratos']:
         if e['nombre'] == estrato:
             lista = [m for m in config['estratos'][d[estrato]]['capas_labels']]
+    return lista
+
+def leeNombreCapa(estrato):
+    d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = ""
+    for e in config['estratos']:
+        if e['nombre'] == estrato:
+            lista = e['nombre_capa']
     return lista
 
 def calculaDistanciaBufferManzana(area):
@@ -327,6 +352,47 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
+def limpiaMapaRAU(mxd, datosRAU, capa):
+    try:
+        mensaje("Limpieza de mapa iniciada.")
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        mensaje("Limpieza de mapa iniciada.")
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
+        mensaje(sql_exp)
+        lyr.definitionQuery = sql_exp
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        arcpy.AddField_management(FC, "tipo", "LONG")
+        tm_path = os.path.join("in_memory", "graphic_lyr")
+        arcpy.MakeFeatureLayer_management(FC, tm_path)
+        tm_layer = arcpy.mapping.Layer(tm_path)
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+        #ext1 = manzana.extent.polygon
+        manzana = datosRAU[0]
+        mensaje("Proyectando")
+        ext = manzana.projectAs(df.spatialReference)
+        mensaje("Proyectado")
+        dist = calculaDistanciaBufferRAU(ext.area)
+        dist_buff = float(dist.replace(" Meters", ""))
+        polgrande = ext.buffer(dist_buff * 20)
+        polchico = ext.buffer(dist_buff)
+        poli = polgrande.difference(polchico)
+        cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
+        cursor.insertRow([poli,0])
+        del cursor
+        del FC
+        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        df1 = arcpy.mapping.ListDataFrames(mxd)[1]
+        lyr1 = arcpy.mapping.ListLayers(mxd, capa, df1)[0]
+        lyr1.definitionQuery = sql_exp
+        mensaje("Limpieza de mapa correcta.")
+        return polchico
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa.")
+    return None
+
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -334,8 +400,8 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        count = arcpy.GetCount_management(lyr_sal)
-        if count > 0:
+        cuantos = arcpy.GetCount_management(lyr_sal)
+        if cuantos > 0:
             arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
             lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
@@ -356,7 +422,6 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
                 lista_etiquetas = listaEtiquetas("Manzana")
                 mensaje("Inicio preparación de etiquetas.")
                 for capa in lista_etiquetas:
-                    mensaje(capa)
                     cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.")
                 return True
@@ -366,20 +431,30 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
-        #poligono = limpiaMapaRAU(mxd, datosRAU[0])
-        #if poligono != None:
-            # if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-        return True
+        nombre = leeNombreCapa("RAU")
+        poligono = limpiaMapaRAU(mxd, datosRAU, nombre)
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("RAU")
+            mensaje("Inicio preparación de etiquetas.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        #poligono = limpiaMapaRural(mxd, datosRural[0])
-        #if poligono != None:
-            #if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-        return True
+        nombre = leeNombreCapa("Rural")
+        poligono = limpiaMapaRAU(mxd, datosRural, nombre)
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Rural")
+            mensaje("Inicio preparación de etiquetas.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
@@ -438,7 +513,9 @@ def procesaRAU(codigo):
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
 
-                        procesaAreasDestacadas(codigo, datosRAU, token)
+                        lista = obtieneListaAreasDestacadas(urlSecciones, codigo, token)
+                        if len(lista) > 0:
+                            mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
 
                         mensaje("Se procesó la sección RAU correctamente.")
     except:
