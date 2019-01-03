@@ -477,11 +477,11 @@ def procesaRural(codigo):
         mensaje("No se completó el proceso de sección Rural.")
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
-    lista = obtieneListaAreasDestacadas(codigoSeccion, token)
+    listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
     if len(lista) > 0:
         mensaje("Se detectaron areas destacadas dentro de la sección.")
-        for row in lista:
-            procesaAreaDestacada(codigoSeccion, row, datosSeccion)
+        for area in listaAreas:
+            procesaAreaDestacada(codigoSeccion, area, datosSeccion)
 
 def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     registro = Registro(codigoSeccion)
@@ -524,17 +524,25 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     return False
 
 def buscaTemplateAreaDestacada(extent):
-    # Por el momento se usan los mismos que para manzanas
-    return buscaTemplateManzana(extent)
+    # Por el momento se usan los mismos que para Rural
+    mxd, infoMxd, escala = buscaTemplateRural(extent)
+    return mxd, infoMxd, escala
 
 def obtieneListaAreasDestacadas(codigoSeccion, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
-        #lista = []
-        with arcpy.da.SearchCursor(fs, ['SHAPE@', 'SHAPE@AREA', 'NUMERO']) as rows:
+
+        fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
+
+        buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
+        fcBuffer = arcpy.Buffer_analysis(fs, buffer, "15 Meters")
+        with arcpy.da.SearchCursor(fcBuffer, fields) as rows:
             lista = [r for r in rows]
+
+        arcpy.Delete_management(buffer)
+
         return lista
     except:
         mensaje("Error obtieneListaAreasDestacadas")
@@ -796,7 +804,7 @@ parametroCodigos = arcpy.GetParameterAsText(3)
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
-parametroCodigos = "1101081004020,1101021003055"
+parametroCodigos = "1101021002005"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
