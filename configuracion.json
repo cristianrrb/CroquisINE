@@ -11,6 +11,7 @@
     "estratos": [
         {
             "nombre": "Manzana",
+            "nombre_capa": "Marco_Manzanas_MM2016",
 
             "capas_labels":
             [
@@ -67,6 +68,7 @@
         },
         {
             "nombre": "RAU",
+            "nombre_capa": "Seccion_Seleccionada",
 
             "capas_labels":
             [
@@ -125,6 +127,7 @@
         },
         {
             "nombre": "Rural",
+            "nombre_capa": "Seccion_Seleccionada",
 
             "capas_labels":
             [
