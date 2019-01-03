@@ -796,7 +796,7 @@ parametroCodigos = arcpy.GetParameterAsText(3)
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
-parametroCodigos = "1101081004020,1101021003055"
+parametroCodigos = "1101021002005"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
