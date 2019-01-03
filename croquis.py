@@ -88,7 +88,7 @@ def obtieneInfoSeccionRural(urlSecciones_Rural, codigoRural, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones_Rural, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
