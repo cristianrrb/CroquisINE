@@ -343,7 +343,8 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        if arcpy.GetCount_management(lyr_sal) > 0:
+        cuantos = arcpy.GetCount_management(lyr_sal) 
+        if cuantos > 0:
             arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
             lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
@@ -696,7 +697,7 @@ def comprime(registros, rutaCSV):
     nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
     rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
     mensaje("Ruta ZIP {}".format(rutaZip))
-    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]]
+    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
     try:
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
