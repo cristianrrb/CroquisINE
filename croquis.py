@@ -60,7 +60,7 @@ def obtieneInfoManzana(urlManzanas, codigoManzana, token):
         mensaje("** Error en obtieneInfoManzana")
         return None
 
-def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
+def obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
@@ -82,7 +82,7 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
-def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
+def obtieneInfoSeccionRural(urlManzanas, codigoRural, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
@@ -104,11 +104,11 @@ def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
         mensaje("Error URL servicio_Rural")
         return None
 
-def obtieneInfoAreaDestacada(urlAreaDestacada, codigo, token):
+def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlAreaDestacada, token, codigo))
+        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
         
         fields = ['SHAPE@','SHAPE@AREA','NUMERO']
 
@@ -373,13 +373,17 @@ def procesaRAU(codigoRAU):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
+            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token)
             if datosRAU != None:
                 intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
                         mensaje("Se procesó la sección RAU correctamente.")
+                        lista = obtieneListaAreasDestacadas(urlSecciones, codigoRAU, token)
+                        if len(lista) > 0:
+                            mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+
                         return mxd, infoMxd, datosRAU, intersecta, escala
     except:
         mensaje("** Error: procesaRAU.")
@@ -389,7 +393,7 @@ def procesaRAU(codigoRAU):
 def procesaRural(codigoRural):
     try:
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRural, extent = obtieneInfoSeccionesRural(urlSecciones, codigoRural, token)
+        datosRural, extent = obtieneInfoSeccionRural(urlSecciones, codigoRural, token)
 
         if datosRural != None:
             intersecta = intersectaAreaRechazo(datosRural[0])
