@@ -306,7 +306,7 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
     try:
         mensaje("Limpieza de esquicio iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
-        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
@@ -322,24 +322,21 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         mensaje("Limpieza de esquicio correcta.")
-        return True
+        return true
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de escicio.")
-    return False
-
-def limpiaMapaRAU(mxd, RAU):
-    pass
+        mensaje("Error en limpieza de mapa.")
+    return None
 
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         mensaje("Inicio preparación de etiquetas.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr_sal = os.path.join("in_memory", elLyr + "_lyr")
+        lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
+        arcpy.CopyFeatures_management(lyr_sal, os.path.join(arcpy.env.scratchGDB, elLyr))
         lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
         mensaje("Preparación de etiquetas correcta.")
         return True
@@ -352,12 +349,11 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
-
-        if poligono != None:
-            if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+            if poligono != None:
                 if cortaEtiqueta(mxd, "Eje_Vial", poligono):
                     return True
-        mensaje("No se completo la preparación del mapa para manzana.")
+    mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
