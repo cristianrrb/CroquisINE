@@ -60,7 +60,7 @@ def obtieneInfoManzana(urlManzanas, codigoManzana, token):
         mensaje("** Error en obtieneInfoManzana")
         return None
 
-def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
+def obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
@@ -82,35 +82,13 @@ def obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
-def obtieneInfoAreaDestacada(urlAreaDestacada, codigo, token):
+def obtieneInfoSeccionRural(urlManzanas, codigoRural, token):
     try:
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlSecciones, token, codigo))
 
         fields = ['SHAPE@','SHAPE@AREA','NUMERO']
-
-        with arcpy.da.SearchCursor(fs, fields) as rows:
-            lista = [r for r in rows]
-
-        if lista != None and len(lista) == 1:
-            metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
-            extent = calculaExtent(fs, metrosBuffer)
-            return lista[0], extent
-        else:
-            mensaje("Error: El registro RAU no existe")
-            return None
-    except:
-        mensaje("Error URL servicio_RAU")
-        return None
-
-def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
-    try:
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
-        fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones, token, codigoRural))
-
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -125,6 +103,23 @@ def obtieneInfoSeccionesRural(urlManzanas, codigoRural, token):
     except:
         mensaje("Error URL servicio_Rural")
         return None
+
+def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
+    try:
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
+        
+        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
+
+        lista = []
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        return lista
+    except:
+        mensaje("Error URL AreasDestacadas")
+        return []
 
 def listaMXDs(estrato, ancho):
 
@@ -196,6 +191,13 @@ def mejorEscalaMXDRural(mxd, alto, ancho):
             return e * 100
     return None
 
+def mejorEscalaMXD(mxd, alto, ancho):
+    escalas = [e for e in range(5, 1000)]
+    for e in escalas:
+        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
+            return e * 100
+    return None
+
 def buscaTemplateManzana(extent):
     try:
         ancho = extent.XMax - extent.XMin
@@ -225,6 +227,14 @@ def buscaTemplateRAU(extent):
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 mensaje('Se selecciono layout para RAU.')
                 return mxd, infoMxd, escala
+
+        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
+        escala = mejorEscalaMXD(infoMxd, alto, ancho)
+        if escala != None:
+            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+            mxd = arcpy.mapping.MapDocument(rutaMXD)
+            mensaje('Se selecciono layout para RAU.')
+            return mxd, infoMxd, escala
     except:
         pass
     mensaje('** Error: No se selecciono layout para RAU.')
@@ -315,17 +325,14 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de escicio.")
-    return False
-
-def limpiaMapaRAU(mxd, RAU):
-    pass
+        mensaje("Error en limpieza de mapa.")
+    return None
 
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
         mensaje("Inicio preparación de etiquetas.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr_sal = os.path.join("in_memory", elLyr + "_lyr")
+        lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
@@ -342,84 +349,129 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0])
-
-        if poligono != None:
-            if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+            if poligono != None:
                 if cortaEtiqueta(mxd, "Eje_Vial", poligono):
                     return True
-        mensaje("No se completo la preparación del mapa para manzana.")
+    mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaRAU(mxd, datosRAU[0])
-        if poligono != None:
-            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                return True
+        #poligono = limpiaMapaRAU(mxd, datosRAU[0])
+        #if poligono != None:
+            # if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+        return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaRural(mxd, datosRural[0])
-        if poligono != None:
-            if cortaEtiqueta(mxd, "Eje_Vial", poligono):
-                return True
+        #poligono = limpiaMapaRural(mxd, datosRural[0])
+        #if poligono != None:
+            #if cortaEtiqueta(mxd, "Eje_Vial", poligono):
+        return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
-def procesaManzana(codigoManzana):
+def procesaManzana(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosManzana, extent = obtieneInfoManzana(urlManzanas, codigoManzana, token)
+            datosManzana, extent = obtieneInfoManzana(urlManzanas, codigo, token)
             if datosManzana != None:
-                intersecta = intersectaAreaRechazo(datosManzana[0])
+                registro.intersecta = intersectaAreaRechazo(datosManzana[0])
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
                     if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                        mensaje("Registrando la operación.")
+                        registro.formato = infoMxd['formato']
+                        registro.orientacion = infoMxd['orientacion']
+                        registro.escala = escala
+
+                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+                        registros.append(registro)
+
+                        if registro.rutaPDF == "":
+                            mensajeEstado(codigo, registro.intersecta, "No Existe")
+                        else:
+                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+
                         mensaje("Se procesó la manzana correctamente.")
-                        return mxd, infoMxd, datosManzana, intersecta, escala
     except:
         mensaje("** Error: procesaManzana.")
-    mensaje("No se completó el proceso de manzana.")
-    return None, None, None, "", None
+        mensaje("No se completó el proceso de manzana.")
+    #return None, None, None, "", None
 
-def procesaRAU(codigoRAU):
+def procesaRAU(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosRAU, extent = obtieneInfoSeccionesRAU(urlSecciones, codigoRAU, token)
+            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones, codigo, token)
             if datosRAU != None:
-                intersecta = intersectaAreaRechazo(datosRAU[0])
+                registro.intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
+                        mensaje("Registrando la operación.")
+                        registro.formato = infoMxd['formato']
+                        registro.orientacion = infoMxd['orientacion']
+                        registro.escala = escala
+
+                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
+                        registros.append(registro)
+
+                        if registro.rutaPDF == "":
+                            mensajeEstado(codigo, registro.intersecta, "No Existe")
+                        else:
+                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                        
+                        lista = obtieneListaAreasDestacadas(urlSecciones, codigo, token)
+                        if len(lista) > 0:
+                            mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+
                         mensaje("Se procesó la sección RAU correctamente.")
-                        return mxd, infoMxd, datosRAU, intersecta, escala
+                        #return mxd, infoMxd, datosRAU, intersecta, escala
     except:
         mensaje("** Error: procesaRAU.")
     mensaje("No se completó el proceso de sección RAU.")
-    return None, None, None, "", None
+    #return None, None, None, "", None
 
-def procesaRural(codigoRural):
+def procesaRural(codigo):
     try:
+        registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRural, extent = obtieneInfoSeccionesRural(urlSecciones, codigoRural, token)
-
+        datosRural, extent = obtieneInfoSeccionRural(urlSecciones, codigo, token)
         if datosRural != None:
-            intersecta = intersectaAreaRechazo(datosRural[0])
+            registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRAU(mxd, extent, escala, datosRural):
+                    mensaje("Registrando la operación.")
+                    registro.formato = infoMxd['formato']
+                    registro.orientacion = infoMxd['orientacion']
+                    registro.escala = escala
+
+                    nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                    registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
+                    registros.append(registro)
+
+                    if registro.rutaPDF == "":
+                        mensajeEstado(codigo, registro.intersecta, "No Existe")
+                    else:
+                        mensajeEstado(codigo, registro.intersecta, "Correcto")
                     mensaje("Se procesó la sección Rural correctamente.")
-                    return mxd, infoMxd, datosRural, intersecta, escala
+                    #return mxd, infoMxd, datosRural, intersecta, escala
     except:
         mensaje("** Error: procesaRural.")
     mensaje("No se completó el proceso de sección Rural.")
-    return None, None, None, "", None
+    #return None, None, None, "", None
 
 def generaListaCodigos(texto):
     try:
@@ -644,11 +696,21 @@ def generarCodigoBarra():
     codigo = "qwertyu"
     return codigo
 
+class Registro:
+    def __init__(self, codigo):
+        self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
+        self.codigo = codigo
+        self.rutaPDF = ""
+        self.intersecta = ""
+        self.formato = ""
+        self.orientacion = ""
+        self.escala = ""
+
 arcpy.env.overwriteOutput = True
 
-urlManzanas    = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlSecciones   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-urlAreaRechazo = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
+urlManzanas      = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+urlSecciones     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+urlAreaRechazo   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
 urlAreaDestacada = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
 
 urlConfiguracion = 'https://gis.ine.cl/croquis/configuracion.json'
@@ -681,19 +743,22 @@ mensaje("Estrato: {}".format(parametroEstrato))
 
 for codigo in listaCodigos:
     #reg[hora, estrato, codigo, pdf, intersecta, formato, orientacion, escala]
-    reg = ["{}".format(datetime.datetime.now().strftime("%H:%M:%S")),parametroEstrato,codigo,"","","","",""]
+    #reg = ["{}".format(datetime.datetime.now().strftime("%H:%M:%S")),parametroEstrato,codigo,"","","","",""]
 
     if parametroEstrato == 'Manzana':
-        mxd, infoMxd, datos, intersecta, escala = procesaManzana(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaManzana(codigo)
+        procesaManzana(codigo)
     elif parametroEstrato == 'RAU':
-        mxd, infoMxd, datos, intersecta, escala = procesaRAU(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaRAU(codigo)
+        procesaRAU(codigo)
     elif parametroEstrato == 'Rural':
-        mxd, infoMxd, datos, intersecta, escala = procesaRural(codigo)
+        #mxd, infoMxd, datos, intersecta, escala = procesaRural(codigo)
+        procesaRural(codigo)
     else:
         mensaje("El estrato no existe")
         quit()
 
-    if mxd != None and infoMxd != None and datos != None:
+    """ if mxd != None and infoMxd != None and datos != None:
         reg[4] = intersecta
         reg[5] = infoMxd['formato']
         reg[6] = infoMxd['orientacion']
@@ -709,7 +774,7 @@ for codigo in listaCodigos:
     if reg[3] == "":
         mensajeEstado(codigo, intersecta, "No Existe")
     else:
-        mensajeEstado(codigo, intersecta, "Correcto")
+        mensajeEstado(codigo, intersecta, "Correcto") """
 
     mensaje("-------------------------------------------------\n")
 
@@ -720,7 +785,11 @@ arcpy.SetParameterAsText(4, rutaZip)
 mensaje("El GeoProceso ha terminado correctamente")
 
 """
-parametroCodigos = "1101021004017"
+
+parametroCodigos = "1101900003"    # codigo rau con areas destacadas
+
+
+
 parametroCodigos = "5402051002042,5402051002031"
 parametroCodigos = "1101021002003,5109131002047,5109131002020,5109131003005"
 parametroCodigos = "5402051002042,5402051002031"
