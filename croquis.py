@@ -60,11 +60,11 @@ def obtieneInfoManzana(urlManzanas, codigoManzana, token):
         mensaje("** Error en obtieneInfoManzana")
         return None
 
-def obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token):
+def obtieneInfoSeccionRAU(urlSecciones_RAU, codigoRAU, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones, token, codigoRAU))
+        fs.load(url.format(urlSecciones_RAU, token, codigoRAU))
 
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
 
@@ -82,13 +82,13 @@ def obtieneInfoSeccionRAU(urlSecciones, codigoRAU, token):
         mensaje("Error URL servicio_RAU")
         return None
 
-def obtieneInfoSeccionRural(urlManzanas, codigoRural, token):
+def obtieneInfoSeccionRural(urlSecciones_Rural, codigoRural, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones, token, codigo))
+        fs.load(url.format(urlSecciones_Rural, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -326,7 +326,8 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        if arcpy.GetCount_management(lyr_sal) > 0:
+        count = arcpy.GetCount_management(lyr_sal)
+        if count > 0:
             arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
             lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
@@ -409,7 +410,7 @@ def procesaRAU(codigo):
         registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones, codigo, token)
+            datosRAU, extent = obtieneInfoSeccionRAU(urlSecciones_RAU, codigo, token)
             if datosRAU != None:
                 registro.intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
@@ -440,12 +441,12 @@ def procesaRural(codigo):
     try:
         registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
-        datosRural, extent = obtieneInfoSeccionRural(urlSecciones, codigo, token)
+        datosRural, extent = obtieneInfoSeccionRural(urlSecciones_Rural, codigo, token)
         if datosRural != None:
             registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
-                if preparaMapaRAU(mxd, extent, escala, datosRural):
+                if preparaMapaRural(mxd, extent, escala, datosRural):
                     mensaje("Registrando la operación.")
                     registro.formato = infoMxd['formato']
                     registro.orientacion = infoMxd['orientacion']
@@ -697,7 +698,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
 
 def intersectaAreaRechazo(poligono):
     try:
-        d = {0:'Permiso edificacion', 1:'CRF'}
+        d = {0:'Permiso edificación', 1:'CRF'}
         poly = poligono.JSON
         params = {'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poly, 'geometryType':'esriGeometryPolygon'}
         for i in range(0,2):
@@ -761,8 +762,10 @@ class Registro:
 
 arcpy.env.overwriteOutput = True
 
-urlManzanas      = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlSecciones     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+# Nuevos Servicios
+urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+urlManzanas = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+urlSecciones_RAU = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
 urlAreaRechazo   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
 urlAreaDestacada = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
 
