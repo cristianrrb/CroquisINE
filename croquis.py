@@ -418,9 +418,8 @@ def procesaManzana(codigo):
 
                         mensaje("Se procesó la manzana correctamente.")
     except:
-        mensaje("** Error: procesaManzana.")
+        #mensaje("** Error: procesaManzana.")
         mensaje("No se completó el proceso de manzana.")
-    #return None, None, None, "", None
 
 def procesaRAU(codigo):
     try:
@@ -452,11 +451,9 @@ def procesaRAU(codigo):
                             mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
 
                         mensaje("Se procesó la sección RAU correctamente.")
-                        #return mxd, infoMxd, datosRAU, intersecta, escala
     except:
-        mensaje("** Error: procesaRAU.")
-    mensaje("No se completó el proceso de sección RAU.")
-    #return None, None, None, "", None
+        #mensaje("** Error: procesaRAU.")
+        mensaje("No se completó el proceso de sección RAU.")
 
 def procesaRural(codigo):
     try:
@@ -482,11 +479,9 @@ def procesaRural(codigo):
                     else:
                         mensajeEstado(codigo, registro.intersecta, "Correcto")
                     mensaje("Se procesó la sección Rural correctamente.")
-                    #return mxd, infoMxd, datosRural, intersecta, escala
     except:
-        mensaje("** Error: procesaRural.")
-    mensaje("No se completó el proceso de sección Rural.")
-    #return None, None, None, "", None
+        #mensaje("** Error: procesaRural.")
+        mensaje("No se completó el proceso de sección Rural.")
 
 def generaListaCodigos(texto):
     try:
