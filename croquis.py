@@ -687,7 +687,8 @@ def escribeCSV(registros):
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
             for r in registros:
-                wr.writerow(r)
+                a = [r.hora, r.codigo, r.rutaPDF, r.intersecta, r.formato, r.orientacion, r.escala]
+                wr.writerow(a)
         return rutaCsv
     except:
         return None
