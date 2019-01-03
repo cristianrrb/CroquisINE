@@ -696,7 +696,7 @@ def comprime(registros, rutaCSV):
     nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
     rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
     mensaje("Ruta ZIP {}".format(rutaZip))
-    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]]
+    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
     try:
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
