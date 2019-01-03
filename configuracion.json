@@ -30,14 +30,14 @@
                 {
                     "ancho": 33.888,
                     "alto": 25.896,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Horizontal",
                     "ruta": "Mz\\Mz_DCA_H"
                 },
                 {
                     "ancho": 25.903,
                     "alto": 33.893,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Vertical",
                     "ruta": "Mz\\Mz_DCA_V"
                 },
@@ -78,14 +78,14 @@
                 {
                     "ancho": 32.000,
                     "alto": 25.897,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Horizontal",
                     "ruta": "RAU\\Rau_DCA_H"
                 },
                 {
                     "ancho": 25.903,
                     "alto": 33.893,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Vertical",
                     "ruta": "RAU\\Rau_DCA_V"
                 },
@@ -113,14 +113,14 @@
                 {
                     "ancho": 31.900,
                     "alto": 25.900,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Horizontal",
                     "ruta": "Rural\\Sec_DCA_H"
                 },
                 {
                     "ancho": 25.708,
                     "alto": 33.749,
-                    "formato": "Carta",
+                    "formato": "DCA",
                     "orientacion": "Vertical",
                     "ruta": "Rural\\Sec_DCA_V"
                 },
