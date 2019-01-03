@@ -720,6 +720,7 @@ class Registro:
 
 arcpy.env.overwriteOutput = True
 
+# Nuevos Servicios
 urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
 urlManzanas = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
 urlSecciones_RAU = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
