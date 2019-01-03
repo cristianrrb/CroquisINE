@@ -712,9 +712,10 @@ class Registro:
 
 arcpy.env.overwriteOutput = True
 
-urlManzanas    = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlSecciones   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-urlAreaRechazo = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
+urlManzanas     
+ = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+urlSecciones     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+urlAreaRechazo   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
 urlAreaDestacada = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
 
 urlConfiguracion = 'https://gis.ine.cl/croquis/configuracion.json'
