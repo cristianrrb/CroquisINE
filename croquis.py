@@ -434,7 +434,7 @@ def cortaEtiqueta(mxd, elLyr, poly):
         return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en preparación de etiquetas.")
+        mensaje("No se encontró etiqueta.")
     return False
 
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
