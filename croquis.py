@@ -537,7 +537,7 @@ def procesaRAU(codigo):
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
 
-                        procesaAreasDestacadas(codigo, datosRural, token)
+                        procesaAreasDestacadas(codigo, datosRAU, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
     except:
