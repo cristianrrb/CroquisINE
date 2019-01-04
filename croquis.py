@@ -580,7 +580,7 @@ def procesaRural(codigo):
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     mensaje("Validando areas destacadas.")
     listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
-    if len(lista) > 0:
+    if len(listaAreas) > 0:
         mensaje("Se detectaron areas destacadas dentro de la sección.")
         for area in listaAreas:
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
@@ -642,7 +642,7 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
         fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
-            cuenta = [r for r in rows] 
+            cuenta = [r for r in rows]
 
         if len(cuenta) > 0:
             buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
