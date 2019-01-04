@@ -579,7 +579,7 @@ def procesaRural(codigo):
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
-    if len(lista) > 0:
+    if len(listaAreas) > 0:
         mensaje("Se detectaron areas destacadas dentro de la sección.")
         for area in listaAreas:
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
@@ -594,22 +594,14 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
-
             codigo = "{}_{}".format(codigoSeccion, area[2])
-
             nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
-
-            """ if registro.rutaPDF == "":
-                mensajeEstado(codigo, registro.intersecta, "No Existe")
-            else:
-                mensajeEstado(codigo, registro.intersecta, "Correcto") """
-
             mensaje("Se procesó el área destacada correctamente.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU
+    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
         if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
@@ -620,8 +612,9 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
                     mensaje(capa)
                     cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.") """
+        mensaje("Se completo la preparación del mapa para area destacada.")
         return True
-    mensaje("No se completo la preparación del mapa para manzana.")
+    mensaje("No se completo la preparación del mapa para area destacada.")
     return False
 
 def buscaTemplateAreaDestacada(extent):
@@ -851,12 +844,12 @@ def escribeCSV(registros):
         return None
 
 def comprime(registros, rutaCSV):
-    f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-    nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
-    rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
-    mensaje("Ruta ZIP {}".format(rutaZip))
-    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
     try:
+        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+        nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
+        rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
+        mensaje("Ruta ZIP {}".format(rutaZip))
+        listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
             for archivo in listaPDFs:
