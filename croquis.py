@@ -717,7 +717,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
 
 def intersectaAreaRechazo(poligono):
     try:
-        d = {0:'Permiso edificación', 1:'CRF'}
+        d = {0:'Permiso edificacion', 1:'CRF'}
         poly = poligono.JSON
         params = {'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poly, 'geometryType':'esriGeometryPolygon'}
         for i in range(0,2):
