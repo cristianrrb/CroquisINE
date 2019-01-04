@@ -634,18 +634,22 @@ def buscaTemplateAreaDestacada(extent):
 
 def obtieneListaAreasDestacadas(codigoSeccion, token):
     try:
+        lista = []
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
 
         fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
 
-        buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
-        fcBuffer = arcpy.Buffer_analysis(fs, buffer, "15 Meters")
-        with arcpy.da.SearchCursor(fcBuffer, fields) as rows:
-            lista = [r for r in rows]
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            cuenta = [r for r in rows] 
 
-        arcpy.Delete_management(buffer)
+        if len(cuenta) > 0:
+            buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
+            fcBuffer = arcpy.Buffer_analysis(fs, buffer, "15 Meters")
+            with arcpy.da.SearchCursor(fcBuffer, fields) as rows:
+                lista = [r for r in rows]
+            arcpy.Delete_management(buffer)
 
         return lista
     except:
