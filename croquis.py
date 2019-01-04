@@ -376,11 +376,11 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         mensaje("Error en limpieza de mapa.")
     return None
 
-def limpiaMapaRural(mxd, datosRural, capa):
+def limpiaMapaRural(mxd, datosRural, nombreCapa):
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         mensaje("Limpieza de mapa iniciada.")
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRural[10]))
         mensaje(sql_exp)
@@ -408,7 +408,7 @@ def limpiaMapaRural(mxd, datosRural, capa):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         df1 = arcpy.mapping.ListDataFrames(mxd)[1]
-        lyr1 = arcpy.mapping.ListLayers(mxd, capa, df1)[0]
+        lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
         lyr1.definitionQuery = sql_exp
         mensaje("Limpieza de mapa correcta.")
         return polchico
@@ -470,8 +470,8 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        nombre = leeNombreCapa("Rural")
-        poligono = limpiaMapaRural(mxd, datosRural, nombre)
+        nombreCapa = leeNombreCapa("Rural")
+        poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Rural")
             mensaje("Inicio preparación de etiquetas.")
@@ -578,11 +578,14 @@ def procesaRural(codigo):
         mensaje("No se completó el proceso de sección Rural.")
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
+    mensaje("Validando areas destacadas.")
     listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
     if len(lista) > 0:
         mensaje("Se detectaron areas destacadas dentro de la sección.")
         for area in listaAreas:
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
+    else:
+        mensaje("No se detectaron areas destacadas dentro de la sección.")
 
 def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     registro = Registro(codigoSeccion)
@@ -790,7 +793,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
             # actualiza vista (opcional)
             # arcpy.RefreshActiveView()
 
-        return nombre_muestra,name_region,name_provincia,name_comuna,cut,cod_seccion,cod_distri,est_geografico,cod_carto
+        #return nombre_muestra,name_region,name_provincia,name_comuna,cut,cod_seccion,cod_distri,est_geografico,cod_carto
     except:
         mensaje("No se pudo actualizaVinetaSeccionRural")
 
@@ -911,6 +914,8 @@ parametroMarco = "2016"
 parametroEstrato = "Manzana"
 
 parametroCodigos = "1101900003"
+
+parametroCodigos = "4204900022"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
