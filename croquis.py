@@ -104,23 +104,6 @@ def obtieneInfoSeccionRural(codigo, token):
         mensaje("Error URL servicio_Rural")
         return None
 
-def obtieneListaAreasDestacadas(urlAreaDestacada, codigoSeccion, token):
-    try:
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
-        fs = arcpy.FeatureSet()
-        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
-
-        fields = ['SHAPE@','SHAPE@AREA','NUMERO']
-
-        lista = []
-        with arcpy.da.SearchCursor(fs, fields) as rows:
-            lista = [r for r in rows]
-
-        return lista
-    except:
-        mensaje("Error URL AreasDestacadas")
-        return []
-
 def listaMXDs(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
