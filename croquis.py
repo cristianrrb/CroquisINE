@@ -537,9 +537,7 @@ def procesaRAU(codigo):
                         else:
                             mensajeEstado(codigo, registro.intersecta, "Correcto")
 
-                        lista = obtieneListaAreasDestacadas(urlSecciones, codigo, token)
-                        if len(lista) > 0:
-                            mensaje("Se detectaron areas destacadas dentro de la sección RAU.")
+                        procesaAreasDestacadas(codigo, datosRural, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
     except:
