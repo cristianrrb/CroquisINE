@@ -339,7 +339,7 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         mensaje("Limpieza de mapa 'Sección RAU' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
-        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRAU[10]))
         lyr.definitionQuery = sql_exp
         lyr1 = arcpy.mapping.ListLayers(mxd, "Mz_Rau", df)[0]
         lyr1.definitionQuery = sql_exp
@@ -380,7 +380,7 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         mensaje("Limpieza de mapa iniciada.")
-        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRural[10]))
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
         mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
@@ -469,11 +469,11 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa(parametroEstrato)
+        nombreCapa = leeNombreCapa("Rural")
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRural[0]):
             if poligono != None:
-                lista_etiquetas = listaEtiquetas(parametroEstrato)
+                lista_etiquetas = listaEtiquetas("Rural")
                 mensaje("Inicio preparación de etiquetas Rural.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
@@ -872,8 +872,8 @@ def comprime(registros, rutaCSV):
         return None
 
 def generarCodigoBarra():
-    codigo = "qwertyu"
-    return codigo
+    barCode = "qwertyu"
+    return barCode
 
 class Registro:
     def __init__(self, codigo):
@@ -926,7 +926,7 @@ parametroMarco = "2016"
 parametroEstrato = "RAU"
 # --------------------------------------------------------------------
 
-parametroCodigos = "4204900022"
+parametroCodigos = "2203900013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
