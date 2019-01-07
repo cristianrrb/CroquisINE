@@ -454,7 +454,7 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("RAU")
-        poligono = limpiaMapaRAU(mxd, datosRAU[0], nombreCapa)
+        poligono = limpiaMapaRAU(mxd, datosRAU, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRAU[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas("RAU")
@@ -470,7 +470,7 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
-        poligono = limpiaMapaRural(mxd, datosRural[0], nombreCapa)
+        poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRural[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas("Rural")
@@ -910,12 +910,21 @@ parametroCodigos = arcpy.GetParameterAsText(3)
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
+# --------------------------------------------------------------------
 parametroCodigos = "1101021002005"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
+# --------------------------------------------------------------------
 
 parametroCodigos = "1101900003"
+
+# --------------------------------------------------------------------
+parametroCodigos = "2301200044"
+parametroEncuesta = "ENE"
+parametroMarco = "2016"
+parametroEstrato = "RAU"
+# --------------------------------------------------------------------
 
 parametroCodigos = "4204900022"
 parametroEncuesta = "ENE"
@@ -946,29 +955,6 @@ rutaZip = comprime(registros, rutaCSV)
 arcpy.SetParameterAsText(4, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-
-"""
-parametroCodigos = "1101900003"    # codigo rau con areas destacadas
-
-parametroCodigos = "5402051002042,5402051002031"
-parametroCodigos = "1101021002003,5109131002047,5109131002020,5109131003005"
-parametroCodigos = "5402051002042,5402051002031"
-parametroCodigos = "1101021002001,1101021002002,1101021002003,1101021002005,1101021002006,1101021002007,1101021002013,1101021002012"
-parametroCodigos = "1101021002006,1101021005083,1101021002003,1101081001003,1101081004011,1101081001027"
-parametroCodigos = "5109021002005,5109021001027,5109021001021,5109021001018,5109021001023"
-parametroCodigos = "1101081004020,1101021003055,1101021005082,1101011001004,1101031002022,1101011001054,1101041005002,1101041002023"
-
-1101021002001,1101021002002,1101021002003,1101021002005,1101021002006,1101021002007,1101021002013,1101021002012,
-1101021002008,1101021002009,1101021002010,1101021003055,1101021005004,1101031003076,1101021001025,1101031003075,
-1101021005002,1101021003053,1101021005001,1101021005071,1101021005043,1101021005042,1101021003054,1101021003050,
-1101021005044,1101021005045,1101021005041,1101021003049,1101021001002,1101021005003,1101021005081,1101021001023,
-1101021005046,1101021005093,1101021001019,1101021005067,1101021001005,1101021005069,1101021005068,1101021005040,
-1101021001028,1101021003048,1101021005066,1101021005092,1101021001024,1101021005091,1101021001008,1101021005039,
-1101021005047,1101021005048,1101011001051,1101021005083,1101021005082,1101021005058,1101021005078,1101021003057,
-1101021005052,1101021005070,1101021003031,1101021005064,1101021005101,1101021005094,1101021001013,1101021005060,
-1101021005090,1101021005057,1101011001052,1101021005074,1101021005059,1101021003041,1101031003074,1101021003045,
-1101021003014
-"""
 
 """
 for mxd in mxd_list:
