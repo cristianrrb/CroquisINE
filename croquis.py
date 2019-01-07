@@ -280,7 +280,7 @@ def zoom(mxd, extent, escala):
 
 def limpiaMapaManzana(mxd, manzana, nombreCapa):
     try:
-        mensaje("Limpieza de mapa iniciada.")
+        mensaje("Limpieza de mapa 'Manzana' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
@@ -305,10 +305,10 @@ def limpiaMapaManzana(mxd, manzana, nombreCapa):
         return polchico
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de mapa.")
+        mensaje("Error en limpieza de mapa 'Manzana'.")
     return None
 
-def limpiaMapaManzanaEsquicio(mxd, manzana):
+def limpiaMapaEsquicio(mxd, nombreEstrato):
     try:
         mensaje("Limpieza de esquicio iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
@@ -320,7 +320,7 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         mensaje("Proyectando")
-        ext = manzana.projectAs(df.spatialReference)
+        ext = nombreEstrato.projectAs(df.spatialReference)
         mensaje("Proyectado")
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([ext,2])
@@ -336,7 +336,7 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
 
 def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
     try:
-        mensaje("Limpieza de mapa iniciada.")
+        mensaje("Limpieza de mapa 'Sección RAU' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
@@ -350,10 +350,9 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         tm_layer = arcpy.mapping.Layer(tm_path)
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        #ext1 = manzana.extent.polygon
-        manzana = datosRAU[0]
+        seccionRau = datosRAU[0]
         mensaje("Proyectando")
-        ext = manzana.projectAs(df.spatialReference)
+        ext = seccionRau.projectAs(df.spatialReference)
         mensaje("Proyectado")
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
@@ -372,12 +371,12 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         return polchico
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de mapa.")
+        mensaje("Error en limpieza de mapa 'Sección RAU'.")
     return None
 
 def limpiaMapaRural(mxd, datosRural, nombreCapa):
     try:
-        mensaje("Limpieza de mapa iniciada.")
+        mensaje("Limpieza de mapa 'Sección Rural' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         mensaje("Limpieza de mapa iniciada.")
@@ -391,10 +390,10 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         tm_layer = arcpy.mapping.Layer(tm_path)
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        #ext1 = manzana.extent.polygon
-        manzana = datosRural[0]
+        #ext1 = seccionRau.extent.polygon
+        seccionRural = datosRural[0]
         mensaje("Proyectando")
-        ext = manzana.projectAs(df.spatialReference)
+        ext = seccionRural.projectAs(df.spatialReference)
         mensaje("Proyectado")
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
@@ -413,7 +412,7 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         return polchico
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de mapa.")
+        mensaje("Error en limpieza de mapa 'Sección Rural'.")
     return None
 
 def cortaEtiqueta(mxd, elLyr, poly):
@@ -441,7 +440,7 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Manzana")
         poligono = limpiaMapaManzana(mxd, datosManzana[0], nombreCapa)
-        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
+        if limpiaMapaEsquicio(mxd, datosManzana[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas("Manzana")
                 mensaje("Inicio preparación de etiquetas Manzana.")
@@ -457,13 +456,14 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("RAU")
         poligono = limpiaMapaRAU(mxd, datosRAU[0], nombreCapa)
-        if poligono != None:
-            lista_etiquetas = listaEtiquetas("RAU")
-            mensaje("Inicio preparación de etiquetas RAU.")
-            for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono)
-            mensaje("Fin preparación de etiquetas.")
-            return True
+        if limpiaMapaEsquicio(mxd, datosRAU[0]):
+            if poligono != None:
+                lista_etiquetas = listaEtiquetas("RAU")
+                mensaje("Inicio preparación de etiquetas RAU.")
+                for capa in lista_etiquetas:
+                    cortaEtiqueta(mxd, capa, poligono)
+                mensaje("Fin preparación de etiquetas.")
+                return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
@@ -472,13 +472,14 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
         poligono = limpiaMapaRural(mxd, datosRural[0], nombreCapa)
-        if poligono != None:
-            lista_etiquetas = listaEtiquetas("Rural")
-            mensaje("Inicio preparación de etiquetas Rural.")
-            for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono)
-            mensaje("Fin preparación de etiquetas.")
-            return True
+        if limpiaMapaEsquicio(mxd, datosRural[0]):
+            if poligono != None:
+                lista_etiquetas = listaEtiquetas("Rural")
+                mensaje("Inicio preparación de etiquetas Rural.")
+                for capa in lista_etiquetas:
+                    cortaEtiqueta(mxd, capa, poligono)
+                mensaje("Fin preparación de etiquetas.")
+                return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
