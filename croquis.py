@@ -43,7 +43,7 @@ def obtieneInfoManzana(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlManzanas, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -670,134 +670,89 @@ def leeJsonConfiguracion():
 def actualizaVinetaManzanas(mxd,datosManzana):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
-        nombre_muestra = parametroEncuesta + " " + parametroMarco
-        name_region    = datosManzana[2]
-        name_provincia = datosManzana[3]
-        name_comuna    = datosManzana[4]
-        name_urbano    = datosManzana[5]
-        cut            = datosManzana[6]
-        cod_distri     = datosManzana[7]
-        cod_zona       = datosManzana[8]
-        cod_manzan     = datosManzana[9]
-        #codigo_barra = generarCodigoBarra()
-
-        # recorre elementos de texto y asigna valores
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
-                elm.text = nombre_muestra
+                elm.text = parametroEncuesta + " " + parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = name_region
+                elm.text = datosManzana[2]
             if elm.name == "Nombre_Provincia":
-                elm.text = name_provincia
+                elm.text = datosManzana[3]
             if elm.name == "Nombre_Comuna":
-                elm.text = name_comuna
+                elm.text = datosManzana[4]
             if elm.name == "Nombre_Urbano":
-                elm.text = name_urbano
+                elm.text = datosManzana[5]
             if elm.name == "CUT":
-                elm.text = cut
+                elm.text = datosManzana[6]
             if elm.name == "COD_DISTRI":
-                elm.text = cod_distri
+                elm.text = datosManzana[7]
             if elm.name == "COD_ZONA":
-                elm.text = cod_zona
+                elm.text = datosManzana[8]
             if elm.name == "COD_MANZAN":
-                elm.text = cod_manzan
-            #if elm.name == "barcode":
-                #elm.text = codigo_barra
-
-            # actualiza vista (opcional)
-            # arcpy.RefreshActiveView()
+                elm.text = datosManzana[9]
+            if elm.name == "barcode":
+                elm.text = codigo_barra
         mensaje("Se actualizaron las viñetas para manzana.")
     except:
         mensaje("No se pudo actualizar las viñetas para manzana.")
-    #return nombre_muestra,name_region,name_provincia,name_comuna,name_urbano,cut,cod_distri,cod_zona,cod_manzan
 
 def actualizaVinetaSeccionRAU(mxd,datosRAU):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
-
-        nombre_muestra = parametroEncuesta+" "+parametroMarco
-        name_region = datosRAU[2]
-        name_provincia = datosRAU[3]
-        name_comuna = datosRAU[4]
-        name_urbano = datosRAU[5]
-        cut = datosRAU[6]
-        est_geografico = datosRAU[7]
-        cod_carto = datosRAU[8]
-        cod_seccion = datosRAU[9]
-
-        # recorre elementos de texto y asigna valores
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
-                elm.text = nombre_muestra
+                elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = name_region
+                elm.text = datosRAU[2]
             if elm.name == "Nombre_Provincia":
-                elm.text = name_provincia
+                elm.text = datosRAU[3]
             if elm.name == "Nombre_Comuna":
-                elm.text = name_comuna
+                elm.text = datosRAU[4]
             if elm.name == "Nombre_Urbano":
-                elm.text = name_urbano
+                elm.text = datosRAU[5]
             if elm.name == "CUT":
-                elm.text = cut
+                elm.text = datosRAU[6]
             if elm.name == "EST_GEOGRAFICO":
-                elm.text = est_geografico
+                elm.text = datosRAU[7]
             if elm.name == "COD_CARTO":
-                elm.text = cod_carto
+                elm.text = datosRAU[8]
             if elm.name == "COD_SECCION":
-                elm.text = cod_seccion
-            #if elm.name == "barcode":
-                #elm.text = codigo_barra
-
-            # actualiza vista (opcional)
-            # arcpy.RefreshActiveView()
-
-        return nombre_muestra,name_region,name_provincia,name_comuna,name_urbano,cut,est_geografico,cod_carto,cod_seccion
+                elm.text = datosRAU[9]
+            if elm.name == "barcode":
+                elm.text = codigo_barra
+        mensaje("Se actualizaron las viñetas para RAU.")
     except:
-        mensaje("No se pudo actualizaVinetaSeccionRAU")
+        mensaje("No se pudo actualizar las viñetas para RAU.")
 
 def actualizaVinetaSeccionRural(mxd,datosRural):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
-
-        nombre_muestra = parametroEncuesta+" "+parametroMarco
-        name_region = datosRural[2]
-        name_provincia = datosRural[3]
-        name_comuna = datosRural[4]
-        cut = datosRural[5]
-        cod_seccion = datosRural[6]
-        cod_distri = datosRural[7]
-        est_geografico = datosRural[8]
-        cod_carto = datosRural[9]
-
-        # recorre elementos de texto y asigna valores
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
-                elm.text = nombre_muestra
+                elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = name_region
+                elm.text = datosRural[2]
             if elm.name == "Nombre_Provincia":
-                elm.text = name_provincia
+                elm.text = datosRural[3]
             if elm.name == "Nombre_Comuna":
-                elm.text = name_comuna
+                elm.text = datosRural[4]
             if elm.name == "CUT":
-                elm.text = cut
+                elm.text = datosRural[5]
             if elm.name == "COD_SECCION":
-                elm.text = cod_seccion
+                elm.text = datosRural[6]
             if elm.name == "COD_DISTRI":
-                elm.text = cod_distri
+                elm.text = datosRural[7]
             if elm.name == "EST_GEOGRAFICO":
-                elm.text = est_geografico
+                elm.text = datosRural[8]
             if elm.name == "COD_CARTO":
-                elm.text = cod_carto
-            #if elm.name == "barcode":
-                #elm.text = codigo_barra
-
-            # actualiza vista (opcional)
-            # arcpy.RefreshActiveView()
-
-        #return nombre_muestra,name_region,name_provincia,name_comuna,cut,cod_seccion,cod_distri,est_geografico,cod_carto
+                elm.text = datosRural[9]
+            if elm.name == "barcode":
+                elm.text = codigo_barra
+        mensaje("Se actualizaron las viñetas para RAU.")
     except:
-        mensaje("No se pudo actualizaVinetaSeccionRural")
+        mensaje("No se pudo actualizar las viñetas para RAU.")
 
 def generaPDF(mxd, nombrePDF, datos):
 
@@ -819,6 +774,17 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     elif estrato == "Rural":
         tipo = "S_RUR"
     nombre = "{}_{}_{}_{}_{}_{}.pdf".format(tipo, codigo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco)
+    return nombre
+
+def generaCodigoBarra(estrato,datosEstrato):
+    parametroMarco = parametroMarco[2:4]
+    if estrato == "Manzana":
+        tipo = "MZ"
+    elif estrato == "RAU":
+        tipo = "RAU"
+    elif estrato == "Rural":
+        tipo = "S_RUR"
+    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4],datosEstrato[10], parametroEncuesta, parametroMarco)
     return nombre
 
 def intersectaAreaRechazo(poligono):
