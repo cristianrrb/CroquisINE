@@ -437,11 +437,11 @@ def cortaEtiqueta(mxd, elLyr, poly):
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa("Manzana")
+        nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapaManzana(mxd, datosManzana[0], nombreCapa)
         if limpiaMapaEsquicio(mxd, datosManzana[0]):
             if poligono != None:
-                lista_etiquetas = listaEtiquetas("Manzana")
+                lista_etiquetas = listaEtiquetas(parametroEstrato)
                 mensaje("Inicio preparación de etiquetas Manzana.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
@@ -453,11 +453,11 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa("RAU")
+        nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapaRAU(mxd, datosRAU, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRAU[0]):
             if poligono != None:
-                lista_etiquetas = listaEtiquetas("RAU")
+                lista_etiquetas = listaEtiquetas(parametroEstrato)
                 mensaje("Inicio preparación de etiquetas RAU.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
@@ -469,11 +469,11 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa("Rural")
+        nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRural[0]):
             if poligono != None:
-                lista_etiquetas = listaEtiquetas("Rural")
+                lista_etiquetas = listaEtiquetas(parametroEstrato)
                 mensaje("Inicio preparación de etiquetas Rural.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
