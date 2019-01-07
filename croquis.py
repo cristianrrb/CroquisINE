@@ -878,20 +878,16 @@ parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 # --------------------------------------------------------------------
-
-parametroCodigos = "1101900003"
-
-# --------------------------------------------------------------------
 parametroCodigos = "2301200044"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "RAU"
 # --------------------------------------------------------------------
-
 parametroCodigos = "2203900013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
+# --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
 
