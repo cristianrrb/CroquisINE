@@ -777,13 +777,13 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     return nombre
 
 def generaCodigoBarra(estrato,datosEstrato):
-    parametroMarco = parametroMarco[2:4]
     if estrato == "Manzana":
         tipo = "MZ"
     elif estrato == "RAU":
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
+    parametroMarco = parametroMarco[2:4]
     nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4],datosEstrato[10], parametroEncuesta, parametroMarco)
     return nombre
 
