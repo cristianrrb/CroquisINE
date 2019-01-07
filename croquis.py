@@ -750,9 +750,9 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
                 elm.text = datosRural[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        mensaje("Se actualizaron las viñetas para RAU.")
+        mensaje("Se actualizaron las viñetas para Rural.")
     except:
-        mensaje("No se pudo actualizar las viñetas para RAU.")
+        mensaje("No se pudo actualizar las viñetas para Rural.")
 
 def generaPDF(mxd, nombrePDF, datos):
 
@@ -776,7 +776,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     nombre = "{}_{}_{}_{}_{}_{}.pdf".format(tipo, codigo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco)
     return nombre
 
-def generaCodigoBarra(estrato,datosEstrato):
+def generaCodigoBarra(estrato, datosEstrato):
     if estrato == "Manzana":
         tipo = "MZ"
     elif estrato == "RAU":
@@ -836,10 +836,6 @@ def comprime(registros, rutaCSV):
         return rutaZip
     except:
         return None
-
-def generarCodigoBarra():
-    barCode = "qwertyu"
-    return barCode
 
 class Registro:
     def __init__(self, codigo):
