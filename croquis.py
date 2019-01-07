@@ -469,11 +469,11 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa("Rural")
+        nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if limpiaMapaEsquicio(mxd, datosRural[0]):
             if poligono != None:
-                lista_etiquetas = listaEtiquetas("Rural")
+                lista_etiquetas = listaEtiquetas(parametroEstrato)
                 mensaje("Inicio preparación de etiquetas Rural.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
