@@ -278,10 +278,11 @@ def zoom(mxd, extent, escala):
         mensaje('** No se ajusto el extent del mapa.')
         return False
 
-def limpiaMapaManzana(mxd, manzana):
+def limpiaMapaManzana(mxd, manzana, capa):
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
+        #lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
@@ -289,7 +290,6 @@ def limpiaMapaManzana(mxd, manzana):
         tm_layer = arcpy.mapping.Layer(tm_path)
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        #ext1 = manzana.extent.polygon
         mensaje("Proyectando")
         ext = manzana.projectAs(df.spatialReference)
         mensaje("Proyectado")
@@ -335,11 +335,11 @@ def limpiaMapaManzanaEsquicio(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
-def limpiaMapaRAU(mxd, datosRAU, capa):
+def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), int(datosRAU[10]))
         lyr.definitionQuery = sql_exp
         lyr1 = arcpy.mapping.ListLayers(mxd, "Mz_Rau", df)[0]
@@ -367,7 +367,7 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         df1 = arcpy.mapping.ListDataFrames(mxd)[1]
-        lyr1 = arcpy.mapping.ListLayers(mxd, capa, df1)[0]
+        lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
         lyr1.definitionQuery = sql_exp
         mensaje("Limpieza de mapa correcta.")
         return polchico
@@ -440,11 +440,12 @@ def cortaEtiqueta(mxd, elLyr, poly):
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaManzana(mxd, datosManzana[0])
+        nombreCapa = leeNombreCapa("Manzana")
+        poligono = limpiaMapaManzana(mxd, datosManzana[0], nombreCapa)
         if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas("Manzana")
-                mensaje("Inicio preparación de etiquetas.")
+                mensaje("Inicio preparación de etiquetas Manzana.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.")
@@ -455,11 +456,11 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
     if zoom(mxd, extent, escala):
-        nombre = leeNombreCapa("RAU")
-        poligono = limpiaMapaRAU(mxd, datosRAU, nombre)
+        nombreCapa = leeNombreCapa("RAU")
+        poligono = limpiaMapaRAU(mxd, datosRAU[0], nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("RAU")
-            mensaje("Inicio preparación de etiquetas.")
+            mensaje("Inicio preparación de etiquetas RAU.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
             mensaje("Fin preparación de etiquetas.")
@@ -471,10 +472,10 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
-        poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
+        poligono = limpiaMapaRural(mxd, datosRural[0], nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Rural")
-            mensaje("Inicio preparación de etiquetas.")
+            mensaje("Inicio preparación de etiquetas Rural.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
             mensaje("Fin preparación de etiquetas.")
