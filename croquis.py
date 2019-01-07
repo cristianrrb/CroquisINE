@@ -390,7 +390,6 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         tm_layer = arcpy.mapping.Layer(tm_path)
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        #ext1 = seccionRau.extent.polygon
         seccionRural = datosRural[0]
         mensaje("Proyectando")
         ext = seccionRural.projectAs(df.spatialReference)
