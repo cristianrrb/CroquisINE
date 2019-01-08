@@ -673,7 +673,7 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
-                elm.text = parametroEncuesta + " " + parametroMarco
+                elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
                 elm.text = datosManzana[2]
             if elm.name == "Nombre_Provincia":
@@ -783,8 +783,7 @@ def generaCodigoBarra(estrato, datosEstrato):
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
-    parametroMarco = parametroMarco[2:4]
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4],datosEstrato[10], parametroEncuesta, parametroMarco)
+    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaAreaRechazo(poligono):
@@ -873,7 +872,7 @@ parametroCodigos = arcpy.GetParameterAsText(3)
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
 # --------------------------------------------------------------------
-parametroCodigos = "1101021002005"
+parametroCodigos = "15101021001002"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
