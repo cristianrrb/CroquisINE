@@ -783,8 +783,8 @@ def generaCodigoBarra(estrato, datosEstrato):
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
-    return nombre
+    barcode = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, int(parametroMarco[2:4]))
+    return barcode
 
 def intersectaAreaRechazo(poligono):
     try:
