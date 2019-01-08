@@ -129,17 +129,17 @@
                 "Eje_Vial",
                 "Cursos_Hidricos",
                 "Equipamiento",
-                "etiquetado_auxiliar_mm2016",
-                "etiquetado_limites_mm2016",
                 "toponimos_mm2016",
                 "Etiquetado_Auxiliar",
                 "Etiquetado_Limites",
+                "toponimos_mm2016",
+                "Localidades",
+                "Entidades",
                 "Cuerpos_De_Agua",
                 "Cotas"
             ],
             "mxds":
             [
-
                 {
                     "ancho": 31.900,
                     "alto": 25.900,
