@@ -669,7 +669,6 @@ def leeJsonConfiguracion():
 def actualizaVinetaManzanas(mxd,datosManzana):
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
-        codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
@@ -689,8 +688,6 @@ def actualizaVinetaManzanas(mxd,datosManzana):
                 elm.text = datosManzana[8]
             if elm.name == "COD_MANZAN":
                 elm.text = datosManzana[9]
-            if elm.name == "barcode":
-                elm.text = codigo_barra
         mensaje("Se actualizaron las viñetas para manzana.")
     except:
         mensaje("No se pudo actualizar las viñetas para manzana.")
@@ -776,9 +773,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     return nombre
 
 def generaCodigoBarra(estrato, datosEstrato):
-    if estrato == "Manzana":
-        tipo = "MZ"
-    elif estrato == "RAU":
+    if estrato == "RAU":
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
