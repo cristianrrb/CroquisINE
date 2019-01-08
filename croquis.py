@@ -278,7 +278,7 @@ def zoom(mxd, extent, escala):
         mensaje('** No se ajusto el extent del mapa.')
         return False
 
-def limpiaMapaManzana(mxd, manzana, nombreCapa):
+def limpiaMapaManzana(mxd, manzana):
     try:
         mensaje("Limpieza de mapa 'Manzana' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -437,8 +437,7 @@ def cortaEtiqueta(mxd, elLyr, poly):
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa(parametroEstrato)
-        poligono = limpiaMapaManzana(mxd, datosManzana[0], nombreCapa)
+        poligono = limpiaMapaManzana(mxd, datosManzana[0])
         if limpiaMapaEsquicio(mxd, datosManzana[0]):
             if poligono != None:
                 lista_etiquetas = listaEtiquetas(parametroEstrato)
