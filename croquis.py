@@ -745,14 +745,27 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         mensaje("No se pudo actualizar las viñetas para Rural.")
 
 def generaPDF(mxd, nombrePDF, datos):
-
     id_region = int(datos[2])
-    id_comuna = int(datos[4])
+    #id_comuna = int(datos[4])
     dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
 
     ruta = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",dict_region[id_region], nombrePDF)
     mensaje(ruta)
-    arcpy.mapping.ExportToPDF(mxd, ruta)
+
+    data_frame = 'PAGE_LAYOUT'
+    df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+    df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+    resolution = 200
+    image_quality = 'NORMAL' #'BEST' 'FASTER'  
+    color_space = 'RGB'
+    compress_vectors = True
+    image_compression = 'ADAPTIVE'
+    picture_symbol = 'RASTERIZE_BITMAP'
+    convert_markers = True  
+    embed_fonts = True
+    #arcpy.mapping.ExportToPDF(mxd, ruta)
+    arcpy.mapping.ExportToPDF(mxd, ruta, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
+
     mensaje("Exportado a pdf")
     return ruta
 
