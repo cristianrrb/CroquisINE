@@ -904,7 +904,6 @@ usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
 config = leeJsonConfiguracion()
-
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
