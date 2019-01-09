@@ -755,13 +755,13 @@ def generaPDF(mxd, nombrePDF, datos):
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    resolution = 200
-    image_quality = 'NORMAL' #'BEST' 'FASTER'  
+    resolution = 400
+    image_quality = 'NORMAL' #'BEST' 'FASTER'
     color_space = 'RGB'
     compress_vectors = True
     image_compression = 'ADAPTIVE'
     picture_symbol = 'RASTERIZE_BITMAP'
-    convert_markers = True  
+    convert_markers = True
     embed_fonts = True
     #arcpy.mapping.ExportToPDF(mxd, ruta)
     arcpy.mapping.ExportToPDF(mxd, ruta, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
