@@ -2,12 +2,9 @@
 
 import arcpy
 import os, urllib, urllib2, json, sys
-import datetime
-import csv
-import uuid
-import zipfile
-import shutil
-from arcpy import env
+import datetime, csv, uuid, zipfile
+#import shutil
+#from arcpy import env
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -488,7 +485,11 @@ def procesaManzana(codigo):
         if token != None:
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             if datosManzana != None:
-                registro.intersecta = intersectaAreaRechazo(datosManzana[0])
+
+                registro.intersectaPE = intersectaConArea(datosManzana[0], urlPE, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], urlCRF, token)
+                registro.homologacion = obtieneHomologacion(codigo, urlHomologacion, token)
+
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
                     if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -502,9 +503,11 @@ def procesaManzana(codigo):
                         registros.append(registro)
 
                         if registro.rutaPDF == "":
-                            mensajeEstado(codigo, registro.intersecta, "No Existe")
+                            #mensajeEstado(codigo, registro.intersecta, "No Existe")
+                            pass
                         else:
-                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                            #mensajeEstado(codigo, registro.intersecta, "Correcto")
+                            pass
 
                         mensaje("Se procesó la manzana correctamente.")
     except:
@@ -518,7 +521,6 @@ def procesaRAU(codigo):
         if token != None:
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
-                registro.intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
@@ -549,7 +551,6 @@ def procesaRural(codigo):
         token = obtieneToken(usuario, clave, urlPortal)
         datosRural, extent = obtieneInfoSeccionRural(codigo, token)
         if datosRural != None:
-            registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRural(mxd, extent, escala, datosRural):
@@ -773,23 +774,30 @@ def generaCodigoBarra(estrato, datosEstrato):
     nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
-def intersectaAreaRechazo(poligono):
+def intersectaConArea(poligono, urlServicio, token):
     try:
-        d = {0:'Permiso edificacion', 1:'CRF'}
-        poly = poligono.JSON
-        params = {'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poly, 'geometryType':'esriGeometryPolygon'}
-        for i in range(0,2):
-            queryURL = "{}/{}/query".format(urlAreaRechazo, i)
-            req = urllib2.Request(queryURL, urllib.urlencode(params))
-            response = urllib2.urlopen(req)
-
-            ids = json.load(response)
-            if ids['objectIds'] != None:
-                mensaje('Intersecta con areas.')
-                return d[i]
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        if ids['objectIds'] != None:
+            return "Si"
     except:
-        mensaje('** Error en intersecta.')
-    mensaje('No intersecta con areas.')
+        pass
+    return "No"
+
+def obtieneHomologacion(codigo, urlServicio, token):
+    try:
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':token, 'f':'json', 'where':'{}={}'.format(nombreCampoIdHomologacion, codigo), 'outFields':nombreCampoTipoHomologacion}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        valores = json.load(response)
+        atributos = valores['features'][0]['attributes']
+        return atributos[nombreCampoTipoHomologacion.decode('utf8')]
+    except:
+        pass
     return ""
 
 def escribeCSV(registros):
@@ -828,7 +836,10 @@ class Registro:
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
         self.rutaPDF = ""
-        self.intersecta = ""
+        #self.intersecta = ""
+        self.intersectaPE = "No"
+        self.intersectaCRF = "No"
+        self.homologacion = ""
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
@@ -839,8 +850,15 @@ arcpy.env.overwriteOutput = True
 urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
 urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
 urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlAreaRechazo     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
+#urlAreaRechazo     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
 urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+
+urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+
+nombreCampoIdHomologacion = "MANZENT_MM2014"
+nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
 
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlPortal          = 'https://gis.ine.cl/portal'
