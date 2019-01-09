@@ -513,9 +513,10 @@ def procesaManzana(codigo):
                         mensajeEstado(registro)
 
                         mensaje("Se procesó la manzana correctamente.")
+                        return
     except:
-        #mensaje("** Error: procesaManzana.")
-        mensaje("No se completó el proceso de manzana.")
+        pass
+    mensaje("No se completó el proceso de manzana.")
 
 def procesaRAU(codigo):
     try:
@@ -541,9 +542,10 @@ def procesaRAU(codigo):
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
+                        return
     except:
-        #mensaje("** Error: procesaRAU.")
-        mensaje("No se completó el proceso de sección RAU.")
+        pass
+    mensaje("No se completó el proceso de sección RAU.")
 
 def procesaRural(codigo):
     try:
@@ -568,9 +570,10 @@ def procesaRural(codigo):
                     procesaAreasDestacadas(codigo, datosRural, token)
 
                     mensaje("Se procesó la sección Rural correctamente.")
+                    return
     except:
-        #mensaje("** Error: procesaRural.")
-        mensaje("No se completó el proceso de sección Rural.")
+        pass
+    mensaje("No se completó el proceso de sección Rural.")
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     mensaje("Validando areas destacadas.")
@@ -805,8 +808,10 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
+            a = ['Hora', 'Codigo', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            wr.writerow(a)
             for r in registros:
-                a = [r.hora, r.codigo, r.rutaPDF, r.intersecta, r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.codigo, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -828,14 +833,17 @@ def comprime(registros, rutaCSV):
     except:
         return None
 
-def generaMensajeProceso(registro):
+""" def generaMensajeProceso(registro):
     m = []
     m.append(registro.homologacion)
+    m.append(registro.intersectaPE)
+    m.append(registro.intersectaCRF)
+    m.append()
     if registro.intersectaPE == "Si":
         m.append("Intersecta con PE")
     if registro.intersectaCRF == "Si":
         m.append("Intersecta con CRF")
-    return ", ".join(m)
+    return ", ".join(m) """
 
 class Registro:
     def __init__(self, codigo):
@@ -919,6 +927,7 @@ for codigo in listaCodigos:
 
 rutaCSV = escribeCSV(registros)
 rutaZip = comprime(registros, rutaCSV)
+
 arcpy.SetParameterAsText(4, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
