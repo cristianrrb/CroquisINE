@@ -126,7 +126,7 @@ def listaEtiquetas(estrato):
     return lista
 
 def leeNombreCapa(estrato):
-    d = {"Manzana":0,"RAU":1,"Rural":2}
+    #d = {"Manzana":0,"RAU":1,"Rural":2}
     lista = ""
     for e in config['estratos']:
         if e['nombre'] == estrato:
