@@ -198,5 +198,13 @@
                 }
             ]
         }
+    ],
+    "regiones":
+    [
+
+      {
+        "codigo":"1",
+        "nombre":"DE TARAPACÁ"
+      }
     ]
 }

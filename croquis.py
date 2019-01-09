@@ -138,6 +138,14 @@ def leeNombreCapa(estrato):
             lista = e['nombre_capa']
     return lista
 
+def leeRegion(codigo):
+    #d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = ""
+    for e in config['regiones']:
+        if e['codigo'] == codigo:
+            lista = e['nombre']
+    return lista
+
 def calculaDistanciaBufferManzana(area):
     #print
     return '15 Meters'
@@ -661,6 +669,7 @@ def leeJsonConfiguracion():
     return data
 
 def actualizaVinetaManzanas(mxd,datosManzana):
+
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
@@ -755,13 +764,13 @@ def generaPDF(mxd, nombrePDF, datos):
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    resolution = 200
-    image_quality = 'NORMAL' #'BEST' 'FASTER'  
+    resolution = 400
+    image_quality = 'NORMAL' #'BEST' 'FASTER'
     color_space = 'RGB'
     compress_vectors = True
     image_compression = 'ADAPTIVE'
     picture_symbol = 'RASTERIZE_BITMAP'
-    convert_markers = True  
+    convert_markers = True
     embed_fonts = True
     #arcpy.mapping.ExportToPDF(mxd, ruta)
     arcpy.mapping.ExportToPDF(mxd, ruta, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
