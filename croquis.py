@@ -2,12 +2,9 @@
 
 import arcpy
 import os, urllib, urllib2, json, sys
-import datetime
-import csv
-import uuid
-import zipfile
-import shutil
-from arcpy import env
+import datetime, csv, uuid, zipfile
+#import shutil
+#from arcpy import env
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -15,8 +12,16 @@ def mensaje(m):
     print(s)
     arcpy.AddMessage(s)
 
-def mensajeEstado(codigo, intersecta, estado):
-    s = "#{}#:{},{}".format(codigo, intersecta, estado)
+def mensajeEstado(registro):
+    homologacion = "I"
+    if registro.homologacion == 'Homologada No Idéntica':
+        homologacion = 'NI'
+
+    estado = "Correcto"
+    if registro.rutaPDF == "":
+        estado = "No existe"
+
+    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, estado)
     print(s)
     arcpy.AddMessage(s)
 
@@ -126,7 +131,7 @@ def listaEtiquetas(estrato):
     return lista
 
 def leeNombreCapa(estrato):
-    d = {"Manzana":0,"RAU":1,"Rural":2}
+    #d = {"Manzana":0,"RAU":1,"Rural":2}
     lista = ""
     for e in config['estratos']:
         if e['nombre'] == estrato:
@@ -488,7 +493,11 @@ def procesaManzana(codigo):
         if token != None:
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             if datosManzana != None:
-                registro.intersecta = intersectaAreaRechazo(datosManzana[0])
+
+                registro.intersectaPE = intersectaConArea(datosManzana[0], urlPE, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], urlCRF, token)
+                registro.homologacion = obtieneHomologacion(codigo, urlHomologacion, token)
+
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
                     if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -501,15 +510,13 @@ def procesaManzana(codigo):
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
                         registros.append(registro)
 
-                        if registro.rutaPDF == "":
-                            mensajeEstado(codigo, registro.intersecta, "No Existe")
-                        else:
-                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                        mensajeEstado(registro)
 
                         mensaje("Se procesó la manzana correctamente.")
+                        return
     except:
-        #mensaje("** Error: procesaManzana.")
-        mensaje("No se completó el proceso de manzana.")
+        pass
+    mensaje("No se completó el proceso de manzana.")
 
 def procesaRAU(codigo):
     try:
@@ -518,7 +525,6 @@ def procesaRAU(codigo):
         if token != None:
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
-                registro.intersecta = intersectaAreaRechazo(datosRAU[0])
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
@@ -531,17 +537,15 @@ def procesaRAU(codigo):
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
                         registros.append(registro)
 
-                        if registro.rutaPDF == "":
-                            mensajeEstado(codigo, registro.intersecta, "No Existe")
-                        else:
-                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                        mensajeEstado(registro)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
                         mensaje("Se procesó la sección RAU correctamente.")
+                        return
     except:
-        #mensaje("** Error: procesaRAU.")
-        mensaje("No se completó el proceso de sección RAU.")
+        pass
+    mensaje("No se completó el proceso de sección RAU.")
 
 def procesaRural(codigo):
     try:
@@ -549,7 +553,6 @@ def procesaRural(codigo):
         token = obtieneToken(usuario, clave, urlPortal)
         datosRural, extent = obtieneInfoSeccionRural(codigo, token)
         if datosRural != None:
-            registro.intersecta = intersectaAreaRechazo(datosRural[0])
             mxd, infoMxd, escala = buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRural(mxd, extent, escala, datosRural):
@@ -562,17 +565,15 @@ def procesaRural(codigo):
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
                     registros.append(registro)
 
-                    if registro.rutaPDF == "":
-                        mensajeEstado(codigo, registro.intersecta, "No Existe")
-                    else:
-                        mensajeEstado(codigo, registro.intersecta, "Correcto")
+                    mensajeEstado(registro)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
 
                     mensaje("Se procesó la sección Rural correctamente.")
+                    return
     except:
-        #mensaje("** Error: procesaRural.")
-        mensaje("No se completó el proceso de sección Rural.")
+        pass
+    mensaje("No se completó el proceso de sección Rural.")
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     mensaje("Validando areas destacadas.")
@@ -594,22 +595,14 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
-
             codigo = "{}_{}".format(codigoSeccion, area[2])
-
             nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
-
-            """ if registro.rutaPDF == "":
-                mensajeEstado(codigo, registro.intersecta, "No Existe")
-            else:
-                mensajeEstado(codigo, registro.intersecta, "Correcto") """
-
             mensaje("Se procesó el área destacada correctamente.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU
+    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
         if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
@@ -620,8 +613,9 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
                     mensaje(capa)
                     cortaEtiqueta(mxd, capa, poligono)
                 mensaje("Fin preparación de etiquetas.") """
+        mensaje("Se completo la preparación del mapa para area destacada.")
         return True
-    mensaje("No se completo la preparación del mapa para manzana.")
+    mensaje("No se completo la preparación del mapa para area destacada.")
     return False
 
 def buscaTemplateAreaDestacada(extent):
@@ -780,23 +774,30 @@ def generaCodigoBarra(estrato, datosEstrato):
     nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
-def intersectaAreaRechazo(poligono):
+def intersectaConArea(poligono, urlServicio, token):
     try:
-        d = {0:'Permiso edificación', 1:'CRF'}
-        poly = poligono.JSON
-        params = {'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poly, 'geometryType':'esriGeometryPolygon'}
-        for i in range(0,2):
-            queryURL = "{}/{}/query".format(urlAreaRechazo, i)
-            req = urllib2.Request(queryURL, urllib.urlencode(params))
-            response = urllib2.urlopen(req)
-
-            ids = json.load(response)
-            if ids['objectIds'] != None:
-                mensaje('Intersecta con areas.')
-                return d[i]
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        if ids['objectIds'] != None:
+            return "Si"
     except:
-        mensaje('** Error en intersecta.')
-    mensaje('No intersecta con areas.')
+        pass
+    return "No"
+
+def obtieneHomologacion(codigo, urlServicio, token):
+    try:
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':token, 'f':'json', 'where':'{}={}'.format(nombreCampoIdHomologacion, codigo), 'outFields':nombreCampoTipoHomologacion}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        valores = json.load(response)
+        atributos = valores['features'][0]['attributes']
+        return atributos[nombreCampoTipoHomologacion.decode('utf8')]
+    except:
+        pass
     return ""
 
 def escribeCSV(registros):
@@ -807,20 +808,22 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
+            a = ['Hora', 'Codigo', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            wr.writerow(a)
             for r in registros:
-                a = [r.hora, r.codigo, r.rutaPDF, r.intersecta, r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.codigo, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
         return None
 
 def comprime(registros, rutaCSV):
-    f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-    nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
-    rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
-    mensaje("Ruta ZIP {}".format(rutaZip))
-    listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
     try:
+        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+        nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
+        rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
+        mensaje("Ruta ZIP {}".format(rutaZip))
+        listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
             for archivo in listaPDFs:
@@ -830,12 +833,27 @@ def comprime(registros, rutaCSV):
     except:
         return None
 
+""" def generaMensajeProceso(registro):
+    m = []
+    m.append(registro.homologacion)
+    m.append(registro.intersectaPE)
+    m.append(registro.intersectaCRF)
+    m.append()
+    if registro.intersectaPE == "Si":
+        m.append("Intersecta con PE")
+    if registro.intersectaCRF == "Si":
+        m.append("Intersecta con CRF")
+    return ", ".join(m) """
+
 class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
         self.rutaPDF = ""
-        self.intersecta = ""
+        #self.intersecta = ""
+        self.intersectaPE = "No"
+        self.intersectaCRF = "No"
+        self.homologacion = ""
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
@@ -846,8 +864,14 @@ arcpy.env.overwriteOutput = True
 urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
 urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
 urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlAreaRechazo     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer'
 urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+
+urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+
+nombreCampoIdHomologacion = "MANZENT_MM2014"
+nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
 
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlPortal          = 'https://gis.ine.cl/portal'
@@ -903,6 +927,7 @@ for codigo in listaCodigos:
 
 rutaCSV = escribeCSV(registros)
 rutaZip = comprime(registros, rutaCSV)
+
 arcpy.SetParameterAsText(4, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
