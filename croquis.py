@@ -3,8 +3,6 @@
 import arcpy
 import os, urllib, urllib2, json, sys
 import datetime, csv, uuid, zipfile
-#import shutil
-#from arcpy import env
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -881,7 +879,7 @@ class Registro:
 
 def nombreRegion(codigo):
     if dictRegiones.has_key(codigo):
-        return dictRegiones[codigo]
+        return dictRegiones[codigo].encode('utf8')
     else:
         return codigo
 
