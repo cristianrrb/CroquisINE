@@ -863,13 +863,18 @@ class Registro:
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
         self.rutaPDF = ""
-        #self.intersecta = ""
         self.intersectaPE = "No"
         self.intersectaCRF = "No"
         self.homologacion = ""
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
+
+def nombreRegion(codigo):
+    if dictRegiones.has_key(codigo):
+        return dictRegiones[codigo]
+    else:
+        return codigo
 
 arcpy.env.overwriteOutput = True
 
@@ -892,6 +897,8 @@ usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
 config = leeJsonConfiguracion()
+
+dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
