@@ -12,8 +12,16 @@ def mensaje(m):
     print(s)
     arcpy.AddMessage(s)
 
-def mensajeEstado(codigo, intersecta, estado):
-    s = "#{}#:{},{}".format(codigo, intersecta, estado)
+def mensajeEstado(registro):
+    homologacion = "I"
+    if registro.homologacion == 'Homologada No Idéntica':
+        homologacion = 'NI'
+
+    estado = "Correcto"
+    if registro.rutaPDF == "":
+        estado = "No existe"
+
+    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, estado)
     print(s)
     arcpy.AddMessage(s)
 
@@ -502,12 +510,7 @@ def procesaManzana(codigo):
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
                         registros.append(registro)
 
-                        if registro.rutaPDF == "":
-                            #mensajeEstado(codigo, registro.intersecta, "No Existe")
-                            pass
-                        else:
-                            #mensajeEstado(codigo, registro.intersecta, "Correcto")
-                            pass
+                        mensajeEstado(registro)
 
                         mensaje("Se procesó la manzana correctamente.")
     except:
@@ -533,10 +536,7 @@ def procesaRAU(codigo):
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
                         registros.append(registro)
 
-                        if registro.rutaPDF == "":
-                            mensajeEstado(codigo, registro.intersecta, "No Existe")
-                        else:
-                            mensajeEstado(codigo, registro.intersecta, "Correcto")
+                        mensajeEstado(registro)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
@@ -563,10 +563,7 @@ def procesaRural(codigo):
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
                     registros.append(registro)
 
-                    if registro.rutaPDF == "":
-                        mensajeEstado(codigo, registro.intersecta, "No Existe")
-                    else:
-                        mensajeEstado(codigo, registro.intersecta, "Correcto")
+                    mensajeEstado(registro)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
 
@@ -830,6 +827,15 @@ def comprime(registros, rutaCSV):
         return rutaZip
     except:
         return None
+
+def generaMensajeProceso(registro):
+    m = []
+    m.append(registro.homologacion)
+    if registro.intersectaPE == "Si":
+        m.append("Intersecta con PE")
+    if registro.intersectaCRF == "Si":
+        m.append("Intersecta con CRF")
+    return ", ".join(m)
 
 class Registro:
     def __init__(self, codigo):
