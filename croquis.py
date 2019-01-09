@@ -667,14 +667,15 @@ def leeJsonConfiguracion():
     return data
 
 def actualizaVinetaManzanas(mxd,datosManzana):
-
+    nombre_region = nombreRegion(datosManzana[2])
+    mensaje(nombre_region)
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = datosManzana[2]
+                elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
                 elm.text = datosManzana[3]
             if elm.name == "Nombre_Comuna":
