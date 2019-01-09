@@ -1,2 +1,70 @@
 15101111003034,11101121003008,1101021003027,1101081004026
-1107031002206,1107031002276,1107031001018,1107021002094,1107041002193,11101121003008,1101061001134,1101021003027,1101081004026,1107021001122,1107021002099,1101051003002
+
+
+********************************************************************
+                      [RESULTADOS LISTA 1]
+15101111003034,1107031002206,1107031002276,1107031001018,1107021002094,1107041002193,11101121003008,1101061001134,1101021003027,1101081004026,1107021001122,1107021002099,1101051003002
+15101111003034,1107031002206,1107031002276,1107031001018,1107021002094,1107041002193,11101121003008
+********************************************************************
+
+15101111003034 (exporta bien)
+1107031002206 (exporta bien) ????
+1107031002276 (NO SELECCIONA LAYOUT, MANZANA GRANDE)
+1107031001018 (exporta bien)
+
+
+
+********************************************************************
+15101021001002 (EJEMPLO MANZANA DADA EN REUNION INE 04/01/2019)
+********************************************************************
+
+Start Time: Wed Jan  9 11:43:18 2019
+Executing (croquis): croquis ENE 2021 Manzana 15101021001002
+Start Time: Wed Jan  9 11:43:18 2019
+Running script croquis...
+[11:43:18]: Estrato: Manzana
+[11:43:18]: Token obtenido correctamente.
+[11:43:20]: Extension del poligono obtenida correctamente.
+[11:43:20]: Datos de manzana obtenidos correctamente.
+[11:43:20]: No intersecta con areas.
+[11:43:20]: Se selecciono layout para manzana.
+[11:43:27]: Se actualizaron las viñetas para manzana.
+[11:43:27]: Se ajusto el extent del mapa.
+[11:43:27]: Limpieza de mapa 'Manzana' iniciada.
+[11:43:27]: Proyectando
+[11:43:27]: Proyectado
+[11:43:27]: Limpieza de mapa correcta.
+[11:43:27]: Limpieza de esquicio iniciada.
+[11:43:27]: Proyectando
+[11:43:27]: Proyectado
+[11:43:27]: Limpieza de esquicio correcta.
+[11:43:27]: Inicio preparación de etiquetas Manzana.
+[11:43:27]: Layer encontrado Eje_Vial
+[11:43:44]: No hay registros de Eje_Vial (SI EXISTEN REGISTROS) ??????????????????????????????????????????????
+[11:43:44]: Layer encontrado Etiquetas_Limites
+[11:43:45]: No hay registros de Etiquetas_Limites
+[11:43:45]: Layer encontrado Cursos_Hidricos_Marco
+[11:48:20]: No hay registros de Cursos_Hidricos_Marco
+[11:48:20]: Fin preparación de etiquetas.
+[11:48:20]: Registrando la operación.
+[11:48:20]: D:\CROQUIS\MUESTRAS_PDF\ENE\ARICA_PARINACOTA\Mz_15101021001002_Oficio_Horizontal_ENE_2021.pdf
+[11:48:29]: Exportado a pdf
+#15101021001002#:,Correcto
+[11:48:29]: Se procesó la manzana correctamente.
+[11:48:30]: -------------------------------------------------
+
+[11:48:30]: Ruta CSV :D:\CROQUIS\LOG\log_2019_01_09_11_48_30_a15f5f5e141d11e9be219457a5669fb8.csv
+[11:48:30]: Ruta ZIP d:\arcgisserver\directories\arcgisjobs\esri\genera_croquis_prod_gpserver\j22ee5f72617f4d6981386c68ebd9aa3a\scratch\exportacion_2019_01_09_11_48_30_a15fad80141d11e984009457a5669fb8.zip
+[11:48:30]: Comprimiendo Mz_15101021001002_Oficio_Horizontal_ENE_2021.pdf
+[11:48:30]: El GeoProceso ha terminado correctamente
+Completed script croquis...
+Succeeded at Wed Jan  9 11:48:30 2019 (Elapsed Time: 5 minutes 12 seconds)
+Succeeded at Wed Jan  9 11:48:30 2019 (Elapsed Time: 5 minutes 12 seconds)
+Succeeded.
+
+
+
+
+
+
+****************************************************************************************************************************************
