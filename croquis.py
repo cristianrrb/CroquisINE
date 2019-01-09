@@ -138,6 +138,14 @@ def leeNombreCapa(estrato):
             lista = e['nombre_capa']
     return lista
 
+def leeRegion(codigo):
+    #d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = ""
+    for e in config['regiones']:
+        if e['codigo'] == codigo:
+            lista = e['nombre']
+    return lista
+
 def calculaDistanciaBufferManzana(area):
     #print
     return '15 Meters'
@@ -661,6 +669,7 @@ def leeJsonConfiguracion():
     return data
 
 def actualizaVinetaManzanas(mxd,datosManzana):
+
     try:
         #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
