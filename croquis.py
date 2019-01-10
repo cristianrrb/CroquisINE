@@ -511,15 +511,14 @@ def procesaManzana(codigo, viviendasEncuestar):
         registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            datosManzana, extent = obtieneInfoManzana(codigo, token)
-            if datosManzana != None:
-                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
-
-                if not validaRangoViviendas(viviendasEncuestar, totalViviendas):
-                    registro.estado = "Rechazado"
-                else:
+            registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
+            if not validaRangoViviendas(viviendasEncuestar, totalViviendas):
+                registro.estado = "Rechazado"
+            else:
+                datosManzana, extent = obtieneInfoManzana(codigo, token)
+                if datosManzana != None:
+                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
                     mxd, infoMxd, escala = buscaTemplateManzana(extent)
                     if mxd != None:
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -559,7 +558,7 @@ def procesaRAU(codigo):
                         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
 
-                        procesaAreasDestacadas(codigo, datosRAU, token)
+                        #procesaAreasDestacadas(codigo, datosRAU, token)
 
                         if registro.rutaPDF != "":
                             registro.estado = "Correcto"
@@ -588,7 +587,7 @@ def procesaRural(codigo):
                     nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
 
-                    procesaAreasDestacadas(codigo, datosRural, token)
+                    #procesaAreasDestacadas(codigo, datosRural, token)
 
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
@@ -1004,11 +1003,13 @@ parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "RAU"
+parametroViviendas = ""
 # --------------------------------------------------------------------
 parametroCodigos = "2203900013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
+parametroViviendas = ""
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
@@ -1024,7 +1025,7 @@ for indice, codigo in enumerate(listaCodigos):
     if parametroEstrato == 'Manzana':
         viviendas = -1
         if len(listaViviendasEncuestar) > 0:
-            viviendas = listaViviendasEncuestar(indice)
+            viviendas = listaViviendasEncuestar[indice]
         procesaManzana(codigo, viviendas)
     elif parametroEstrato == 'RAU':
         procesaRAU(codigo)
