@@ -502,7 +502,7 @@ def procesaManzana(codigo):
 
                 registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
                 registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                registro.homologacion = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
+                registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
 
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
@@ -823,15 +823,20 @@ def intersectaConArea(poligono, urlServicio, token):
 def obtieneHomologacion(codigo, urlServicio, token):
     try:
         queryURL = "{}/query".format(urlServicio)
-        params = {'token':token, 'f':'json', 'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 'outFields':infoMarco.nombreCampoTipoHomologacion}
+        params = {
+            'token':token, 
+            'f':'json', 
+            'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 
+            'outFields': "{},{}".format(infoMarco.nombreCampoTipoHomologacion, infoMarco.nombreCampoTotalViviendas)
+        }
         req = urllib2.Request(queryURL, urllib.urlencode(params))
         response = urllib2.urlopen(req)
         valores = json.load(response)
         atributos = valores['features'][0]['attributes']
-        return atributos[infoMarco.nombreCampoTipoHomologacion.decode('utf8')]
+        return atributos[infoMarco.nombreCampoTipoHomologacion.decode('utf8')] , atributos[infoMarco.nombreCampoTotalViviendas.decode('utf8')]
     except:
         pass
-    return ""
+    return "", -1
 
 def escribeCSV(registros):
     try:
@@ -923,6 +928,7 @@ class InfoMarco:
         self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
         self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+        self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
         self.leeConfiguracion(codigo, config)
 
     def leeConfiguracion(self, codigo, config):
@@ -937,6 +943,7 @@ class InfoMarco:
                 self.urlHomologacion =     marco['config']['urlHomologacion']
                 self.nombreCampoIdHomologacion = marco['config']['nombreCampoIdHomologacion']
                 self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
+                self.nombreCampoTotalViviendas = marco['config']['nombreCampoTotalViviendas']
 
 arcpy.env.overwriteOutput = True
 
@@ -957,6 +964,7 @@ parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
 parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
 parametroCodigos = arcpy.GetParameterAsText(3)
+parametroViviendas = arcpy.GetParameterAsText(4)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
@@ -1016,7 +1024,7 @@ for codigo in listaCodigos:
 rutaCSV = escribeCSV(registros)
 rutaZip = comprime(registros, rutaCSV)
 
-arcpy.SetParameterAsText(4, rutaZip)
+arcpy.SetParameterAsText(5, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
 
