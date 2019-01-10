@@ -930,11 +930,6 @@ def nombreUrbano(codigo):
     else:
         return codigo
 
-dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
-dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
-dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-dictUrbanos = {r['codigo']:r['nombre'] for r in config['urbanos']}
-
 arcpy.env.overwriteOutput = True
 
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
@@ -943,6 +938,11 @@ usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
 config = leeJsonConfiguracion()
+
+dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
+dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
+dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
+dictUrbanos = {r['codigo']:r['nombre'] for r in config['urbanos']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
