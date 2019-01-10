@@ -854,17 +854,11 @@ def comprime(registros, rutaCSV):
     except:
         return None
 
-""" def generaMensajeProceso(registro):
-    m = []
-    m.append(registro.homologacion)
-    m.append(registro.intersectaPE)
-    m.append(registro.intersectaCRF)
-    m.append()
-    if registro.intersectaPE == "Si":
-        m.append("Intersecta con PE")
-    if registro.intersectaCRF == "Si":
-        m.append("Intersecta con CRF")
-    return ", ".join(m) """
+def nombreRegion(codigo):
+    if dictRegiones.has_key(codigo):
+        return dictRegiones[codigo].encode('utf8')
+    else:
+        return codigo
 
 class Registro:
     def __init__(self, codigo):
@@ -877,12 +871,6 @@ class Registro:
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
-
-def nombreRegion(codigo):
-    if dictRegiones.has_key(codigo):
-        return dictRegiones[codigo].encode('utf8')
-    else:
-        return codigo
 
 arcpy.env.overwriteOutput = True
 
@@ -984,3 +972,15 @@ for mxd in mxd_list:
 
     pdfDoc.saveAndClose()  # save the pdf for the mxd
 """
+
+""" def generaMensajeProceso(registro):
+    m = []
+    m.append(registro.homologacion)
+    m.append(registro.intersectaPE)
+    m.append(registro.intersectaCRF)
+    m.append()
+    if registro.intersectaPE == "Si":
+        m.append("Intersecta con PE")
+    if registro.intersectaCRF == "Si":
+        m.append("Intersecta con CRF")
+    return ", ".join(m) """
