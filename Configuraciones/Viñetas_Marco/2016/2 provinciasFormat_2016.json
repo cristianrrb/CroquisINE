@@ -1,0 +1,191 @@
+"provincias":
+[
+    {
+      "codigo": "72",
+      "nombre": "CAUQUENES"
+    },
+    {
+      "codigo": "111",
+      "nombre": "COYHAIQUE"
+    },
+    {
+      "codigo": "81",
+      "nombre": "CONCEPCIÓN"
+    },
+    {
+      "codigo": "151",
+      "nombre": "ARICA"
+    },
+    {
+      "codigo": "103",
+      "nombre": "OSORNO"
+    },
+    {
+      "codigo": "33",
+      "nombre": "HUASCO"
+    },
+    {
+      "codigo": "56",
+      "nombre": "SAN ANTONIO"
+    },
+    {
+      "codigo": "21",
+      "nombre": "ANTOFAGASTA"
+    },
+    {
+      "codigo": "142",
+      "nombre": "RANCO"
+    },
+    {
+      "codigo": "32",
+      "nombre": "CHAÑARAL"
+    },
+    {
+      "codigo": "42",
+      "nombre": "CHOAPA"
+    },
+    {
+      "codigo": "43",
+      "nombre": "LIMARÍ"
+    },
+    {
+      "codigo": "124",
+      "nombre": "ÚLTIMA ESPERANZA"
+    },
+    {
+      "codigo": "62",
+      "nombre": "CARDENAL CARO"
+    },
+    {
+      "codigo": "71",
+      "nombre": "TALCA"
+    },
+    {
+      "codigo": "132",
+      "nombre": "CORDILLERA"
+    },
+    {
+      "codigo": "57",
+      "nombre": "SAN FELIPE DE ACONCAGUA"
+    },
+    {
+      "codigo": "135",
+      "nombre": "MELIPILLA"
+    },
+    {
+      "codigo": "11",
+      "nombre": "IQUIQUE"
+    },
+    {
+      "codigo": "101",
+      "nombre": "LLANQUIHUE"
+    },
+    {
+      "codigo": "141",
+      "nombre": "VALDIVIA"
+    },
+    {
+      "codigo": "63",
+      "nombre": "COLCHAGUA"
+    },
+    {
+      "codigo": "82",
+      "nombre": "ARAUCO"
+    },
+    {
+      "codigo": "102",
+      "nombre": "CHILOÉ"
+    },
+    {
+      "codigo": "41",
+      "nombre": "ELQUI"
+    },
+    {
+      "codigo": "51",
+      "nombre": "VALPARAÍSO"
+    },
+    {
+      "codigo": "14",
+      "nombre": "TAMARUGAL"
+    },
+    {
+      "codigo": "83",
+      "nombre": "BIOBÍO"
+    },
+    {
+      "codigo": "53",
+      "nombre": "LOS ANDES"
+    },
+    {
+      "codigo": "84",
+      "nombre": "ÑUBLE"
+    },
+    {
+      "codigo": "91",
+      "nombre": "CAUTÍN"
+    },
+    {
+      "codigo": "92",
+      "nombre": "MALLECO"
+    },
+    {
+      "codigo": "136",
+      "nombre": "TALAGANTE"
+    },
+    {
+      "codigo": "23",
+      "nombre": "TOCOPILLA"
+    },
+    {
+      "codigo": "133",
+      "nombre": "CHACABUCO"
+    },
+    {
+      "codigo": "22",
+      "nombre": "EL LOA"
+    },
+    {
+      "codigo": "58",
+      "nombre": "MARGA MARGA"
+    },
+    {
+      "codigo": "131",
+      "nombre": "SANTIAGO"
+    },
+    {
+      "codigo": "55",
+      "nombre": "QUILLOTA"
+    },
+    {
+      "codigo": "112",
+      "nombre": "AYSÉN"
+    },
+    {
+      "codigo": "134",
+      "nombre": "MAIPO"
+    },
+    {
+      "codigo": "73",
+      "nombre": "CURICÓ"
+    },
+    {
+      "codigo": "74",
+      "nombre": "LINARES"
+    },
+    {
+      "codigo": "61",
+      "nombre": "CACHAPOAL"
+    },
+    {
+      "codigo": "54",
+      "nombre": "PETORCA"
+    },
+    {
+      "codigo": "121",
+      "nombre": "MAGALLANES"
+    },
+    {
+      "codigo": "31",
+      "nombre": "COPIAPÓ"
+    }
+]
