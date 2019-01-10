@@ -667,21 +667,24 @@ def leeJsonConfiguracion():
     return data
 
 def actualizaVinetaManzanas(mxd,datosManzana):
-    nombre_region = nombreRegion(datosManzana[2])
-    mensaje(nombre_region)
+    #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
     try:
-        #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
+        nombre_region = nombreRegion(datosManzana[2])
+        nombre_provincia = nombreProvincia(datosManzana[3])
+        nombre_comuna = nombreComuna(datosManzana[4])
+        nombre_urbano = nombreUrbano(datosManzana[5])
+
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
                 elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
-                elm.text = datosManzana[3]
+                elm.text = nombre_provincia
             if elm.name == "Nombre_Comuna":
-                elm.text = datosManzana[4]
+                elm.text = nombre_comuna
             if elm.name == "Nombre_Urbano":
-                elm.text = datosManzana[5]
+                elm.text = nombre_urbano
             if elm.name == "CUT":
                 elm.text = datosManzana[6]
             if elm.name == "COD_DISTRI":
@@ -695,20 +698,25 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         mensaje("No se pudo actualizar las viñetas para manzana.")
 
 def actualizaVinetaSeccionRAU(mxd,datosRAU):
+    #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
     try:
-        #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
+        nombre_region = nombreRegion(datosRAU[2])
+        nombre_provincia = nombreProvincia(datosRAU[3])
+        nombre_comuna = nombreComuna(datosRAU[4])
+        nombre_urbano = nombreUrbano(datosRAU[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
+
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = datosRAU[2]
+                elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
-                elm.text = datosRAU[3]
+                elm.text = nombre_provincia
             if elm.name == "Nombre_Comuna":
-                elm.text = datosRAU[4]
+                elm.text = nombre_comuna
             if elm.name == "Nombre_Urbano":
-                elm.text = datosRAU[5]
+                elm.text = nombre_urbano
             if elm.name == "CUT":
                 elm.text = datosRAU[6]
             if elm.name == "EST_GEOGRAFICO":
@@ -724,18 +732,22 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         mensaje("No se pudo actualizar las viñetas para RAU.")
 
 def actualizaVinetaSeccionRural(mxd,datosRural):
+    #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
     try:
-        #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
+        nombre_region = nombreRegion(datosRural[2])
+        nombre_provincia = nombreProvincia(datosRural[3])
+        nombre_comuna = nombreComuna(datosRural[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
+
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
-                elm.text = datosRural[2]
+                elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
-                elm.text = datosRural[3]
+                elm.text = nombre_provincia
             if elm.name == "Nombre_Comuna":
-                elm.text = datosRural[4]
+                elm.text = nombre_comuna
             if elm.name == "CUT":
                 elm.text = datosRural[5]
             if elm.name == "COD_SECCION":
@@ -894,6 +906,35 @@ class Registro:
         self.orientacion = ""
         self.escala = ""
 
+def nombreRegion(codigo):
+    if dictRegiones.has_key(codigo):
+        return dictRegiones[codigo].encode('utf8')
+    else:
+        return codigo
+
+def nombreProvincia(codigo):
+    if dictProvincias.has_key(codigo):
+        return dictProvincias[codigo].encode('utf8')
+    else:
+        return codigo
+
+def nombreComuna(codigo):
+    if dictComunas.has_key(codigo):
+        return dictComunas[codigo].encode('utf8')
+    else:
+        return codigo
+
+def nombreUrbano(codigo):
+    if dictUrbanos.has_key(codigo):
+        return dictUrbanos[codigo].encode('utf8')
+    else:
+        return codigo
+
+dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
+dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
+dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
+dictUrbanos = {r['codigo']:r['nombre'] for r in config['urbanos']}
+
 arcpy.env.overwriteOutput = True
 
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
@@ -902,7 +943,6 @@ usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
 config = leeJsonConfiguracion()
-dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)

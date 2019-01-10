@@ -219,7 +219,7 @@
         },
         {
             "codigo":"5",
-            "nombre":"DE VALPARAISO"
+            "nombre":"DE VALPARAÍSO"
         },
         {
             "codigo":"6",
@@ -235,7 +235,196 @@
         },
         {
             "codigo":"9",
-            "nombre":"DE ARAUCANIA"
+            "nombre":"DE ARAUCANÍA"
+        },
+        {
+            "codigo":"10",
+            "nombre":"DE LOS LAGOS"
+        },
+        {
+            "codigo":"11",
+            "nombre":"DE AYSEN"
+        },
+        {
+            "codigo":"12",
+            "nombre":"DE MAGALLANES"
+        },
+        {
+            "codigo":"13",
+            "nombre":"METROPOLITANA"
+        },
+        {
+            "codigo":"14",
+            "nombre":"DE LOS RIOS"
+        },
+        {
+            "codigo":"15",
+            "nombre":"DE ARICA Y PARINACOTA"
+        }
+    ],
+    "provincias":
+    [
+        {
+            "codigo":"1",
+            "nombre":"DE TARAPACÁ"
+        },
+        {
+            "codigo":"2",
+            "nombre":"DE ANTOFAGASTA"
+        },
+        {
+            "codigo":"3",
+            "nombre":"DE ATACAMA"
+        },
+        {
+            "codigo":"4",
+            "nombre":"DE COQUIMBO"
+        },
+        {
+            "codigo":"5",
+            "nombre":"DE VALPARAÍSO"
+        },
+        {
+            "codigo":"6",
+            "nombre":"DE OHIGGINS"
+        },
+        {
+            "codigo":"7",
+            "nombre":"DE MAULE"
+        },
+        {
+            "codigo":"8",
+            "nombre":"DE BIOBIO"
+        },
+        {
+            "codigo":"9",
+            "nombre":"DE ARAUCANÍA"
+        },
+        {
+            "codigo":"10",
+            "nombre":"DE LOS LAGOS"
+        },
+        {
+            "codigo":"11",
+            "nombre":"DE AYSEN"
+        },
+        {
+            "codigo":"12",
+            "nombre":"DE MAGALLANES"
+        },
+        {
+            "codigo":"13",
+            "nombre":"METROPOLITANA"
+        },
+        {
+            "codigo":"14",
+            "nombre":"DE LOS RIOS"
+        },
+        {
+            "codigo":"15",
+            "nombre":"DE ARICA Y PARINACOTA"
+        }
+    ],
+    "comunas":
+    [
+        {
+            "codigo":"1",
+            "nombre":"DE TARAPACÁ"
+        },
+        {
+            "codigo":"2",
+            "nombre":"DE ANTOFAGASTA"
+        },
+        {
+            "codigo":"3",
+            "nombre":"DE ATACAMA"
+        },
+        {
+            "codigo":"4",
+            "nombre":"DE COQUIMBO"
+        },
+        {
+            "codigo":"5",
+            "nombre":"DE VALPARAÍSO"
+        },
+        {
+            "codigo":"6",
+            "nombre":"DE OHIGGINS"
+        },
+        {
+            "codigo":"7",
+            "nombre":"DE MAULE"
+        },
+        {
+            "codigo":"8",
+            "nombre":"DE BIOBIO"
+        },
+        {
+            "codigo":"9",
+            "nombre":"DE ARAUCANÍA"
+        },
+        {
+            "codigo":"10",
+            "nombre":"DE LOS LAGOS"
+        },
+        {
+            "codigo":"11",
+            "nombre":"DE AYSEN"
+        },
+        {
+            "codigo":"12",
+            "nombre":"DE MAGALLANES"
+        },
+        {
+            "codigo":"13",
+            "nombre":"METROPOLITANA"
+        },
+        {
+            "codigo":"14",
+            "nombre":"DE LOS RIOS"
+        },
+        {
+            "codigo":"15",
+            "nombre":"DE ARICA Y PARINACOTA"
+        }
+    ],
+    "urbanos":
+    [
+        {
+            "codigo":"1",
+            "nombre":"DE TARAPACÁ"
+        },
+        {
+            "codigo":"2",
+            "nombre":"DE ANTOFAGASTA"
+        },
+        {
+            "codigo":"3",
+            "nombre":"DE ATACAMA"
+        },
+        {
+            "codigo":"4",
+            "nombre":"DE COQUIMBO"
+        },
+        {
+            "codigo":"5",
+            "nombre":"DE VALPARAÍSO"
+        },
+        {
+            "codigo":"6",
+            "nombre":"DE OHIGGINS"
+        },
+        {
+            "codigo":"7",
+            "nombre":"DE MAULE"
+        },
+        {
+            "codigo":"8",
+            "nombre":"DE BIOBIO"
+        },
+        {
+            "codigo":"9",
+            "nombre":"DE ARAUCANÍA"
         },
         {
             "codigo":"10",
