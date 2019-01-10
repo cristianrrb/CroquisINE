@@ -500,10 +500,10 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas):
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
                 return True
             else:
-                mensaje("No se cumple con el rango de viviendas de la manzana.")
+                mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
                 return False
         else:    # no existe el rango
-            mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar.")
+            mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
             return False
 
 def procesaManzana(codigo, viviendasEncuestar):
