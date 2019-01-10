@@ -841,11 +841,11 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estrato geografico', 'Estrato Muestral', 'Codigo Carto', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
-                estGeo, estMue, codCar = descomponeManzent(r.codigo)
-                a = [r.hora, r.codigo, estGeo, estMue, codCar, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                cut, dis, area, loc, ent = descomponeManzent(r.codigo)
+                a = [r.hora, r.codigo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -869,7 +869,12 @@ def comprime(registros, rutaCSV):
 
 def descomponeManzent(codigo):
     c = "{}".format(codigo)
-    return c[:-5], c[-5:-3], c[-3:]
+    cut = c[:-9]
+    dis = c[-9:-7]
+    area = c[-7:-6]
+    loc = c[-6:-3]
+    ent = c[-3:]
+    return cut, dis, area, loc, ent
 
 def nombreRegion(codigo):
     if dictRegiones.has_key(codigo):
