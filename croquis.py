@@ -500,11 +500,11 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas):
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
         return False
 
-    if viviendasEncuestar != -1:    # no se evalua
+    if viviendasEncuestar == -1:    # no se evalua
         mensaje("No se evalua cantidad de viviendas a encuestar.")
         return True
     else:
-        if viviendasEncuestar in dictRangos.values():
+        if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
             if rango[0] <= totalViviendas <= rango[1]:
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
@@ -523,14 +523,13 @@ def procesaManzana(codigo, viviendasEncuestar):
         if token != None:
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             if datosManzana != None:
+                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
                 registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
 
                 if not validaRangoViviendas(viviendasEncuestar, totalViviendas):
                     registro.estado = "Rechazado"
                 else:
-                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-
                     mxd, infoMxd, escala = buscaTemplateManzana(extent)
                     if mxd != None:
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -852,21 +851,20 @@ def intersectaConArea(poligono, urlServicio, token):
 
 def obtieneHomologacion(codigo, urlServicio, token):
     try:
+        #campos = "{},{}".format(infoMarco.nombreCampoTipoHomologacion.decode('utf8'), infoMarco.nombreCampoTotalViviendas.decode('utf8'))
+        campos = "*"
         queryURL = "{}/query".format(urlServicio)
         params = {
             'token':token, 
             'f':'json', 
             'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 
-            #'outFields': "{},{}".format(infoMarco.nombreCampoTipoHomologacion.decode('utf8'), infoMarco.nombreCampoTotalViviendas.decode('utf8'))
-
-            'outFields': infoMarco.nombreCampoTipoHomologacion
-
+            'outFields': campos
         }
         req = urllib2.Request(queryURL, urllib.urlencode(params))
         response = urllib2.urlopen(req)
         valores = json.load(response)
         atributos = valores['features'][0]['attributes']
-        return atributos[infoMarco.nombreCampoTipoHomologacion.decode('utf8')] , atributos[infoMarco.nombreCampoTotalViviendas.decode('utf8')]
+        return atributos[infoMarco.nombreCampoTipoHomologacion] , atributos[infoMarco.nombreCampoTotalViviendas]
     except:
         pass
     return "", -1
@@ -879,11 +877,11 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora','Estado', 'Codigo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                a = [r.hora, r.codigo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.estado, r.codigo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
