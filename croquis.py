@@ -44,7 +44,7 @@ def obtieneInfoManzana(codigo, token):
     try:
         url = '{}/query?token={}&where=MANZENT+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlManzanas, token, codigo))
+        fs.load(url.format(infoMarco.urlManzanas, token, codigo))
 
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT']
 
@@ -67,7 +67,7 @@ def obtieneInfoSeccionRAU(codigo, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones_RAU, token, codigo))
+        fs.load(url.format(infoMarco.urlSecciones_RAU, token, codigo))
 
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
 
@@ -89,7 +89,7 @@ def obtieneInfoSeccionRural(codigo, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlSecciones_Rural, token, codigo))
+        fs.load(url.format(infoMarco.urlSecciones_Rural, token, codigo))
 
         fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
@@ -500,9 +500,9 @@ def procesaManzana(codigo):
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             if datosManzana != None:
 
-                registro.intersectaPE = intersectaConArea(datosManzana[0], urlPE, token)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], urlCRF, token)
-                registro.homologacion = obtieneHomologacion(codigo, urlHomologacion, token)
+                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                registro.homologacion = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
 
                 mxd, infoMxd, escala = buscaTemplateManzana(extent)
                 if mxd != None:
@@ -634,7 +634,7 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
         lista = []
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlAreaDestacada, token, codigoSeccion))
+        fs.load(url.format(infoMarco.urlAreaDestacada, token, codigoSeccion))
 
         fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
 
@@ -823,12 +823,12 @@ def intersectaConArea(poligono, urlServicio, token):
 def obtieneHomologacion(codigo, urlServicio, token):
     try:
         queryURL = "{}/query".format(urlServicio)
-        params = {'token':token, 'f':'json', 'where':'{}={}'.format(nombreCampoIdHomologacion, codigo), 'outFields':nombreCampoTipoHomologacion}
+        params = {'token':token, 'f':'json', 'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 'outFields':infoMarco.nombreCampoTipoHomologacion}
         req = urllib2.Request(queryURL, urllib.urlencode(params))
         response = urllib2.urlopen(req)
         valores = json.load(response)
         atributos = valores['features'][0]['attributes']
-        return atributos[nombreCampoTipoHomologacion.decode('utf8')]
+        return atributos[infoMarco.nombreCampoTipoHomologacion.decode('utf8')]
     except:
         pass
     return ""
@@ -877,41 +877,6 @@ def nombreRegion(codigo):
     else:
         return codigo
 
-def configuraMarco(marco):
-    
-
-
-    if marco == 2016:
-        urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-        urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
-        urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-        urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-
-        urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
-        urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
-        urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
-
-        nombreCampoIdHomologacion = "MANZENT_MM2014"
-        nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
-
-class Registro:
-    def __init__(self, codigo):
-        self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
-        self.codigo = codigo
-        self.rutaPDF = ""
-        self.intersectaPE = "No"
-        self.intersectaCRF = "No"
-        self.homologacion = ""
-        self.formato = ""
-        self.orientacion = ""
-        self.escala = ""
-
-def nombreRegion(codigo):
-    if dictRegiones.has_key(codigo):
-        return dictRegiones[codigo].encode('utf8')
-    else:
-        return codigo
-
 def nombreProvincia(codigo):
     if dictProvincias.has_key(codigo):
         return dictProvincias[codigo].encode('utf8')
@@ -929,6 +894,46 @@ def nombreUrbano(codigo):
         return dictUrbanos[codigo].encode('utf8')
     else:
         return codigo
+
+class Registro:
+    def __init__(self, codigo):
+        self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
+        self.codigo = codigo
+        self.rutaPDF = ""
+        self.intersectaPE = "No"
+        self.intersectaCRF = "No"
+        self.homologacion = ""
+        self.formato = ""
+        self.orientacion = ""
+        self.escala = ""
+
+class InfoMarco:
+    def __init__(self, codigo, config):
+        self.leeConfiguracion(codigo, config)
+        """ self.urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+        self.urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
+        self.urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+        self.urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+
+        self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+        self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+        self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+
+        self.nombreCampoIdHomologacion = "MANZENT_MM2014"
+        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN" """
+
+    def leeConfiguracion(self, codigo, config):
+        for marco in config['marcos']:
+            if marco['id'] == codigo:
+                self.urlManzanas =         marco['config']['urlManzanas']
+                self.urlSecciones_RAU =    marco['config']['urlSecciones_RAU']
+                self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
+                self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
+                self.urlPE =               marco['config']['urlPE']
+                self.urlCRF =              marco['config']['urlCRF']
+                self.urlHomologacion =     marco['config']['urlHomologacion']
+                self.nombreCampoIdHomologacion = marco['config']['nombreCampoIdHomologacion']
+                self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
 
 arcpy.env.overwriteOutput = True
 
@@ -973,7 +978,7 @@ parametroEstrato = "Rural"
 # ---------------------- PARAMETROS EN DURO ---------------------------
 
 # Nuevos Servicios
-urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+""" urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
 urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
 urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
 urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
@@ -983,10 +988,10 @@ urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo
 urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
 
 nombreCampoIdHomologacion = "MANZENT_MM2014"
-nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN" """
 
 # Si es necesario reconfigura los parametros para el marco
-configuraMarco(2016)
+infoMarco = InfoMarco(parametroMarco, config)
 
 listaCodigos = generaListaCodigos(parametroCodigos)
 registros = []
