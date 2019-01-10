@@ -298,7 +298,7 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Proyectando")
         ext = manzana.projectAs(df.spatialReference)
         mensaje("Proyectado")
-        polgrande = ext.buffer(200)
+        polgrande = ext.buffer(1000)
         polchico = ext.buffer(15)
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
@@ -360,7 +360,7 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         mensaje("Proyectado")
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
-        polgrande = ext.buffer(dist_buff * 80)
+        polgrande = ext.buffer(dist_buff * 100)
         polchico = ext.buffer(dist_buff)
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
@@ -400,7 +400,7 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         mensaje("Proyectado")
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
-        polgrande = ext.buffer(dist_buff * 20)
+        polgrande = ext.buffer(dist_buff * 100)
         polchico = ext.buffer(dist_buff)
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
@@ -591,7 +591,7 @@ def procesaRural(codigo):
 
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
-        
+
         registros.append(registro)
         mensajeEstado(registro)
         return
@@ -822,7 +822,7 @@ def generaCodigoBarra(estrato, datosEstrato):
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], round(datosEstrato[10],0), parametroEncuesta, parametroMarco[2:4])
+    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
@@ -844,9 +844,9 @@ def obtieneHomologacion(codigo, urlServicio, token):
         campos = "*"
         queryURL = "{}/query".format(urlServicio)
         params = {
-            'token':token, 
-            'f':'json', 
-            'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 
+            'token':token,
+            'f':'json',
+            'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo),
             'outFields': campos
         }
         req = urllib2.Request(queryURL, urllib.urlencode(params))
