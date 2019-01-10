@@ -15,13 +15,16 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica':
         homologacion = 'NI'
 
-    estado = "Correcto"
-    if registro.rutaPDF == "":
-        estado = "No existe"
-
-    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, estado)
+    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, registro.estado)
     print(s)
     arcpy.AddMessage(s)
+
+    if registro.estado == "Correcto":
+        mensaje("Se genero el croquis correctamente.")
+    if registro.estado == "No generado":
+        mensaje("No se logro generar el croquis.")
+    if registro.estado == "Rechazado":
+        mensaje("Se rechazo la manzana.")
 
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
@@ -492,34 +495,59 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
-def procesaManzana(codigo):
+def validaRangoViviendas(viviendasEncuestar, totalViviendas):
+    if totalViviendas < 8:    # se descarta desde el principio
+        mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
+        return False
+
+    if viviendasEncuestar != -1:    # no se evalua
+        mensaje("No se evalua cantidad de viviendas a encuestar.")
+        return True
+    else:
+        if viviendasEncuestar in dictRangos.values():
+            rango = dictRangos[viviendasEncuestar]
+            if rango[0] <= totalViviendas <= rango[1]:
+                mensaje("Se cumple con el rango de viviendas de la manzana.")
+                return True
+            else:
+                mensaje("No se cumple con el rango de viviendas de la manzana.")
+                return False
+        else:    # no existe el rango
+            mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar.")
+            return False
+
+def procesaManzana(codigo, viviendasEncuestar):
     try:
         registro = Registro(codigo)
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             if datosManzana != None:
-
-                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
                 registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
 
-                mxd, infoMxd, escala = buscaTemplateManzana(extent)
-                if mxd != None:
-                    if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                        mensaje("Registrando la operación.")
-                        registro.formato = infoMxd['formato']
-                        registro.orientacion = infoMxd['orientacion']
-                        registro.escala = escala
+                if not validaRangoViviendas(viviendasEncuestar, totalViviendas):
+                    registro.estado = "Rechazado"
+                else:
+                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
 
-                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
-                        registros.append(registro)
+                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                    if mxd != None:
+                        if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                            mensaje("Registrando la operación.")
+                            registro.formato = infoMxd['formato']
+                            registro.orientacion = infoMxd['orientacion']
+                            registro.escala = escala
 
-                        mensajeEstado(registro)
+                            nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
 
-                        mensaje("Se procesó la manzana correctamente.")
-                        return
+                            if registro.rutaPDF != "":
+                                registro.estado = "Correcto"
+
+        registros.append(registro)
+        mensajeEstado(registro)
+        return
     except:
         pass
     mensaje("No se completó el proceso de manzana.")
@@ -541,14 +569,15 @@ def procesaRAU(codigo):
 
                         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
-                        registros.append(registro)
-
-                        mensajeEstado(registro)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
-                        mensaje("Se procesó la sección RAU correctamente.")
-                        return
+                        if registro.rutaPDF != "":
+                            registro.estado = "Correcto"
+
+        registros.append(registro)
+        mensajeEstado(registro)
+        return
     except:
         pass
     mensaje("No se completó el proceso de sección RAU.")
@@ -569,14 +598,15 @@ def procesaRural(codigo):
 
                     nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
-                    registros.append(registro)
-
-                    mensajeEstado(registro)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
 
-                    mensaje("Se procesó la sección Rural correctamente.")
-                    return
+                    if registro.rutaPDF != "":
+                        registro.estado = "Correcto"
+        
+        registros.append(registro)
+        mensajeEstado(registro)
+        return
     except:
         pass
     mensaje("No se completó el proceso de sección Rural.")
@@ -827,7 +857,10 @@ def obtieneHomologacion(codigo, urlServicio, token):
             'token':token, 
             'f':'json', 
             'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 
-            'outFields': "{},{}".format(infoMarco.nombreCampoTipoHomologacion, infoMarco.nombreCampoTotalViviendas)
+            #'outFields': "{},{}".format(infoMarco.nombreCampoTipoHomologacion.decode('utf8'), infoMarco.nombreCampoTotalViviendas.decode('utf8'))
+
+            'outFields': infoMarco.nombreCampoTipoHomologacion
+
         }
         req = urllib2.Request(queryURL, urllib.urlencode(params))
         response = urllib2.urlopen(req)
@@ -916,6 +949,7 @@ class Registro:
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
+        self.estado = "No generado"
 
 class InfoMarco:
     def __init__(self, codigo, config):
@@ -976,6 +1010,7 @@ parametroCodigos = "15101021001002"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
+parametroViviendas = ""
 # --------------------------------------------------------------------
 parametroCodigos = "2301200044"
 parametroEncuesta = "ENE"
@@ -992,13 +1027,17 @@ parametroEstrato = "Rural"
 
 infoMarco = InfoMarco(parametroMarco, config)
 listaCodigos = generaListaCodigos(parametroCodigos)
+listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
 
 for indice, codigo in enumerate(listaCodigos):
     if parametroEstrato == 'Manzana':
-        procesaManzana(codigo)
+        viviendas = -1
+        if len(listaViviendasEncuestar) > 0:
+            viviendas = listaViviendasEncuestar(indice)
+        procesaManzana(codigo, viviendas)
     elif parametroEstrato == 'RAU':
         procesaRAU(codigo)
     elif parametroEstrato == 'Rural':
