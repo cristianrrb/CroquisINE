@@ -1,0 +1,3559 @@
+ID: 1101
+Name: 1101
+
+REGION:
+Inherited
+PROVINCIA:
+Coded Values: [11: IQUIQUE]
+COMUNA:
+Coded Values: [1101: IQUIQUE]
+URBANO:
+Coded Values: [11011: IQUIQUE]
+
+ID: 1107
+Name: 1107 
+
+REGION:
+Inherited
+PROVINCIA:
+Coded Values: [11: IQUIQUE]
+COMUNA:
+Coded Values: [1107: ALTO HOSPICIO]
+URBANO:
+Coded Values: [11071: ALTO HOSPICIO]
+
+
+
+
+
+ID: 1401
+Name: 1401
+
+REGION:
+Inherited
+PROVINCIA:
+Coded Values: [14: TAMARUGAL]
+COMUNA:
+Coded Values: [1401: POZO ALMONTE]
+URBANO:
+Coded Values: [14011: POZO ALMONTE]
+
+
+
+
+
+ID: 2101
+Name: 2101
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [21: ANTOFAGASTA]
+COMUNA:
+Coded Values: [2101: ANTOFAGASTA]
+URBANO:
+Coded Values: [21011: ANTOFAGASTA]
+
+
+
+
+
+ID: 2102
+Name: 2102
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [21: ANTOFAGASTA]
+COMUNA:
+Coded Values: [2102: MEJILLONES]
+URBANO:
+Coded Values: [21021: MEJILLONES]
+
+
+
+
+
+ID: 2104
+Name: 2104
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [21: ANTOFAGASTA]
+COMUNA:
+Coded Values: [2104: TALTAL]
+URBANO:
+Coded Values: [21041: TALTAL]
+
+
+
+
+
+ID: 2201
+Name: 2201
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [22: EL LOA]
+COMUNA:
+Coded Values: [2201: CALAMA]
+URBANO:
+Coded Values: [22011: CALAMA]
+
+
+
+
+
+ID: 2301
+Name: 2301
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [23: TOCOPILLA]
+COMUNA:
+Coded Values: [2301: TOCOPILLA]
+URBANO:
+Coded Values: [23011: TOCOPILLA]
+
+
+
+
+
+ID: 2302
+Name: 2302
+
+REGION:
+Coded Values: [2: REGIÓN DE ANTOFAGASTA]
+PROVINCIA:
+Coded Values: [23: TOCOPILLA]
+COMUNA:
+Coded Values: [2302: MARÍA ELENA]
+URBANO:
+Coded Values: [23021: MARÍA ELENA]
+
+
+
+
+
+ID: 3101
+Name: 3101
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [31: COPIAPÓ]
+COMUNA:
+Coded Values: [3101: COPIAPÓ]
+URBANO:
+Coded Values: [31011: COPIAPÓ]
+
+
+
+
+
+ID: 3102
+Name: 3102
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [31: COPIAPÓ]
+COMUNA:
+Coded Values: [3102: CALDERA]
+URBANO:
+Coded Values: [31021: CALDERA]
+
+
+
+
+
+ID: 3103
+Name: 3103
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [31: COPIAPÓ]
+COMUNA:
+Coded Values: [3103: TIERRA AMARILLA]
+URBANO:
+Coded Values: [31031: TIERRA AMARILLA]
+
+
+
+
+
+ID: 3201
+Name: 3201
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [32: CHAÑARAL]
+COMUNA:
+Coded Values: [3201: CHAÑARAL]
+URBANO:
+Coded Values: [32011: CHAÑARAL]
+
+
+
+
+
+ID: 3202
+Name: 3202
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [32: CHAÑARAL]
+COMUNA:
+Coded Values: [3202: DIEGO DE ALMAGRO]
+URBANO:
+Coded Values: [32021: DIEGO DE ALMAGRO] , [32022: EL SALVADOR]
+
+
+
+
+
+ID: 3301
+Name: 3301
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [33: HUASCO]
+COMUNA:
+Coded Values: [3301: VALLENAR]
+URBANO:
+Coded Values: [33011: VALLENAR]
+
+
+
+
+
+ID: 3303
+Name: 3303
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [33: HUASCO]
+COMUNA:
+Coded Values: [3303: FREIRINA]
+URBANO:
+Coded Values: [33031: FREIRINA]
+
+
+
+
+
+ID: 3304
+Name: 3304
+
+REGION:
+Coded Values: [3: REGIÓN DE ATACAMA]
+PROVINCIA:
+Coded Values: [33: HUASCO]
+COMUNA:
+Coded Values: [3304: HUASCO]
+URBANO:
+Coded Values: [33041: HUASCO]
+
+
+
+
+
+ID: 4101
+Name: 4101
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [41: ELQUI]
+COMUNA:
+Coded Values: [4101: LA SERENA]
+URBANO:
+Coded Values: [41011: LA SERENA]
+
+
+
+
+
+ID: 4102
+Name: 4102
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [41: ELQUI]
+COMUNA:
+Coded Values: [4102: COQUIMBO]
+URBANO:
+Coded Values: [41021: COQUIMBO]
+
+
+
+
+
+ID: 4103
+Name: 4103
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [41: ELQUI]
+COMUNA:
+Coded Values: [4103: ANDACOLLO]
+URBANO:
+Coded Values: [41031: ANDACOLLO]
+
+
+
+
+
+ID: 4106
+Name: 4106
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [41: ELQUI]
+COMUNA:
+Coded Values: [4106: VICUÑA]
+URBANO:
+Coded Values: [41061: VICUÑA]
+
+
+
+
+
+ID: 4201
+Name: 4201
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [42: CHOAPA]
+COMUNA:
+Coded Values: [4201: ILLAPEL]
+URBANO:
+Coded Values: [42011: ILLAPEL]
+
+
+
+
+
+ID: 4203
+Name: 4203
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [42: CHOAPA]
+COMUNA:
+Coded Values: [4203: LOS VILOS]
+URBANO:
+Coded Values: [42031: LOS VILOS]
+
+
+
+
+
+ID: 4204
+Name: 4204
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [42: CHOAPA]
+COMUNA:
+Coded Values: [4204: SALAMANCA]
+URBANO:
+Coded Values: [42041: SALAMANCA]
+
+
+
+
+
+ID: 4301
+Name: 4301
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [43: LIMARÍ]
+COMUNA:
+Coded Values: [4301: OVALLE]
+URBANO:
+Coded Values: [43011: OVALLE]
+
+
+
+
+
+ID: 4302
+Name: 4302
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [43: LIMARÍ]
+COMUNA:
+Coded Values: [4302: COMBARBALÁ]
+URBANO:
+Coded Values: [43021: COMBARBALÁ]
+
+
+
+
+
+ID: 4303
+Name: 4303
+
+REGION:
+Coded Values: [4: REGIÓN DE COQUIMBO]
+PROVINCIA:
+Coded Values: [43: LIMARÍ]
+COMUNA:
+Coded Values: [4303: MONTE PATRIA]
+URBANO:
+Coded Values: [43031: EL PALQUI] , [43032: MONTE PATRIA]
+
+
+
+
+
+ID: 5101
+Name: 5101
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5101: VALPARAÍSO]
+URBANO:
+Coded Values: [51011: PLACILLA DE PEÑUELAS] , [51012: VALPARAÍSO]
+
+
+
+
+
+ID: 5102
+Name: 5102
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5102: CASABLANCA]
+URBANO:
+Coded Values: [51021: CASABLANCA]
+
+
+
+
+
+ID: 5103
+Name: 5103
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5103: CONCÓN]
+URBANO:
+Coded Values: [51031: CONCÓN]
+
+
+
+
+
+ID: 5105
+Name: 5105
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5105: PUCHUNCAVÍ]
+URBANO:
+Coded Values: [51051: LAS VENTANAS] , [51052: PUCHUNCAVÍ]
+
+
+
+
+
+ID: 5107
+Name: 5107
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5107: QUINTERO]
+URBANO:
+Coded Values: [51071: QUINTERO]
+
+
+
+
+
+ID: 5109
+Name: 5109
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [51: VALPARAÍSO]
+COMUNA:
+Coded Values: [5109: VIÑA DEL MAR]
+URBANO:
+Coded Values: [51091: VIÑA DEL MAR]
+
+
+
+
+
+ID: 5301
+Name: 5301
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [53: LOS ANDES]
+COMUNA:
+Coded Values: [5301: LOS ANDES]
+URBANO:
+Coded Values: [53011: LOS ANDES]
+
+
+
+
+
+ID: 5302
+Name: 5302
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [53: LOS ANDES]
+COMUNA:
+Coded Values: [5302: CALLE LARGA]
+URBANO:
+Coded Values: [53021: CALLE LARGA]
+
+
+
+
+
+ID: 5303
+Name: 5303
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [53: LOS ANDES]
+COMUNA:
+Coded Values: [5303: RINCONADA]
+URBANO:
+Coded Values: [53031: RINCONADA]
+
+
+
+
+
+ID: 5304
+Name: 5304
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [53: LOS ANDES]
+COMUNA:
+Coded Values: [5304: SAN ESTEBAN]
+URBANO:
+Coded Values: [53041: SAN ESTEBAN]
+
+
+
+
+
+ID: 5401
+Name: 5401
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [54: PETORCA]
+COMUNA:
+Coded Values: [5401: LA LIGUA]
+URBANO:
+Coded Values: [54011: LA LIGUA]
+
+
+
+
+
+ID: 5402
+Name: 5402
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [54: PETORCA]
+COMUNA:
+Coded Values: [5402: CABILDO]
+URBANO:
+Coded Values: [54021: CABILDO]
+
+
+
+
+
+ID: 5501
+Name: 5501
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [55: QUILLOTA]
+COMUNA:
+Coded Values: [5501: QUILLOTA]
+URBANO:
+Coded Values: [55011: QUILLOTA]
+
+
+
+
+
+ID: 5502
+Name: 5502
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [55: QUILLOTA]
+COMUNA:
+Coded Values: [5502: CALERA]
+URBANO:
+Coded Values: [55021: LA CALERA]
+
+
+
+
+
+ID: 5503
+Name: 5503
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [55: QUILLOTA]
+COMUNA:
+Coded Values: [5503: HIJUELAS]
+URBANO:
+Coded Values: [55031: HIJUELAS]
+
+
+
+
+
+ID: 5504
+Name: 5504
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [55: QUILLOTA]
+COMUNA:
+Coded Values: [5504: LA CRUZ]
+URBANO:
+Coded Values: [55041: LA CRUZ]
+
+
+
+
+
+ID: 5506
+Name: 5506
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [55: QUILLOTA]
+COMUNA:
+Coded Values: [5506: NOGALES]
+URBANO:
+Coded Values: [55061: EL MELÓN] , [55062: NOGALES]
+
+
+
+
+
+ID: 5601
+Name: 5601
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [56: SAN ANTONIO]
+COMUNA:
+Coded Values: [5601: SAN ANTONIO]
+URBANO:
+Coded Values: [56011: SAN ANTONIO]
+
+
+
+
+
+ID: 5602
+Name: 5602
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [56: SAN ANTONIO]
+COMUNA:
+Coded Values: [5602: ALGARROBO]
+URBANO:
+Inherited
+
+
+
+
+
+ID: 5603
+Name: 5603
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [56: SAN ANTONIO]
+COMUNA:
+Coded Values: [5603: CARTAGENA]
+URBANO:
+Coded Values: [56031: CARTAGENA]
+
+
+
+
+
+ID: 5604
+Name: 5604
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [56: SAN ANTONIO]
+COMUNA:
+Coded Values: [5604: EL QUISCO]
+URBANO:
+Coded Values: [56041: EL QUISCO]
+
+
+
+
+
+ID: 5605
+Name: 5605
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [56: SAN ANTONIO]
+COMUNA:
+Coded Values: [5605: EL TABO]
+URBANO:
+Coded Values: [56051: LAS CRUCES]
+
+
+
+
+
+ID: 5701
+Name: 5701
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [57: SAN FELIPE DE ACONCAGUA]
+COMUNA:
+Coded Values: [5701: SAN FELIPE]
+URBANO:
+Coded Values: [57011: SAN FELIPE]
+
+
+
+
+
+ID: 5702
+Name: 5702
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [57: SAN FELIPE DE ACONCAGUA]
+COMUNA:
+Coded Values: [5702: CATEMU]
+URBANO:
+Coded Values: [57021: CATEMU]
+
+
+
+
+
+ID: 5703
+Name: 5703
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [57: SAN FELIPE DE ACONCAGUA]
+COMUNA:
+Coded Values: [5703: LLAILLAY]
+URBANO:
+Coded Values: [57031: LLAILLAY]
+
+
+
+
+
+ID: 5705
+Name: 5705
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [57: SAN FELIPE DE ACONCAGUA]
+COMUNA:
+Coded Values: [5705: PUTAENDO]
+URBANO:
+Coded Values: [57051: PUTAENDO]
+
+
+
+
+
+ID: 5706
+Name: 5706
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [57: SAN FELIPE DE ACONCAGUA]
+COMUNA:
+Coded Values: [5706: SANTA MARÍA]
+URBANO:
+Coded Values: [57061: SANTA MARÍA]
+
+
+
+
+
+ID: 5801
+Name: 5801
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [58: MARGA MARGA]
+COMUNA:
+Coded Values: [5801: QUILPUÉ]
+URBANO:
+Coded Values: [58011: QUILPUÉ]
+
+
+
+
+
+ID: 5802
+Name: 5802
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [58: MARGA MARGA]
+COMUNA:
+Coded Values: [5802: LIMACHE]
+URBANO:
+Coded Values: [58021: LIMACHE]
+
+
+
+
+
+ID: 5803
+Name: 5803
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [58: MARGA MARGA]
+COMUNA:
+Coded Values: [5803: OLMUÉ]
+URBANO:
+Coded Values: [58031: OLMUÉ]
+
+
+
+
+
+ID: 5804
+Name: 5804
+
+REGION:
+Coded Values: [5: REGIÓN DE VALPARAÍSO]
+PROVINCIA:
+Coded Values: [58: MARGA MARGA]
+COMUNA:
+Coded Values: [5804: VILLA ALEMANA]
+URBANO:
+Coded Values: [58041: VILLA ALEMANA]
+
+
+
+
+
+ID: 6101
+Name: 6101
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6101: RANCAGUA]
+URBANO:
+Coded Values: [61011: RANCAGUA]
+
+
+
+
+
+ID: 6102
+Name: 6102
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6102: CODEGUA]
+URBANO:
+Coded Values: [61021: CODEGUA]
+
+
+
+
+
+ID: 6105
+Name: 6105
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6105: DOÑIHUE]
+URBANO:
+Coded Values: [61051: DOÑIHUE] , [61052: LO MIRANDA]
+
+
+
+
+
+ID: 6106
+Name: 6106
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6106: GRANEROS]
+URBANO:
+Coded Values: [61061: GRANEROS]
+
+
+
+
+
+ID: 6107
+Name: 6107
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6107: LAS CABRAS]
+URBANO:
+Coded Values: [61071: LAS CABRAS]
+
+
+
+
+
+ID: 6108
+Name: 6108
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6108: MACHALÍ]
+URBANO:
+Coded Values: [61081: MACHALÍ]
+
+
+
+
+
+ID: 6110
+Name: 6110
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6110: MOSTAZAL]
+URBANO:
+Coded Values: [61101: SAN FRANCISCO DE MOSTAZAL]
+
+
+
+
+
+ID: 6111
+Name: 6111
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6111: OLIVAR]
+URBANO:
+Coded Values: [61111: GULTRO] , [61112: OLIVAR ALTO]
+
+
+
+
+
+ID: 6112
+Name: 6112
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6112: PEUMO]
+URBANO:
+Coded Values: [61121: PEUMO]
+
+
+
+
+
+ID: 6113
+Name: 6113
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6113: PICHIDEGUA]
+URBANO:
+Coded Values: [61131: PICHIDEGUA]
+
+
+
+
+
+ID: 6114
+Name: 6114
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6114: QUINTA DE TILCOCO]
+URBANO:
+Coded Values: [61141: QUINTA DE TILCOCO]
+
+
+
+
+
+ID: 6115
+Name: 6115
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6115: RENGO]
+URBANO:
+Coded Values: [61151: RENGO]
+
+
+
+
+
+ID: 6116
+Name: 6116
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6116: REQUÍNOA]
+URBANO:
+Coded Values: [61161: REQUÍNOA]
+
+
+
+
+
+ID: 6117
+Name: 6117
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [61: CACHAPOAL]
+COMUNA:
+Coded Values: [6117: SAN VICENTE]
+URBANO:
+Coded Values: [61171: SAN VICENTE DE TAGUA TAGUA]
+
+
+
+
+
+ID: 6201
+Name: 6201
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [62: CARDENAL CARO]
+COMUNA:
+Coded Values: [6201: PICHILEMU]
+URBANO:
+Coded Values: [62011: PICHILEMU]
+
+
+
+
+
+ID: 6203
+Name: 6203
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [62: CARDENAL CARO]
+COMUNA:
+Coded Values: [6203: LITUECHE]
+URBANO:
+Coded Values: [62031: LITUECHE]
+
+
+
+
+
+ID: 6204
+Name: 6204
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [62: CARDENAL CARO]
+COMUNA:
+Coded Values: [6204: MARCHIHUE]
+URBANO:
+Coded Values: [62041: MARCHIHUE]
+
+
+
+
+
+ID: 6301
+Name: 6301
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [63: COLCHAGUA]
+COMUNA:
+Coded Values: [6301: SAN FERNANDO]
+URBANO:
+Coded Values: [63011: SAN FERNANDO]
+
+
+
+
+
+ID: 6302
+Name: 6302
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [63: COLCHAGUA]
+COMUNA:
+Coded Values: [6302: CHÉPICA]
+URBANO:
+Coded Values: [63021: CHÉPICA]
+
+
+
+
+
+ID: 6303
+Name: 6303
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [63: COLCHAGUA]
+COMUNA:
+Coded Values: [6303: CHIMBARONGO]
+URBANO:
+Coded Values: [63031: CHIMBARONGO]
+
+
+
+
+
+ID: 6305
+Name: 6305
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [63: COLCHAGUA]
+COMUNA:
+Coded Values: [6305: NANCAGUA]
+URBANO:
+Coded Values: [63051: NANCAGUA]
+
+
+
+
+
+ID: 6310
+Name: 6310
+
+REGION:
+Coded Values: [6: REGIÓN DEL LIBERTADOR GENERAL BERNARDO O'HIGGINS]
+PROVINCIA:
+Coded Values: [63: COLCHAGUA]
+COMUNA:
+Coded Values: [6310: SANTA CRUZ]
+URBANO:
+Coded Values: [63101: SANTA CRUZ]
+
+
+
+
+
+ID: 7101
+Name: 7101
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [71: TALCA]
+COMUNA:
+Coded Values: [7101: TALCA]
+URBANO:
+Coded Values: [71011: TALCA]
+
+
+
+
+
+ID: 7102
+Name: 7102
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [71: TALCA]
+COMUNA:
+Coded Values: [7102: CONSTITUCIÓN]
+URBANO:
+Coded Values: [71021: CONSTITUCIÓN]
+
+
+
+
+
+ID: 7109
+Name: 7109
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [71: TALCA]
+COMUNA:
+Coded Values: [7109: SAN CLEMENTE]
+URBANO:
+Coded Values: [71091: SAN CLEMENTE]
+
+
+
+
+
+ID: 7201
+Name: 7201
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [72: CAUQUENES]
+COMUNA:
+Coded Values: [7201: CAUQUENES]
+URBANO:
+Coded Values: [72011: CAUQUENES]
+
+
+
+
+
+ID: 7202
+Name: 7202
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [72: CAUQUENES]
+COMUNA:
+Coded Values: [7202: CHANCO]
+URBANO:
+Coded Values: [72021: CHANCO]
+
+
+
+
+
+ID: 7301
+Name: 7301
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [73: CURICÓ]
+COMUNA:
+Coded Values: [7301: CURICÓ]
+URBANO:
+Coded Values: [73011: CURICÓ] , [73012: SARMIENTO]
+
+
+
+
+
+ID: 7302
+Name: 7302
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [73: CURICÓ]
+COMUNA:
+Coded Values: [7302: HUALAÑÉ]
+URBANO:
+Coded Values: [73021: HUALAÑÉ]
+
+
+
+
+
+ID: 7304
+Name: 7304
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [73: CURICÓ]
+COMUNA:
+Coded Values: [7304: MOLINA]
+URBANO:
+Coded Values: [73041: MOLINA]
+
+
+
+
+
+ID: 7308
+Name: 7308
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [73: CURICÓ]
+COMUNA:
+Coded Values: [7308: TENO]
+URBANO:
+Coded Values: [73081: TENO]
+
+
+
+
+
+ID: 7401
+Name: 7401
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [74: LINARES]
+COMUNA:
+Coded Values: [7401: LINARES]
+URBANO:
+Coded Values: [74011: LINARES]
+
+
+
+
+
+ID: 7403
+Name: 7403
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [74: LINARES]
+COMUNA:
+Coded Values: [7403: LONGAVÍ]
+URBANO:
+Coded Values: [74031: LONGAVÍ]
+
+
+
+
+
+ID: 7404
+Name: 7404
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [74: LINARES]
+COMUNA:
+Coded Values: [7404: PARRAL]
+URBANO:
+Coded Values: [74041: PARRAL]
+
+
+
+
+
+ID: 7406
+Name: 7406
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [74: LINARES]
+COMUNA:
+Coded Values: [7406: SAN JAVIER]
+URBANO:
+Coded Values: [74061: SAN JAVIER]
+
+
+
+
+
+ID: 7407
+Name: 7407
+
+REGION:
+Coded Values: [7: REGIÓN DEL MAULE]
+PROVINCIA:
+Coded Values: [74: LINARES]
+COMUNA:
+Coded Values: [7407: VILLA ALEGRE]
+URBANO:
+Coded Values: [74071: VILLA ALEGRE]
+
+
+
+
+
+ID: 8101
+Name: 8101
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8101: CONCEPCIÓN]
+URBANO:
+Coded Values: [81011: CONCEPCIÓN]
+
+
+
+
+
+ID: 8102
+Name: 8102
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8102: CORONEL]
+URBANO:
+Coded Values: [81021: CORONEL]
+
+
+
+
+
+ID: 8103
+Name: 8103
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8103: CHIGUAYANTE]
+URBANO:
+Coded Values: [81031: CHIGUAYANTE]
+
+
+
+
+
+ID: 8104
+Name: 8104
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8104: FLORIDA]
+URBANO:
+Coded Values: [81041: FLORIDA]
+
+
+
+
+
+ID: 8105
+Name: 8105
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8105: HUALQUI]
+URBANO:
+Coded Values: [81051: HUALQUI]
+
+
+
+
+
+ID: 8106
+Name: 8106
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8106: LOTA]
+URBANO:
+Coded Values: [81061: LOTA]
+
+
+
+
+
+ID: 8107
+Name: 8107
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8107: PENCO]
+URBANO:
+Coded Values: [81071: PENCO]
+
+
+
+
+
+ID: 8108
+Name: 8108
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8108: SAN PEDRO DE LA PAZ]
+URBANO:
+Coded Values: [81081: SAN PEDRO DE LA PAZ]
+
+
+
+
+
+ID: 8109
+Name: 8109
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8109: SANTA JUANA]
+URBANO:
+Coded Values: [81091: SANTA JUANA]
+
+
+
+
+
+ID: 8110
+Name: 8110
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8110: TALCAHUANO]
+URBANO:
+Coded Values: [81101: TALCAHUANO]
+
+
+
+
+
+ID: 8111
+Name: 8111
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8111: TOMÉ]
+URBANO:
+Coded Values: [81111: TOMÉ]
+
+
+
+
+
+ID: 8112
+Name: 8112
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [81: CONCEPCIÓN]
+COMUNA:
+Coded Values: [8112: HUALPÉN]
+URBANO:
+Coded Values: [81121: HUALPÉN]
+
+
+
+
+
+ID: 8201
+Name: 8201
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [82: ARAUCO]
+COMUNA:
+Coded Values: [8201: LEBU]
+URBANO:
+Coded Values: [82011: LEBU]
+
+
+
+
+
+ID: 8202
+Name: 8202
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [82: ARAUCO]
+COMUNA:
+Coded Values: [8202: ARAUCO]
+URBANO:
+Coded Values: [82021: ARAUCO]
+
+
+
+
+
+ID: 8203
+Name: 8203
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [82: ARAUCO]
+COMUNA:
+Coded Values: [8203: CAÑETE]
+URBANO:
+Coded Values: [82031: CAÑETE]
+
+
+
+
+
+ID: 8205
+Name: 8205
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [82: ARAUCO]
+COMUNA:
+Coded Values: [8205: CURANILAHUE]
+URBANO:
+Coded Values: [82051: CURANILAHUE]
+
+
+
+
+
+ID: 8206
+Name: 8206
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [82: ARAUCO]
+COMUNA:
+Coded Values: [8206: LOS ÁLAMOS]
+URBANO:
+Coded Values: [82061: LOS ÁLAMOS]
+
+
+
+
+
+ID: 8301
+Name: 8301
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8301: LOS ÁNGELES]
+URBANO:
+Coded Values: [83011: LOS ÁNGELES]
+
+
+
+
+
+ID: 8303
+Name: 8303
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8303: CABRERO]
+URBANO:
+Coded Values: [83031: CABRERO] , [83032: MONTE ÁGUILA]
+
+
+
+
+
+ID: 8304
+Name: 8304
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8304: LAJA]
+URBANO:
+Coded Values: [83041: LA LAJA]
+
+
+
+
+
+ID: 8305
+Name: 8305
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8305: MULCHÉN]
+URBANO:
+Coded Values: [83051: MULCHÉN]
+
+
+
+
+
+ID: 8306
+Name: 8306
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8306: NACIMIENTO]
+URBANO:
+Coded Values: [83061: NACIMIENTO]
+
+
+
+
+
+ID: 8311
+Name: 8311
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8311: SANTA BÁRBARA]
+URBANO:
+Coded Values: [83111: SANTA BÁRBARA]
+
+
+
+
+
+ID: 8312
+Name: 8312
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8312: TUCAPEL]
+URBANO:
+Coded Values: [83121: HUÉPIL] , [83122: TUCAPEL]
+
+
+
+
+
+ID: 8313
+Name: 8313
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [83: BIOBÍO]
+COMUNA:
+Coded Values: [8313: YUMBEL]
+URBANO:
+Coded Values: [83131: YUMBEL]
+
+
+
+
+
+ID: 8401
+Name: 8401
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8401: CHILLÁN]
+URBANO:
+Coded Values: [84011: CHILLÁN]
+
+
+
+
+
+ID: 8402
+Name: 8402
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8402: BULNES]
+URBANO:
+Coded Values: [84021: BULNES]
+
+
+
+
+
+ID: 8404
+Name: 8404
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8404: COELEMU]
+URBANO:
+Coded Values: [84041: COELEMU]
+
+
+
+
+
+ID: 8405
+Name: 8405
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8405: COIHUECO]
+URBANO:
+Coded Values: [84051: COIHUECO]
+
+
+
+
+
+ID: 8406
+Name: 8406
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8406: CHILLÁN VIEJO]
+URBANO:
+Coded Values: [84061: CHILLÁN VIEJO]
+
+
+
+
+
+ID: 8413
+Name: 8413
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8413: QUILLÓN]
+URBANO:
+Coded Values: [84131: QUILLÓN]
+
+
+
+
+
+ID: 8414
+Name: 8414
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8414: QUIRIHUE]
+URBANO:
+Coded Values: [84141: QUIRIHUE]
+
+
+
+
+
+ID: 8416
+Name: 8416
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8416: SAN CARLOS]
+URBANO:
+Coded Values: [84161: SAN CARLOS]
+
+
+
+
+
+ID: 8421
+Name: 8421
+
+REGION:
+Coded Values: [8: REGIÓN DEL BIOBÍO]
+PROVINCIA:
+Coded Values: [84: ÑUBLE]
+COMUNA:
+Coded Values: [8421: YUNGAY]
+URBANO:
+Coded Values: [84211: YUNGAY]
+
+
+
+
+
+ID: 9101
+Name: 9101
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9101: TEMUCO]
+URBANO:
+Coded Values: [91011: LABRANZA] , [91012: TEMUCO]
+
+
+
+
+
+ID: 9102
+Name: 9102
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9102: CARAHUE]
+URBANO:
+Coded Values: [91021: CARAHUE]
+
+
+
+
+
+ID: 9103
+Name: 9103
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9103: CUNCO]
+URBANO:
+Coded Values: [91031: CUNCO]
+
+
+
+
+
+ID: 9105
+Name: 9105
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9105: FREIRE]
+URBANO:
+Coded Values: [91051: FREIRE]
+
+
+
+
+
+ID: 9107
+Name: 9107
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9107: GORBEA]
+URBANO:
+Coded Values: [91071: GORBEA]
+
+
+
+
+
+ID: 9108
+Name: 9108
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9108: LAUTARO]
+URBANO:
+Coded Values: [91081: LAUTARO]
+
+
+
+
+
+ID: 9109
+Name: 9109
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9109: LONCOCHE]
+URBANO:
+Coded Values: [91091: LONCOCHE]
+
+
+
+
+
+ID: 9111
+Name: 9111
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9111: NUEVA IMPERIAL]
+URBANO:
+Coded Values: [91111: NUEVA IMPERIAL]
+
+
+
+
+
+ID: 9112
+Name: 9112
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9112: PADRE LAS CASAS]
+URBANO:
+Coded Values: [91121: PADRE LAS CASAS]
+
+
+
+
+
+ID: 9114
+Name: 9114
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9114: PITRUFQUÉN]
+URBANO:
+Coded Values: [91141: PITRUFQUÉN]
+
+
+
+
+
+ID: 9115
+Name: 9115
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9115: PUCÓN]
+URBANO:
+Coded Values: [91151: PUCÓN]
+
+
+
+
+
+ID: 9120
+Name: 9120
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [91: CAUTÍN]
+COMUNA:
+Coded Values: [9120: VILLARRICA]
+URBANO:
+Coded Values: [91201: VILLARRICA]
+
+
+
+
+
+ID: 9201
+Name: 9201
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9201: ANGOL]
+URBANO:
+Coded Values: [92011: ANGOL]
+
+
+
+
+
+ID: 9202
+Name: 9202
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9202: COLLIPULLI]
+URBANO:
+Coded Values: [92021: COLLIPULLI]
+
+
+
+
+
+ID: 9203
+Name: 9203
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9203: CURACAUTÍN]
+URBANO:
+Coded Values: [92031: CURACAUTÍN]
+
+
+
+
+
+ID: 9208
+Name: 9208
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9208: PURÉN]
+URBANO:
+Coded Values: [92081: PURÉN]
+
+
+
+
+
+ID: 9209
+Name: 9209
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9209: RENAICO]
+URBANO:
+Coded Values: [92091: RENAICO]
+
+
+
+
+
+ID: 9210
+Name: 9210
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9210: TRAIGUÉN]
+URBANO:
+Coded Values: [92101: TRAIGUÉN]
+
+
+
+
+
+ID: 9211
+Name: 9211
+
+REGION:
+Coded Values: [9: REGIÓN DE LA ARAUCANÍA]
+PROVINCIA:
+Coded Values: [92: MALLECO]
+COMUNA:
+Coded Values: [9211: VICTORIA]
+URBANO:
+Coded Values: [92111: VICTORIA]
+
+
+
+
+
+ID: 10101
+Name: 10101
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10101: PUERTO MONTT]
+URBANO:
+Coded Values: [101011: ALERCE] , [101012: PUERTO MONTT]
+
+
+
+
+
+ID: 10102
+Name: 10102
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10102: CALBUCO]
+URBANO:
+Coded Values: [101021: CALBUCO]
+
+
+
+
+
+ID: 10104
+Name: 10104
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10104: FRESIA]
+URBANO:
+Coded Values: [101041: FRESIA]
+
+
+
+
+
+ID: 10105
+Name: 10105
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10105: FRUTILLAR]
+URBANO:
+Coded Values: [101051: FRUTILLAR]
+
+
+
+
+
+ID: 10106
+Name: 10106
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10106: LOS MUERMOS]
+URBANO:
+Coded Values: [101061: LOS MUERMOS]
+
+
+
+
+
+ID: 10107
+Name: 10107
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10107: LLANQUIHUE]
+URBANO:
+Coded Values: [101071: LLANQUIHUE]
+
+
+
+
+
+ID: 10109
+Name: 10109
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [101: LLANQUIHUE]
+COMUNA:
+Coded Values: [10109: PUERTO VARAS]
+URBANO:
+Coded Values: [101091: PUERTO VARAS]
+
+
+
+
+
+ID: 10201
+Name: 10201
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [102: CHILOÉ]
+COMUNA:
+Coded Values: [10201: CASTRO]
+URBANO:
+Coded Values: [102011: CASTRO]
+
+
+
+
+
+ID: 10202
+Name: 10202
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [102: CHILOÉ]
+COMUNA:
+Coded Values: [10202: ANCUD]
+URBANO:
+Coded Values: [102021: ANCUD]
+
+
+
+
+
+ID: 10208
+Name: 10208
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [102: CHILOÉ]
+COMUNA:
+Coded Values: [10208: QUELLÓN]
+URBANO:
+Coded Values: [102081: QUELLÓN]
+
+
+
+
+
+ID: 10301
+Name: 10301
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [103: OSORNO]
+COMUNA:
+Coded Values: [10301: OSORNO]
+URBANO:
+Coded Values: [103011: OSORNO]
+
+
+
+
+
+ID: 10303
+Name: 10303
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [103: OSORNO]
+COMUNA:
+Coded Values: [10303: PURRANQUE]
+URBANO:
+Coded Values: [103031: PURRANQUE]
+
+
+
+
+
+ID: 10305
+Name: 10305
+
+REGION:
+Coded Values: [10: REGIÓN DE LOS LAGOS]
+PROVINCIA:
+Coded Values: [103: OSORNO]
+COMUNA:
+Coded Values: [10305: RÍO NEGRO]
+URBANO:
+Coded Values: [103051: RÍO NEGRO]
+
+
+
+
+
+ID: 11101
+Name: 11101
+
+REGION:
+Coded Values: [11: REGIÓN DE AYSÉN DEL GENERAL CARLOS IBÁÑEZ DEL CAMPO]
+PROVINCIA:
+Coded Values: [111: COYHAIQUE]
+COMUNA:
+Coded Values: [11101: COYHAIQUE]
+URBANO:
+Coded Values: [111011: COYHAIQUE]
+
+
+
+
+
+ID: 11201
+Name: 11201
+
+REGION:
+Coded Values: [11: REGIÓN DE AYSÉN DEL GENERAL CARLOS IBÁÑEZ DEL CAMPO]
+PROVINCIA:
+Inherited
+COMUNA:
+Inherited
+URBANO:
+Coded Values: [112011: PUERTO AYSÉN] , [112012: VILLA MAÑIGUALES]
+
+
+
+
+
+ID: 12101
+Name: 12101
+
+REGION:
+Coded Values: [12: REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA]
+PROVINCIA:
+Coded Values: [121: MAGALLANES]
+COMUNA:
+Coded Values: [12101: PUNTA ARENAS]
+URBANO:
+Coded Values: [121011: PUNTA ARENAS]
+
+
+
+
+
+ID: 12401
+Name: 12401
+
+REGION:
+Coded Values: [12: REGIÓN DE MAGALLANES Y DE LA ANTÁRTICA CHILENA]
+PROVINCIA:
+Coded Values: [124: ÚLTIMA ESPERANZA]
+COMUNA:
+Coded Values: [12401: NATALES]
+URBANO:
+Coded Values: [124011: PUERTO NATALES]
+
+
+
+
+
+ID: 13101
+Name: 13101
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13101: SANTIAGO]
+URBANO:
+Coded Values: [131011: SANTIAGO]
+
+
+
+
+
+ID: 13102
+Name: 13102
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13102: CERRILLOS]
+URBANO:
+Coded Values: [131021: CERRILLOS]
+
+
+
+
+
+ID: 13103
+Name: 13103
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13103: CERRO NAVIA]
+URBANO:
+Coded Values: [131031: CERRO NAVIA]
+
+
+
+
+
+ID: 13104
+Name: 13104
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13104: CONCHALÍ]
+URBANO:
+Coded Values: [131041: CONCHALÍ]
+
+
+
+
+
+ID: 13105
+Name: 13105
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13105: EL BOSQUE]
+URBANO:
+Coded Values: [131051: EL BOSQUE]
+
+
+
+
+
+ID: 13106
+Name: 13106
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13106: ESTACIÓN CENTRAL]
+URBANO:
+Coded Values: [131061: ESTACIÓN CENTRAL]
+
+
+
+
+
+ID: 13107
+Name: 13107
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13107: HUECHURABA]
+URBANO:
+Coded Values: [131071: HUECHURABA]
+
+
+
+
+
+ID: 13108
+Name: 13108
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13108: INDEPENDENCIA]
+URBANO:
+Coded Values: [131081: INDEPENDENCIA]
+
+
+
+
+
+ID: 13109
+Name: 13109
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13109: LA CISTERNA]
+URBANO:
+Coded Values: [131091: LA CISTERNA]
+
+
+
+
+
+ID: 13110
+Name: 13110
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13110: LA FLORIDA]
+URBANO:
+Coded Values: [131101: LA FLORIDA]
+
+
+
+
+
+ID: 13111
+Name: 13111
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13111: LA GRANJA]
+URBANO:
+Coded Values: [131111: LA GRANJA]
+
+
+
+
+
+ID: 13112
+Name: 13112
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13112: LA PINTANA]
+URBANO:
+Coded Values: [131121: LA PINTANA]
+
+
+
+
+
+ID: 13113
+Name: 13113
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13113: LA REINA]
+URBANO:
+Coded Values: [131131: LA REINA]
+
+
+
+
+
+ID: 13114
+Name: 13114
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13114: LAS CONDES]
+URBANO:
+Coded Values: [131141: LAS CONDES]
+
+
+
+
+
+ID: 13115
+Name: 13115
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13115: LO BARNECHEA]
+URBANO:
+Coded Values: [131151: LO BARNECHEA]
+
+
+
+
+
+ID: 13116
+Name: 13116
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13116: LO ESPEJO]
+URBANO:
+Coded Values: [131161: LO ESPEJO]
+
+
+
+
+
+ID: 13117
+Name: 13117
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13117: LO PRADO]
+URBANO:
+Coded Values: [131171: LO PRADO]
+
+
+
+
+
+ID: 13118
+Name: 13118
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13118: MACUL]
+URBANO:
+Coded Values: [131181: MACUL]
+
+
+
+
+
+ID: 13119
+Name: 13119
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13119: MAIPÚ]
+URBANO:
+Coded Values: [131191: MAIPÚ]
+
+
+
+
+
+ID: 13120
+Name: 13120
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13120: ÑUÑOA]
+URBANO:
+Coded Values: [131201: ÑUÑOA]
+
+
+
+
+
+ID: 13121
+Name: 13121
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13121: PEDRO AGUIRRE CERDA]
+URBANO:
+Coded Values: [131211: PEDRO AGUIRRE CERDA]
+
+
+
+
+
+ID: 13122
+Name: 13122
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13122: PEÑALOLÉN]
+URBANO:
+Coded Values: [131221: PEÑALOLÉN]
+
+
+
+
+
+ID: 13123
+Name: 13123
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13123: PROVIDENCIA]
+URBANO:
+Coded Values: [131231: PROVIDENCIA]
+
+
+
+
+
+ID: 13124
+Name: 13124
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13124: PUDAHUEL]
+URBANO:
+Coded Values: [131241: PUDAHUEL]
+
+
+
+
+
+ID: 13125
+Name: 13125
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13125: QUILICURA]
+URBANO:
+Coded Values: [131251: QUILICURA]
+
+
+
+
+
+ID: 13126
+Name: 13126
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13126: QUINTA NORMAL]
+URBANO:
+Coded Values: [131261: QUINTA NORMAL]
+
+
+
+
+
+ID: 13127
+Name: 13127
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13127: RECOLETA]
+URBANO:
+Coded Values: [131271: RECOLETA]
+
+
+
+
+
+ID: 13128
+Name: 13128
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13128: RENCA]
+URBANO:
+Coded Values: [131281: RENCA]
+
+
+
+
+
+ID: 13129
+Name: 13129
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13129: SAN JOAQUÍN]
+URBANO:
+Coded Values: [131291: SAN JOAQUÍN]
+
+
+
+
+
+ID: 13130
+Name: 13130
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13130: SAN MIGUEL]
+URBANO:
+Coded Values: [131301: SAN MIGUEL]
+
+
+
+
+
+ID: 13131
+Name: 13131
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13131: SAN RAMÓN]
+URBANO:
+Coded Values: [131311: SAN RAMÓN]
+
+
+
+
+
+ID: 13132
+Name: 13132
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [131: SANTIAGO]
+COMUNA:
+Coded Values: [13132: VITACURA]
+URBANO:
+Coded Values: [131321: VITACURA]
+
+
+
+
+
+ID: 13201
+Name: 13201
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [132: CORDILLERA]
+COMUNA:
+Coded Values: [13201: PUENTE ALTO]
+URBANO:
+Coded Values: [132011: PUENTE ALTO]
+
+
+
+
+
+ID: 13202
+Name: 13202
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [132: CORDILLERA]
+COMUNA:
+Coded Values: [13202: PIRQUE]
+URBANO:
+Coded Values: [132021: PIRQUE]
+
+
+
+
+
+ID: 13203
+Name: 13203
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [132: CORDILLERA]
+COMUNA:
+Coded Values: [13203: SAN JOSÉ DE MAIPO]
+URBANO:
+Coded Values: [132031: SAN JOSÉ DE MAIPO]
+
+
+
+
+
+ID: 13301
+Name: 13301
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [133: CHACABUCO]
+COMUNA:
+Coded Values: [13301: COLINA]
+URBANO:
+Coded Values: [133011: COLINA]
+
+
+
+
+
+ID: 13302
+Name: 13302
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [133: CHACABUCO]
+COMUNA:
+Coded Values: [13302: LAMPA]
+URBANO:
+Coded Values: [133021: BATUCO] , [133022: LAMPA]
+
+
+
+
+
+ID: 13303
+Name: 13303
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [133: CHACABUCO]
+COMUNA:
+Coded Values: [13303: TILTIL]
+URBANO:
+Coded Values: [133031: TILTIL]
+
+
+
+
+
+ID: 13401
+Name: 13401
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [134: MAIPO]
+COMUNA:
+Coded Values: [13401: SAN BERNARDO]
+URBANO:
+Coded Values: [134011: SAN BERNARDO]
+
+
+
+
+
+ID: 13402
+Name: 13402
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [134: MAIPO]
+COMUNA:
+Coded Values: [13402: BUIN]
+URBANO:
+Coded Values: [134021: ALTO JAHUEL] , [134022: BUIN]
+
+
+
+
+
+ID: 13403
+Name: 13403
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [134: MAIPO]
+COMUNA:
+Coded Values: [13403: CALERA DE TANGO]
+URBANO:
+Coded Values: [134031: BAJOS DE SAN AGUSTÍN]
+
+
+
+
+
+ID: 13404
+Name: 13404
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [134: MAIPO]
+COMUNA:
+Coded Values: [13404: PAINE]
+URBANO:
+Coded Values: [134041: HOSPITAL] , [134042: PAINE]
+
+
+
+
+
+ID: 13501
+Name: 13501
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [135: MELIPILLA]
+COMUNA:
+Coded Values: [13501: MELIPILLA]
+URBANO:
+Coded Values: [135011: MELIPILLA]
+
+
+
+
+
+ID: 13503
+Name: 13503
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [135: MELIPILLA]
+COMUNA:
+Coded Values: [13503: CURACAVÍ]
+URBANO:
+Coded Values: [135031: CURACAVÍ]
+
+
+
+
+
+ID: 13601
+Name: 13601
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [136: TALAGANTE]
+COMUNA:
+Coded Values: [13601: TALAGANTE]
+URBANO:
+Coded Values: [136011: TALAGANTE]
+
+
+
+
+
+ID: 13602
+Name: 13602
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [136: TALAGANTE]
+COMUNA:
+Coded Values: [13602: EL MONTE]
+URBANO:
+Coded Values: [136021: EL MONTE]
+
+
+
+
+
+ID: 13603
+Name: 13603
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [136: TALAGANTE]
+COMUNA:
+Coded Values: [13603: ISLA DE MAIPO]
+URBANO:
+Coded Values: [136031: ISLA DE MAIPO] , [136032: LA ISLITA]
+
+
+
+
+
+ID: 13604
+Name: 13604
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [136: TALAGANTE]
+COMUNA:
+Coded Values: [13604: PADRE HURTADO]
+URBANO:
+Coded Values: [136041: PADRE HURTADO]
+
+
+
+
+
+ID: 13605
+Name: 13605
+
+REGION:
+Coded Values: [13: REGIÓN METROPOLITANA DE SANTIAGO]
+PROVINCIA:
+Coded Values: [136: TALAGANTE]
+COMUNA:
+Coded Values: [13605: PEÑAFLOR]
+URBANO:
+Coded Values: [136051: PEÑAFLOR]
+
+
+
+
+
+ID: 14101
+Name: 14101
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14101: VALDIVIA]
+URBANO:
+Coded Values: [141011: VALDIVIA]
+
+
+
+
+
+ID: 14103
+Name: 14103
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14103: LANCO]
+URBANO:
+Coded Values: [141031: LANCO]
+
+
+
+
+
+ID: 14104
+Name: 14104
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14104: LOS LAGOS]
+URBANO:
+Coded Values: [141041: LOS LAGOS]
+
+
+
+
+
+ID: 14106
+Name: 14106
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14106: MARIQUINA]
+URBANO:
+Coded Values: [141061: SAN JOSÉ DE LA MARIQUINA]
+
+
+
+
+
+ID: 14107
+Name: 14107
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14107: PAILLACO]
+URBANO:
+Coded Values: [141071: PAILLACO]
+
+
+
+
+
+ID: 14108
+Name: 14108
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [141: VALDIVIA]
+COMUNA:
+Coded Values: [14108: PANGUIPULLI]
+URBANO:
+Coded Values: [141081: PANGUIPULLI]
+
+
+
+
+
+ID: 14201
+Name: 14201
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [142: RANCO]
+COMUNA:
+Coded Values: [14201: LA UNIÓN]
+URBANO:
+Coded Values: [142011: LA UNIÓN]
+
+
+
+
+
+ID: 14202
+Name: 14202
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [142: RANCO]
+COMUNA:
+Coded Values: [14202: FUTRONO]
+URBANO:
+Coded Values: [142021: FUTRONO] , [142022: LLIFÉN]
+
+
+
+
+
+ID: 14204
+Name: 14204
+
+REGION:
+Coded Values: [14: REGIÓN DE LOS RÍOS]
+PROVINCIA:
+Coded Values: [142: RANCO]
+COMUNA:
+Coded Values: [14204: RÍO BUENO]
+URBANO:
+Coded Values: [142041: RÍO BUENO]
+
+
+
+
+
+ID: 15101
+Name: 15101
+
+REGION:
+Coded Values: [15: REGIÓN DE ARICA Y PARINACOTA]
+PROVINCIA:
+Coded Values: [151: ARICA]
+COMUNA:
+Coded Values: [15101: ARICA]
+URBANO:
+Coded Values: [151011: ARICA]
