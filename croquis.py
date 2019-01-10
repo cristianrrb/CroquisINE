@@ -893,22 +893,6 @@ class Registro:
 
 arcpy.env.overwriteOutput = True
 
-# Nuevos Servicios
-urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
-urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-
-urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
-urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
-urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
-
-nombreCampoIdHomologacion = "MANZENT_MM2014"
-nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
-
-# Si es necesario reconfigura los parametros para el marco
-configuraMarco(2016)
-
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlPortal          = 'https://gis.ine.cl/portal'
 usuario = 'esri_chile'
@@ -944,6 +928,22 @@ parametroEstrato = "Rural"
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
+
+# Nuevos Servicios
+urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
+urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+
+urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+
+nombreCampoIdHomologacion = "MANZENT_MM2014"
+nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+
+# Si es necesario reconfigura los parametros para el marco
+configuraMarco(2016)
 
 listaCodigos = generaListaCodigos(parametroCodigos)
 registros = []
