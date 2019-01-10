@@ -723,7 +723,7 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         nombre_comuna = nombreComuna(datosRAU[4])
         nombre_urbano = nombreUrbano(datosRAU[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
-
+        
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
                 elm.text = parametroEncuesta+" "+parametroMarco
@@ -822,7 +822,7 @@ def generaCodigoBarra(estrato, datosEstrato):
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
+    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], int(datosEstrato[10]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
