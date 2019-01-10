@@ -980,28 +980,13 @@ parametroEstrato = "Rural"
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
 
-# Nuevos Servicios
-""" urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
-urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-
-urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
-urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
-urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
-
-nombreCampoIdHomologacion = "MANZENT_MM2014"
-nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN" """
-
-# Si es necesario reconfigura los parametros para el marco
 infoMarco = InfoMarco(parametroMarco, config)
-
 listaCodigos = generaListaCodigos(parametroCodigos)
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
 
-for codigo in listaCodigos:
+for indice, codigo in enumerate(listaCodigos):
     if parametroEstrato == 'Manzana':
         procesaManzana(codigo)
     elif parametroEstrato == 'RAU':
