@@ -909,18 +909,16 @@ class Registro:
 
 class InfoMarco:
     def __init__(self, codigo, config):
-        self.leeConfiguracion(codigo, config)
-        """ self.urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+        self.urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
         self.urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
         self.urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
         self.urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-
         self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
         self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
         self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
-
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
-        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN" """
+        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+        self.leeConfiguracion(codigo, config)
 
     def leeConfiguracion(self, codigo, config):
         for marco in config['marcos']:
