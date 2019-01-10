@@ -829,10 +829,11 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'Estrato geografico', 'Estrato Muestral', 'Codigo Carto', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
-                a = [r.hora, r.codigo, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                estGeo, estMue, codCar = descomponeManzent(r.codigo)
+                a = [r.hora, r.codigo, estGeo, estMue, codCar, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -854,11 +855,29 @@ def comprime(registros, rutaCSV):
     except:
         return None
 
+def descomponeManzent(codigo):
+    c = "{}".format(codigo)
+    return c[:-5], c[-5:-3], c[-3:]
+
 def nombreRegion(codigo):
     if dictRegiones.has_key(codigo):
         return dictRegiones[codigo].encode('utf8')
     else:
         return codigo
+
+def configuraMarco(marco):
+    if marco == 2016:
+        urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+        urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
+        urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+        urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+
+        urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+        urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+        urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+
+        nombreCampoIdHomologacion = "MANZENT_MM2014"
+        nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
 
 class Registro:
     def __init__(self, codigo):
@@ -886,6 +905,9 @@ urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo
 
 nombreCampoIdHomologacion = "MANZENT_MM2014"
 nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+
+# Si es necesario reconfigura los parametros para el marco
+configuraMarco(2016)
 
 urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlPortal          = 'https://gis.ine.cl/portal'
