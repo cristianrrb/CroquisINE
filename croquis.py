@@ -136,14 +136,6 @@ def leeNombreCapa(estrato):
             lista = e['nombre_capa']
     return lista
 
-def leeRegion(codigo):
-    #d = {"Manzana":0,"RAU":1,"Rural":2}
-    lista = ""
-    for e in config['regiones']:
-        if e['codigo'] == codigo:
-            lista = e['nombre']
-    return lista
-
 def calculaDistanciaBufferManzana(area):
     #print
     return '15 Meters'
@@ -352,8 +344,6 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRAU[10]))
         lyr.definitionQuery = sql_exp
-        lyr1 = arcpy.mapping.ListLayers(mxd, "Mz_Rau", df)[0]
-        lyr1.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
@@ -367,7 +357,7 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         mensaje("Proyectado")
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
-        polgrande = ext.buffer(dist_buff * 20)
+        polgrande = ext.buffer(dist_buff * 80)
         polchico = ext.buffer(dist_buff)
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
@@ -543,7 +533,7 @@ def procesaRAU(codigo):
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
                         registros.append(registro)
 
-                        mensajeEstado(registro)
+                        #mensajeEstado(registro)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
@@ -804,7 +794,7 @@ def generaCodigoBarra(estrato, datosEstrato):
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], datosEstrato[10], parametroEncuesta, parametroMarco[2:4])
+    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], round(datosEstrato[10],0), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
@@ -824,9 +814,9 @@ def obtieneHomologacion(codigo, urlServicio, token):
     try:
         queryURL = "{}/query".format(urlServicio)
         params = {
-            'token':token, 
-            'f':'json', 
-            'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo), 
+            'token':token,
+            'f':'json',
+            'where':'{}={}'.format(infoMarco.nombreCampoIdHomologacion, codigo),
             'outFields': "{},{}".format(infoMarco.nombreCampoTipoHomologacion, infoMarco.nombreCampoTotalViviendas)
         }
         req = urllib2.Request(queryURL, urllib.urlencode(params))
@@ -977,7 +967,7 @@ parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 # --------------------------------------------------------------------
-parametroCodigos = "2301200044"
+parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "RAU"
