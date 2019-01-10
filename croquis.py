@@ -959,6 +959,8 @@ dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictUrbanos = {r['codigo']:r['nombre'] for r in config['urbanos']}
 
+dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
+
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
