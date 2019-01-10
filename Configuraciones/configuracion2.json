@@ -1,0 +1,265 @@
+{
+    "rutabase" :"D:\\CROQUIS\\" ,
+    "encuestas": [
+        "ENE",
+        "EPF",
+        "ENUSC",
+        "CASEN",
+        "SENDA"
+    ],
+    "marcos": ["2016"],
+    "estratos": [
+        {
+            "nombre": "Manzana",
+            "nombre_capa": "Manzana",
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Etiquetas_Limites",
+                "Cursos_Hidricos_Marco"
+            ],
+            "mxds":
+            [
+                {
+                    "ancho": 24.500,
+                    "alto": 20.565,
+                    "formato": "Oficio",
+                    "orientacion": "Horizontal",
+                    "ruta": "Mz\\Mz_of_H"
+                },
+                {
+                    "ancho": 20.565,
+                    "alto": 24.065,
+                    "formato": "Oficio",
+                    "orientacion": "Vertical",
+                    "ruta": "Mz\\Mz_of_V"
+                },
+                {
+                    "ancho": 33.888,
+                    "alto": 25.896,
+                    "formato": "DCA",
+                    "orientacion": "Horizontal",
+                    "ruta": "Mz\\Mz_DCA_H"
+                },
+                {
+                    "ancho": 25.903,
+                    "alto": 33.893,
+                    "formato": "DCA",
+                    "orientacion": "Vertical",
+                    "ruta": "Mz\\Mz_DCA_V"
+                },
+                {
+                    "ancho": 60.492,
+                    "alto": 48.000,
+                    "formato": "Perso",
+                    "orientacion": "Horizontal",
+                    "ruta": "Mz\\Mz_Perso_H"
+                },
+                {
+                    "ancho": 47.995,
+                    "alto": 60.499,
+                    "formato": "Perso",
+                    "orientacion": "Vertical",
+                    "ruta": "Mz\\Mz_Perso_V"
+                }
+            ]
+        },
+        {
+            "nombre": "RAU",
+            "nombre_capa":"Seccion_Seleccionada",
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Equipamiento",
+                "Cursos_Hidricos_Marco",
+                "Etiquetado_Auxiliar",
+                "Etiquetas_Limites"
+            ],
+            "mxds":
+            [
+                {
+                    "ancho": 22.493,
+                    "alto": 20.593,
+                    "formato": "Oficio",
+                    "orientacion": "Horizontal",
+                    "ruta": "RAU\\Rau_Oficio_H"
+                },
+                {
+                    "ancho": 20.160,
+                    "alto": 24.065,
+                    "formato": "Oficio",
+                    "orientacion": "Vertical",
+                    "ruta": "RAU\\Rau_Oficio_V"
+                },
+                {
+                    "ancho": 32.000,
+                    "alto": 25.897,
+                    "formato": "DCA",
+                    "orientacion": "Horizontal",
+                    "ruta": "RAU\\Rau_DCA_H"
+                },
+                {
+                    "ancho": 25.903,
+                    "alto": 33.893,
+                    "formato": "DCA",
+                    "orientacion": "Vertical",
+                    "ruta": "RAU\\Rau_DCA_V"
+                },
+                {
+                    "ancho": 48.500,
+                    "alto": 38.000,
+                    "formato": "P1",
+                    "orientacion": "Horizontal",
+                    "ruta": "RAU\\Rau_P1_H"
+                },
+                {
+                    "ancho": 38.006,
+                    "alto": 50.512,
+                    "formato": "P1",
+                    "orientacion": "Vertical",
+                    "ruta": "RAU\\Rau_P1_V"
+                }
+            ]
+        },
+        {
+            "nombre": "Rural",
+            "nombre_capa":"Seccion_Seleccionada",
+            "capas_labels":
+            [
+                "Eje_Vial",
+                "Cursos_Hidricos",
+                "Equipamiento",
+                "toponimos_mm2016",
+                "Etiquetado_Auxiliar",
+                "Etiquetado_Limites",
+                "toponimos_mm2016",
+                "Localidades",
+                "Entidades",
+                "Cuerpos_De_Agua",
+                "Cotas"
+            ],
+            "mxds":
+            [
+                {
+                    "ancho": 31.900,
+                    "alto": 25.900,
+                    "formato": "DCA",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Sec_DCA_H"
+                },
+                {
+                    "ancho": 25.708,
+                    "alto": 33.749,
+                    "formato": "DCA",
+                    "orientacion": "Vertical",
+                    "ruta": "Rural\\Sec_DCA_V"
+                },
+                {
+                    "ancho": 48.499,
+                    "alto": 38.000,
+                    "formato": "P1",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Sec_P1_H"
+                },
+                {
+                    "ancho": 37.949,
+                    "alto": 50.533,
+                    "formato": "P1",
+                    "orientacion": "Vertical",
+                    "ruta": "Rural\\Sec_P1_V"
+                },
+                {
+                    "ancho": 58.501,
+                    "alto": 57.999,
+                    "formato": "Anexos70x60",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Anexos_70x60"
+                },
+                {
+                    "ancho": 67.865,
+                    "alto": 57.038,
+                    "formato": "P2",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Sec_P2_H"
+                },
+                {
+                    "ancho": 57.998,
+                    "alto": 70.534,
+                    "formato": "P2",
+                    "orientacion": "Vertical",
+                    "ruta": "Rural\\Sec_P2_V"
+                },
+                {
+                    "ancho": 77.796,
+                    "alto": 77.015,
+                    "formato": "P3",
+                    "orientacion": "Horizontal",
+                    "ruta": "Rural\\Sec_P3_H"
+                }
+            ]
+        }
+    ],
+    "regiones":
+    [
+        {
+            "codigo":"1",
+            "nombre":"DE TARAPACÁ"
+        },
+        {
+            "codigo":"2",
+            "nombre":"DE ANTOFAGASTA"
+        },
+        {
+            "codigo":"3",
+            "nombre":"DE ATACAMA"
+        },
+        {
+            "codigo":"4",
+            "nombre":"DE COQUIMBO"
+        },
+        {
+            "codigo":"5",
+            "nombre":"DE VALPARAÍSO"
+        },
+        {
+            "codigo":"6",
+            "nombre":"DE OHIGGINS"
+        },
+        {
+            "codigo":"7",
+            "nombre":"DE MAULE"
+        },
+        {
+            "codigo":"8",
+            "nombre":"DE BIOBIO"
+        },
+        {
+            "codigo":"9",
+            "nombre":"DE ARAUCANÍA"
+        },
+        {
+            "codigo":"10",
+            "nombre":"DE LOS LAGOS"
+        },
+        {
+            "codigo":"11",
+            "nombre":"DE AYSEN"
+        },
+        {
+            "codigo":"12",
+            "nombre":"DE MAGALLANES"
+        },
+        {
+            "codigo":"13",
+            "nombre":"METROPOLITANA"
+        },
+        {
+            "codigo":"14",
+            "nombre":"DE LOS RIOS"
+        },
+        {
+            "codigo":"15",
+            "nombre":"DE ARICA Y PARINACOTA"
+        }
+    ]
+}
