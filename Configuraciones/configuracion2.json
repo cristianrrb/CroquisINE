@@ -265,189 +265,189 @@
     "provincias":
     [
         {
-            "codigo":"1",
+            "codigo":"111",
             "nombre":"DE TARAPACÁ"
         },
         {
-            "codigo":"2",
+            "codigo":"222",
             "nombre":"DE ANTOFAGASTA"
         },
         {
-            "codigo":"3",
+            "codigo":"333",
             "nombre":"DE ATACAMA"
         },
         {
-            "codigo":"4",
+            "codigo":"444",
             "nombre":"DE COQUIMBO"
         },
         {
-            "codigo":"5",
+            "codigo":"555",
             "nombre":"DE VALPARAÍSO"
         },
         {
-            "codigo":"6",
+            "codigo":"666",
             "nombre":"DE OHIGGINS"
         },
         {
-            "codigo":"7",
+            "codigo":"777",
             "nombre":"DE MAULE"
         },
         {
-            "codigo":"8",
+            "codigo":"888",
             "nombre":"DE BIOBIO"
         },
         {
-            "codigo":"9",
+            "codigo":"999",
             "nombre":"DE ARAUCANÍA"
         },
         {
-            "codigo":"10",
+            "codigo":"100",
             "nombre":"DE LOS LAGOS"
         },
         {
-            "codigo":"11",
+            "codigo":"111",
             "nombre":"DE AYSEN"
         },
         {
-            "codigo":"12",
+            "codigo":"122",
             "nombre":"DE MAGALLANES"
         },
         {
-            "codigo":"13",
+            "codigo":"133",
             "nombre":"METROPOLITANA"
         },
         {
-            "codigo":"14",
+            "codigo":"144",
             "nombre":"DE LOS RIOS"
         },
         {
-            "codigo":"15",
+            "codigo":"155",
             "nombre":"DE ARICA Y PARINACOTA"
         }
     ],
     "comunas":
     [
         {
-            "codigo":"1",
+            "codigo":"1111",
             "nombre":"DE TARAPACÁ"
         },
         {
-            "codigo":"2",
+            "codigo":"2222",
             "nombre":"DE ANTOFAGASTA"
         },
         {
-            "codigo":"3",
+            "codigo":"3333",
             "nombre":"DE ATACAMA"
         },
         {
-            "codigo":"4",
+            "codigo":"4444",
             "nombre":"DE COQUIMBO"
         },
         {
-            "codigo":"5",
+            "codigo":"5555",
             "nombre":"DE VALPARAÍSO"
         },
         {
-            "codigo":"6",
+            "codigo":"6666",
             "nombre":"DE OHIGGINS"
         },
         {
-            "codigo":"7",
+            "codigo":"7777",
             "nombre":"DE MAULE"
         },
         {
-            "codigo":"8",
+            "codigo":"8888",
             "nombre":"DE BIOBIO"
         },
         {
-            "codigo":"9",
+            "codigo":"9999",
             "nombre":"DE ARAUCANÍA"
         },
         {
-            "codigo":"10",
+            "codigo":"10000",
             "nombre":"DE LOS LAGOS"
         },
         {
-            "codigo":"11",
+            "codigo":"11111",
             "nombre":"DE AYSEN"
         },
         {
-            "codigo":"12",
+            "codigo":"12222",
             "nombre":"DE MAGALLANES"
         },
         {
-            "codigo":"13",
+            "codigo":"13333",
             "nombre":"METROPOLITANA"
         },
         {
-            "codigo":"14",
+            "codigo":"14444",
             "nombre":"DE LOS RIOS"
         },
         {
-            "codigo":"15",
+            "codigo":"15555",
             "nombre":"DE ARICA Y PARINACOTA"
         }
     ],
     "urbanos":
     [
         {
-            "codigo":"1",
+            "codigo":"11111",
             "nombre":"DE TARAPACÁ"
         },
         {
-            "codigo":"2",
+            "codigo":"22222",
             "nombre":"DE ANTOFAGASTA"
         },
         {
-            "codigo":"3",
+            "codigo":"33333",
             "nombre":"DE ATACAMA"
         },
         {
-            "codigo":"4",
+            "codigo":"44444",
             "nombre":"DE COQUIMBO"
         },
         {
-            "codigo":"5",
+            "codigo":"55555",
             "nombre":"DE VALPARAÍSO"
         },
         {
-            "codigo":"6",
+            "codigo":"66666",
             "nombre":"DE OHIGGINS"
         },
         {
-            "codigo":"7",
+            "codigo":"77777",
             "nombre":"DE MAULE"
         },
         {
-            "codigo":"8",
+            "codigo":"88888",
             "nombre":"DE BIOBIO"
         },
         {
-            "codigo":"9",
+            "codigo":"99999",
             "nombre":"DE ARAUCANÍA"
         },
         {
-            "codigo":"10",
+            "codigo":"100000",
             "nombre":"DE LOS LAGOS"
         },
         {
-            "codigo":"11",
+            "codigo":"111111",
             "nombre":"DE AYSEN"
         },
         {
-            "codigo":"12",
+            "codigo":"122222",
             "nombre":"DE MAGALLANES"
         },
         {
-            "codigo":"13",
+            "codigo":"133333",
             "nombre":"METROPOLITANA"
         },
         {
-            "codigo":"14",
+            "codigo":"144444",
             "nombre":"DE LOS RIOS"
         },
         {
-            "codigo":"15",
+            "codigo":"155555",
             "nombre":"DE ARICA Y PARINACOTA"
         }
     ]
