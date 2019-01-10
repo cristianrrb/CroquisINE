@@ -866,6 +866,9 @@ def nombreRegion(codigo):
         return codigo
 
 def configuraMarco(marco):
+    
+
+
     if marco == 2016:
         urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
         urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
