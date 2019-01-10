@@ -20,7 +20,8 @@
                 "urlCRF"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1",
                 "urlHomologacion" : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2",
                 "nombreCampoIdHomologacion" : "MANZENT_MM2014",
-                "nombreCampoTipoHomologacion" : "TIPO_HOMOLOGACIÓN"
+                "nombreCampoTipoHomologacion" : "TIPO_HOMOLOGACIÓN",
+                "nombreCampoTotalViviendas" : "TOT_VIV_PART_PC2016"
             }
         }
     ],
@@ -466,5 +467,39 @@
             "codigo":"155555",
             "nombre":"DE ARICA Y PARINACOTA"
         }
+    ],
+
+    "rangos":
+    [
+        {"2":  [6,13]},
+        {"3":  [8,17]},
+        {"4":  [10,23]},
+        {"5":  [14,25]},
+        {"6":  [18,29]},
+        {"7":  [24,33]},
+        {"8":  [26,37]},
+        {"9":  [30,44]},
+        {"10": [34,45]},
+        {"11": [34,53]},
+        {"12": [38,57]},
+        {"13": [45,61]},
+        {"14": [46,65]},
+        {"15": [50,69]},
+        {"16": [54,73]},
+        {"17": [58,77]},
+        {"18": [62,81]},
+        {"19": [66,85]},
+        {"20": [70,89]},
+        {"21": [74,93]},
+        {"22": [78,97]},
+        {"23": [82,102]},
+        {"24": [86,105]},
+        {"25": [90,109]},
+        {"26": [94,113]},
+        {"27": [98,154]},
+        {"28": [103,303]},
+        {"29": [106,9999]},
+        {"30": [110,9999]},
+        {"31": [114,9999]}
     ]
 }
