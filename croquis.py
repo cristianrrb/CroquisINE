@@ -1869,7 +1869,7 @@ for mxd in mxd_list:
     #id_comuna = int(datos[4])
     dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
 
-    ruta = os.path.join(config['rutabase'],"MUESTRAS_PDF","MUESTRAS_16R","ENE",dict_region[id_region], nombrePDF)
+    ruta = os.path.join(config['rutabase'],"MUESTRAS_PDF","MUESTRAS_15R","ENE",dict_region[id_region], nombrePDF)
     mensaje(ruta)
 
     data_frame = 'PAGE_LAYOUT'
