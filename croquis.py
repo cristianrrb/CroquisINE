@@ -691,6 +691,14 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         nombre_provincia = nombreProvincia(datosManzana[3])
         nombre_comuna = nombreComuna(datosManzana[4])
         nombre_urbano = nombreUrbano(datosManzana[5])
+        mensaje(nombre_region)
+        mensaje(nombre_provincia)
+        mensaje(nombre_comuna)
+        mensaje(nombre_urbano)
+        mensaje("----------codigo comuna ---------")
+        mensaje(datosManzana[4])
+
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
@@ -711,6 +719,8 @@ def actualizaVinetaManzanas(mxd,datosManzana):
                 elm.text = datosManzana[8]
             if elm.name == "COD_MANZAN":
                 elm.text = datosManzana[9]
+            if elm.name == "barcode":
+                elm.text = codigo_barra
         mensaje("Se actualizaron las viñetas para manzana.")
     except:
         mensaje("No se pudo actualizar las viñetas para manzana.")
@@ -722,6 +732,12 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         nombre_provincia = nombreProvincia(datosRAU[3])
         nombre_comuna = nombreComuna(datosRAU[4])
         nombre_urbano = nombreUrbano(datosRAU[5])
+        mensaje(nombre_region)
+        mensaje(nombre_provincia)
+        mensaje(nombre_comuna)
+        mensaje(nombre_urbano)
+        mensaje("----------codigo comuna ---------")
+        mensaje(datosRAU[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
@@ -755,7 +771,12 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         nombre_region = nombreRegion(datosRural[2])
         nombre_provincia = nombreProvincia(datosRural[3])
         nombre_comuna = nombreComuna(datosRural[4])
+        mensaje(nombre_region)
+        mensaje(nombre_provincia)
+        mensaje(nombre_comuna)
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
+        mensaje("----------codigo comuna ---------")
+        mensaje(datosRural[4])
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
