@@ -564,7 +564,7 @@ def procesaRAU(codigo):
                         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
 
-                        #procesaAreasDestacadas(codigo, datosRAU, token)
+                        procesaAreasDestacadas(codigo, datosRAU, token)
 
                         if registro.rutaPDF != "":
                             registro.estado = "Correcto"
