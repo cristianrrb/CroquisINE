@@ -692,6 +692,7 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         nombre_comuna = nombreComuna(datosManzana[4])
         nombre_urbano = nombreUrbano(datosManzana[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
+        mensaje(codigo_barra)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
@@ -726,6 +727,7 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         nombre_comuna = nombreComuna(datosRAU[4])
         nombre_urbano = nombreUrbano(datosRAU[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
+        mensaje(codigo_barra)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
@@ -759,6 +761,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         nombre_provincia = nombreProvincia(datosRural[3])
         nombre_comuna = nombreComuna(datosRural[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
+        mensaje(codigo_barra)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
@@ -822,7 +825,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
 
 def generaCodigoBarra(estrato, datosEstrato):
     if estrato == "Manzana":
-        tipo = "Manzana"
+        tipo = "MZ"
     elif estrato == "RAU":
         tipo = "RAU"
     elif estrato == "Rural":
