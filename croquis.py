@@ -497,9 +497,15 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas):
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
             if rango[0] <= totalViviendas <= rango[1]:
+                mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
+                mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
+                mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
                 return True
             else:
+                mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
+                mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
+                mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
                 return False
         else:    # no existe el rango
