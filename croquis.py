@@ -821,7 +821,7 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     return nombre
 
 def generaCodigoBarra(estrato, datosEstrato):
-    if estrato == "Manzana"":
+    if estrato == "Manzana":
         tipo = "Manzana"
     elif estrato == "RAU":
         tipo = "RAU"
