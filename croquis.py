@@ -691,13 +691,6 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         nombre_provincia = nombreProvincia(datosManzana[3])
         nombre_comuna = nombreComuna(datosManzana[4])
         nombre_urbano = nombreUrbano(datosManzana[5])
-        mensaje(nombre_region)
-        mensaje(nombre_provincia)
-        mensaje(nombre_comuna)
-        mensaje(nombre_urbano)
-        mensaje("----------codigo comuna ---------")
-        mensaje(datosManzana[4])
-
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
@@ -732,12 +725,6 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         nombre_provincia = nombreProvincia(datosRAU[3])
         nombre_comuna = nombreComuna(datosRAU[4])
         nombre_urbano = nombreUrbano(datosRAU[5])
-        mensaje(nombre_region)
-        mensaje(nombre_provincia)
-        mensaje(nombre_comuna)
-        mensaje(nombre_urbano)
-        mensaje("----------codigo comuna ---------")
-        mensaje(datosRAU[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
@@ -771,12 +758,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         nombre_region = nombreRegion(datosRural[2])
         nombre_provincia = nombreProvincia(datosRural[3])
         nombre_comuna = nombreComuna(datosRural[4])
-        mensaje(nombre_region)
-        mensaje(nombre_provincia)
-        mensaje(nombre_comuna)
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
-        mensaje("----------codigo comuna ---------")
-        mensaje(datosRural[4])
 
         for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
             if elm.name == "Nombre_Muestra":
@@ -839,7 +821,9 @@ def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     return nombre
 
 def generaCodigoBarra(estrato, datosEstrato):
-    if estrato == "RAU":
+    if estrato == "Manzana"":
+        tipo = "Manzana"
+    elif estrato == "RAU":
         tipo = "RAU"
     elif estrato == "Rural":
         tipo = "S_RUR"
