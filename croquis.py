@@ -320,7 +320,7 @@ def limpiaMapaManzana(mxd, manzana):
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\Desarrollo\INE\Aplicacion\graphic_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         ext = manzana.projectAs(df.spatialReference)
         dist = calculaDistanciaBufferManzana(ext.area)
@@ -375,7 +375,7 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\Desarrollo\INE\Aplicacion\graphic_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         manzana = datosRAU[0]
         ext = manzana.projectAs(df.spatialReference)
@@ -482,12 +482,11 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
             clusTol = "0.05 Meters"
             tm_path = os.path.join("in_memory", "seudo_lyr")
             tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.FeatureToPolygon_management(lyr_sal, lyr_man, clusTol,
-                                  "NO_ATTRIBUTES", "")
+            arcpy.FeatureToPolygon_management(lyr_sal, lyr_man, clusTol, "NO_ATTRIBUTES", "")
             arcpy.Buffer_analysis(lyr_man, tm_path_buff, "-4 Meters", "FULL", "ROUND")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            lyr_seudo = r"C:\Desarrollo\INE\Aplicacion\seudo_lyr.lyr"
+            lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
             #mensaje("aqui")
