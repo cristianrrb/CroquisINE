@@ -534,14 +534,13 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
-        if limpiaMapaManzanaEsquicio(mxd, datosRural[0]):
-            if poligono != None:
-                lista_etiquetas = listaEtiquetas("Rural")
-                mensaje("Inicio preparación de etiquetas Rural.")
-                for capa in lista_etiquetas:
-                    cortaEtiqueta(mxd, capa, poligono)
-                mensaje("Fin preparación de etiquetas.")
-                return True
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Rural")
+            mensaje("Inicio preparación de etiquetas Rural.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
