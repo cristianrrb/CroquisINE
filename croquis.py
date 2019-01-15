@@ -366,7 +366,7 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
-        cod_RAU = int(datosRAU[1])
+        cod_RAU = int(datosRAU[10])
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), cod_RAU)
         mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
@@ -387,7 +387,7 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([poli,0])
         # "https://gis.ine.cl/public/rest/services/ESRI/servicio_rau/MapServer/1"
-        url = self.urlSecciones_RAU
+        url = infoMarco.urlSecciones_RAU
         manz_excluidas = areasExcluidas(ext, url)
         if manz_excluidas != None:
             for manz in manz_excluidas:
@@ -452,18 +452,13 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
-        cuantos = int(arcpy.GetCount_management(lyr)[0])
-        mensaje(cuantos)
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        mensaje("1")
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:
             #mensaje(path_scratchGDB)
             if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
                 arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
-            mensaje("2")
             arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
-            mensaje("3")
             lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
         else:
@@ -482,6 +477,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         lyr_man = os.path.join("in_memory", "seudoman")
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
+        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:

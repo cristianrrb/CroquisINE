@@ -30,7 +30,8 @@
          "nombre_capa": "Manzana",
          "capas_labels": [
             "Eje_Vial",
-            "Etiquetas_Limites"
+            "Etiquetas_Limites",
+            "Cursos_Hidricos_Marco"
          ],
          "mxds": [
             {
@@ -83,6 +84,7 @@
          "capas_labels": [
             "Eje_Vial",
             "Equipamiento",
+            "Cursos_Hidricos_Marco",
             "Etiquetado_Auxiliar",
             "Etiquetas_Limites"
          ],
@@ -136,6 +138,7 @@
          "nombre_capa": "Seccion_Seleccionada",
          "capas_labels": [
             "Eje_Vial",
+            "Cursos_Hidricos",
             "Equipamiento",
             "toponimos_mm2016",
             "Etiquetado_Auxiliar",
