@@ -284,6 +284,33 @@ def zoom(mxd, extent, escala):
         mensaje('** No se ajusto el extent del mapa.')
         return False
 
+def areasExcluidas(poligono, url):
+    try:
+        poly_paso = poligono.buffer(10)
+        poli = arcpy.Polygon(poly_paso.getPart(0), poligono.spatialReference)
+        params = {'f':'json', 'where':'1=1', 'outFields':'SHAPE',  'geometry':poli.JSON, 'geometryType':'esriGeometryPolygon',
+                  'spatialRel':'esriSpatialRelContains', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
+                  'outSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere'}
+        queryURL = "{}/query".format(url)
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        pols = []
+        poly = poli.buffer(-10)
+        for pol in ids["features"]:
+            polygon = arcpy.AsShape(pol["geometry"], True)
+            mensaje(poly.contains(polygon, "PROPER"))
+            if poly.contains(polygon, "PROPER"):
+                pols.append(polygon)
+        if len(pols) > 0:
+            mensaje(len(pols))
+            return pols
+        else:
+            return None
+    except:
+        mensaje('** Error en áreas de exclución.')
+    return ""
+
 def limpiaMapaManzana(mxd, manzana):
     try:
         mensaje("Limpieza de mapa iniciada.")
@@ -293,20 +320,27 @@ def limpiaMapaManzana(mxd, manzana):
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\Desarrollo\INE\Aplicacion\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        mensaje("Proyectando")
         ext = manzana.projectAs(df.spatialReference)
-        mensaje("Proyectado")
-        polgrande = ext.buffer(1000)
-        polchico = ext.buffer(15)
+        dist = calculaDistanciaBufferManzana(ext.area)
+        dist_buff = float(dist.replace(" Meters", ""))
+        polgrande = ext.buffer(dist_buff * 40)
+        polchico = ext.buffer(dist_buff)
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([poli,0])
         cursor.insertRow([ext,1])
+        #   "https://gis.ine.cl/public/rest/services/ESRI/servicio_manzana/MapServer/0"
+        url = infoMarco.urlManzanas
+        manz_excluidas = areasExcluidas(ext, url)
+        if manz_excluidas != None:
+            for manz in manz_excluidas:
+                cursor.insertRow([manz,2])
         del cursor
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        limpiaEsquicio(mxd, leeNombreCapa("Manzana"), "manzent", cod_manz)
         mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
@@ -314,50 +348,37 @@ def limpiaMapaManzana(mxd, manzana):
         mensaje("Error en limpieza de mapa.")
     return None
 
-def limpiaMapaManzanaEsquicio(mxd, manzana):
+def limpiaEsquicio(mxd, capa, campo, valor):
     try:
         mensaje("Limpieza de esquicio iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
-        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
-        arcpy.AddField_management(FC, "tipo", "LONG")
-        tm_path = os.path.join("in_memory", "graphic_lyr")
-        arcpy.MakeFeatureLayer_management(FC, tm_path)
-        tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
-        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        mensaje("Proyectando")
-        ext = manzana.projectAs(df.spatialReference)
-        mensaje("Proyectado")
-        cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
-        cursor.insertRow([ext,2])
-        del cursor
-        del FC
-        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        mensaje("Limpieza de esquicio correcta.")
-        return True
+        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, campo), valor)
+        lyr.definitionQuery = sql_exp
+        mensaje(sql_exp)
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de mapa.")
+        mensaje("Error en limpieza de esquicio.")
     return None
 
-def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
+def limpiaMapaRAU(mxd, datosRAU, capa):
     try:
-        mensaje("Limpieza de mapa 'Sección RAU' iniciada.")
+        mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
-        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRAU[10]))
+        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        cod_RAU = int(datosRAU[1])
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), cod_RAU)
+        mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\Desarrollo\INE\Aplicacion\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        seccionRau = datosRAU[0]
-        mensaje("Proyectando")
-        ext = seccionRau.projectAs(df.spatialReference)
-        mensaje("Proyectado")
+        manzana = datosRAU[0]
+        ext = manzana.projectAs(df.spatialReference)
         dist = calculaDistanciaBufferRAU(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
         polgrande = ext.buffer(dist_buff * 100)
@@ -365,17 +386,22 @@ def limpiaMapaRAU(mxd, datosRAU, nombreCapa):
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([poli,0])
+        # "https://gis.ine.cl/public/rest/services/ESRI/servicio_rau/MapServer/1"
+        url = self.urlSecciones_RAU
+        manz_excluidas = areasExcluidas(ext, url)
+        if manz_excluidas != None:
+            for manz in manz_excluidas:
+                cursor.insertRow([manz,2])
         del cursor
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        df1 = arcpy.mapping.ListDataFrames(mxd)[1]
-        lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
-        lyr1.definitionQuery = sql_exp
+        limpiaEsquicio(mxd, leeNombreCapa("RAU"), "cu_seccion", cod_RAU)
+        dibujaSeudoManzanas(mxd, "Eje_Vial", polchico)
         mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de mapa 'Sección RAU'.")
+        mensaje("Error en limpieza de mapa.")
     return None
 
 def limpiaMapaRural(mxd, datosRural, nombreCapa):
@@ -420,6 +446,7 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
 
 def cortaEtiqueta(mxd, elLyr, poly):
     try:
+        path_scratchGDB = arcpy.env.scratchGDB
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
@@ -427,29 +454,62 @@ def cortaEtiqueta(mxd, elLyr, poly):
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:
-            arcpy.CopyFeatures_management(lyr_sal, arcpy.env.scratchGDB + "/" + elLyr)
-            lyr.replaceDataSource(arcpy.env.scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
+            #mensaje(path_scratchGDB)
+            if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
+                arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
+            arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
+            lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
         else:
             mensaje("No hay registros de {}".format(elLyr))
         return True
     except Exception:
         mensaje(sys.exc_info()[1].args[0])
-        mensaje("No se encontró etiqueta.")
+        mensaje("Error en preparación de etiquetas.")
+    return False
+
+def dibujaSeudoManzanas(mxd, elLyr, poly):
+    try:
+        path_scratchGDB = arcpy.env.scratchGDB
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr_sal = os.path.join("in_memory", "ejes")
+        lyr_man = os.path.join("in_memory", "seudoman")
+        lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+        mensaje("Layer encontrado {}".format(lyr.name))
+        arcpy.Clip_analysis(lyr, poly, lyr_sal)
+        cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
+        if cuantos > 0:
+            clusTol = "0.05 Meters"
+            tm_path = os.path.join("in_memory", "seudo_lyr")
+            tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
+            arcpy.FeatureToPolygon_management(lyr_sal, lyr_man, clusTol,
+                                  "NO_ATTRIBUTES", "")
+            arcpy.Buffer_analysis(lyr_man, tm_path_buff, "-4 Meters", "FULL", "ROUND")
+            arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
+            tm_layer = arcpy.mapping.Layer(tm_path)
+            lyr_seudo = r"C:\Desarrollo\INE\Aplicacion\seudo_lyr.lyr"
+            arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
+            arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            #mensaje("aqui")
+        else:
+            mensaje("No hay registros de {}".format(elLyr))
+        return True
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en preparación de etiquetas.")
     return False
 
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
-        poligono = limpiaMapaManzana(mxd, datosManzana[0])
-        if limpiaMapaManzanaEsquicio(mxd, datosManzana[0]):
-            if poligono != None:
-                lista_etiquetas = listaEtiquetas("Manzana")
-                mensaje("Inicio preparación de etiquetas Manzana.")
-                for capa in lista_etiquetas:
-                    cortaEtiqueta(mxd, capa, poligono)
-                mensaje("Fin preparación de etiquetas.")
-                return True
+        poligono = limpiaMapaManzana(mxd, datosManzana[0], int(datosManzana[10]))
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Manzana")
+            mensaje("Inicio preparación de etiquetas Manzana.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para manzana.")
     return False
 
@@ -458,14 +518,13 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
     if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("RAU")
         poligono = limpiaMapaRAU(mxd, datosRAU, nombreCapa)
-        if limpiaMapaManzanaEsquicio(mxd, datosRAU[0]):
-            if poligono != None:
-                lista_etiquetas = listaEtiquetas("RAU")
-                mensaje("Inicio preparación de etiquetas RAU.")
-                for capa in lista_etiquetas:
-                    cortaEtiqueta(mxd, capa, poligono)
-                mensaje("Fin preparación de etiquetas.")
-                return True
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("RAU")
+            mensaje("Inicio preparación de etiquetas RAU.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
     mensaje("No se completo la preparación del mapa para sección RAU.")
     return False
 
