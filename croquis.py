@@ -311,7 +311,7 @@ def areasExcluidas(poligono, url):
         mensaje('** Error en áreas de exclución.')
     return ""
 
-def limpiaMapaManzana(mxd, manzana):
+def limpiaMapaManzana(mxd, manzana,cod_manz):
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -451,13 +451,19 @@ def cortaEtiqueta(mxd, elLyr, poly):
         lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
+        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
+        cuantos = int(arcpy.GetCount_management(lyr)[0])
+        mensaje(cuantos)
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
+        mensaje("1")
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:
             #mensaje(path_scratchGDB)
             if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
                 arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
+            mensaje("2")
             arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
+            mensaje("3")
             lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
             mensaje("Etiquetas correcta de {}".format(elLyr))
         else:
