@@ -794,13 +794,35 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las viñetas para Rural.")
 
-def generaPDF(mxd, nombrePDF, datos):
-    id_region = int(datos[2])
-    #id_comuna = int(datos[4])
-    dict_region = {1:'TARAPACA',2:'ANTOFAGASTA',3:'ATACAMA',4:'COQUIMBO',5:'VALPARAISO',6:'OHIGGINS',7:'MAULE',8:'BIOBIO',9:'ARAUCANIA',10:'LOS_LAGOS',11:'AYSEN',12:'MAGALLANES',13:'METROPOLITANA',14:'LOS_RIOS',15:'ARICA_PARINACOTA',16:'NUBLE'}
+def normalizaPalabra(s):
+    replacements = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+        ("ñ", "n"),
+        ("Á", "A"),
+        ("É", "E"),
+        ("Í", "I"),
+        ("Ó", "O"),
+        ("Ú", "U"),
+        ("Ñ", "N"),
+        (" ", "_"),
+    )
+    for a, b in replacements:
+        s = s.replace(a, b).replace(a.upper(), b.upper())
+    return s
 
-    ruta = os.path.join(config['rutabase'],"MUESTRAS_PDF","MUESTRAS_15R","ENE",dict_region[id_region], nombrePDF)
-    mensaje(ruta)
+def generaPDF(mxd, nombrePDF, datos):
+
+    nombre_region = nombreRegion(datos[2])
+    nombre_comuna = nombreComuna(datos[4])
+    nueva_region = normalizaPalabra(nombre_region)
+    nueva_comuna = normalizaPalabra(nombre_comuna)
+
+    rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna)
+    mensaje(rutaDestino)
 
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
@@ -813,11 +835,14 @@ def generaPDF(mxd, nombrePDF, datos):
     picture_symbol = 'RASTERIZE_BITMAP'
     convert_markers = True
     embed_fonts = True
-    #arcpy.mapping.ExportToPDF(mxd, ruta)
-    arcpy.mapping.ExportToPDF(mxd, ruta, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
 
+    if not os.path.exists(rutaDestino):
+        os.makedirs(rutaDestino)
+
+    destinoPDF = os.path.join(rutaDestino, nombrePDF)
+    arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
     mensaje("Exportado a pdf")
-    return ruta
+    return destinoPDF
 
 def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
     if estrato == "Manzana":
