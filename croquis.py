@@ -644,12 +644,12 @@ def procesaRAU(codigo):
                         registro.escala = escala
 
                         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-                        #registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
+                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
 
-                        #procesaAreasDestacadas(codigo, datosRAU, token)
+                        procesaAreasDestacadas(codigo, datosRAU, token)
 
-                        #if registro.rutaPDF != "":
-                            #registro.estado = "Correcto"
+                        if registro.rutaPDF != "":
+                            registro.estado = "Correcto"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1021,8 +1021,8 @@ def nombreComuna(codigo):
         return codigo
 
 def nombreUrbano(codigo):
-    if dictUrbanos.has_key(codigo):
-        return dictUrbanos[codigo].encode('utf8')
+    if diccionario.has_key(codigo):
+        return diccionario[codigo].encode('utf8')
     else:
         return codigo
 
@@ -1079,8 +1079,7 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-dictUrbanosManzana = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
-dictUrbanosRAU = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+
 
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
@@ -1122,6 +1121,11 @@ listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
+
+if parametroEstrato == "Manzana":
+    diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+elif parametroEstrato == "RAU":
+    diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
 
 for indice, codigo in enumerate(listaCodigos):
     if parametroEstrato == 'Manzana':
