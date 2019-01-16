@@ -110,6 +110,29 @@ def obtieneInfoSeccionRural(codigo, token):
         mensaje("Error URL servicio_Rural")
         return None
 
+def obtieneListaAreasDestacadas(codigoSeccion, token):
+    try:
+        lista = []
+        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(infoMarco.urlAreaDestacada, token, codigoSeccion))
+
+        fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
+
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            cuenta = [r for r in rows]
+
+        if len(cuenta) > 0:
+            buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
+            fcBuffer = arcpy.Buffer_analysis(fs, buffer, "15 Meters")
+            with arcpy.da.SearchCursor(fcBuffer, fields) as rows:
+                lista = [r for r in rows]
+            arcpy.Delete_management(buffer)
+        return lista
+    except:
+        mensaje("Error obtieneListaAreasDestacadas")
+        return []
+
 def listaMXDs(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
@@ -652,7 +675,7 @@ def procesaRural(codigo):
                     nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
 
-                    #procesaAreasDestacadas(codigo, datosRural, token)
+                    procesaAreasDestacadas(codigo, datosRural, token)
 
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
@@ -711,30 +734,6 @@ def buscaTemplateAreaDestacada(extent):
     # Por el momento se usan los mismos que para Rural
     mxd, infoMxd, escala = buscaTemplateRural(extent)
     return mxd, infoMxd, escala
-
-def obtieneListaAreasDestacadas(codigoSeccion, token):
-    try:
-        lista = []
-        url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
-        fs = arcpy.FeatureSet()
-        fs.load(url.format(infoMarco.urlAreaDestacada, token, codigoSeccion))
-
-        fields = ['SHAPE@', 'SHAPE@AREA', 'NUMERO']
-
-        with arcpy.da.SearchCursor(fs, fields) as rows:
-            cuenta = [r for r in rows]
-
-        if len(cuenta) > 0:
-            buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
-            fcBuffer = arcpy.Buffer_analysis(fs, buffer, "15 Meters")
-            with arcpy.da.SearchCursor(fcBuffer, fields) as rows:
-                lista = [r for r in rows]
-            arcpy.Delete_management(buffer)
-
-        return lista
-    except:
-        mensaje("Error obtieneListaAreasDestacadas")
-        return []
 
 def generaListaCodigos(texto):
     try:
@@ -868,6 +867,8 @@ def normalizaPalabra(s):
         ("Ú", "U"),
         ("Ñ", "N"),
         (" ", "_"),
+        ("'", ""),
+
     )
     for a, b in replacements:
         s = s.replace(a, b).replace(a.upper(), b.upper())
@@ -875,12 +876,14 @@ def normalizaPalabra(s):
 
 def generaPDF(mxd, nombrePDF, datos):
 
-    nombre_region = nombreRegion(datos[2])
-    nombre_comuna = nombreComuna(datos[4])
-    nueva_region = normalizaPalabra(nombre_region)
-    nueva_comuna = normalizaPalabra(nombre_comuna)
+    nueva_region = normalizaPalabra(nombreRegion(datos[2]))
+    nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
-    rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna)
+    if parametroEstrato == "Rural":
+        rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna)
+    else:
+        nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
+        rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna,nueva_urbano)
     mensaje(rutaDestino)
 
     data_frame = 'PAGE_LAYOUT'
@@ -1143,27 +1146,15 @@ mensaje("El GeoProceso ha terminado correctamente")
 
 """
 for mxd in mxd_list:
-
     current_mxd = arcpy.mapping.MapDocument(os.path.join(ws,mxd))
-
     pdf_name = os.path.join(pdfws,mxd[:-4])+ ".pdf"
-
     pdfDoc = arcpy.mapping.PDFDocumentCreate(pdf_name)  # create the PDF document object
-
     for pageNum in range(1, current_mxd.dataDrivenPages.pageCount + 1):
-
         current_mxd.dataDrivenPages.currentPageID = pageNum
-
         page_pdf = os.path.join(pdfws,mxd[:-4])+ + str(pageNum) + ".pdf"
-
         arcpy.mapping.ExportToPDF(current_mxd, page_pdf)
-
         pdfDoc.appendPages(page_pdf) # add pages to it
-
         os.remove(page_pdf)  # delete the file
-
-
-
     pdfDoc.saveAndClose()  # save the pdf for the mxd
 """
 
