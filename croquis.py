@@ -644,12 +644,12 @@ def procesaRAU(codigo):
                         registro.escala = escala
 
                         nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-                        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
+                        #registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
 
-                        procesaAreasDestacadas(codigo, datosRAU, token)
+                        #procesaAreasDestacadas(codigo, datosRAU, token)
 
-                        if registro.rutaPDF != "":
-                            registro.estado = "Correcto"
+                        #if registro.rutaPDF != "":
+                            #registro.estado = "Correcto"
 
         registros.append(registro)
         mensajeEstado(registro)
