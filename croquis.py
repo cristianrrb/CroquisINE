@@ -567,14 +567,16 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completo la preparación del mapa para sección Rural.")
     return False
 
-def validaRangoViviendas(viviendasEncuestar, totalViviendas):
+def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
+        registro.estado = "Rechazado"
+        registro.motivoRechazo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
-        return False
+        #return False
 
     if viviendasEncuestar == -1:    # no se evalua
         mensaje("No se evalua cantidad de viviendas a encuestar.")
-        return True
+        #return True
     else:
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
@@ -583,16 +585,19 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas):
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
-                return True
+                #return True
             else:
                 mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
-                return False
+
+                registro.estado = "Rechazado"
+                registro.motivoRechazo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
+                #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
-            return False
+            #return False
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
@@ -600,26 +605,29 @@ def procesaManzana(codigo, viviendasEncuestar):
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
-            if not validaRangoViviendas(viviendasEncuestar, totalViviendas):
-                registro.estado = "Rechazado"
+            validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
+
+            if parametroSoloAnalisis == 'si':
+                mensaje("** Solo se realiza analisis, no se generará el croquis.")
             else:
-                datosManzana, extent = obtieneInfoManzana(codigo, token)
-                if datosManzana != None:
-                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
-                    if mxd != None:
-                        if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                            mensaje("Registrando la operación.")
-                            registro.formato = infoMxd['formato']
-                            registro.orientacion = infoMxd['orientacion']
-                            registro.escala = escala
+                if registro.estado != "Rechazado" and :
+                    datosManzana, extent = obtieneInfoManzana(codigo, token)
+                    if datosManzana != None:
+                        registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                        registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                        mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                        if mxd != None:
+                            if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                                #mensaje("Registrando la operación.")
+                                registro.formato = infoMxd['formato']
+                                registro.orientacion = infoMxd['orientacion']
+                                registro.escala = escala
 
-                            nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
-                            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+                                nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                                registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
 
-                            if registro.rutaPDF != "":
-                                registro.estado = "Correcto"
+                                if registro.rutaPDF != "":
+                                    registro.estado = "Correcto"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -967,11 +975,11 @@ def escribeCSV(registros):
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora','Estado', 'Codigo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                a = [r.hora, r.estado, r.codigo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -1038,6 +1046,7 @@ class Registro:
         self.orientacion = ""
         self.escala = ""
         self.estado = "No generado"
+        self.motivoRechazo = ""
 
 class InfoMarco:
     def __init__(self, codigo, config):
@@ -1089,6 +1098,7 @@ parametroMarco = arcpy.GetParameterAsText(1)
 parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
 parametroCodigos = arcpy.GetParameterAsText(3)
 parametroViviendas = arcpy.GetParameterAsText(4)
+parametroSoloAnalisis = arcpy.GetParameterAsText(5)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
@@ -1099,6 +1109,7 @@ parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
+parametroSoloAnalisis = "si"
 # --------------------------------------------------------------------
 parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
@@ -1145,7 +1156,7 @@ for indice, codigo in enumerate(listaCodigos):
 rutaCSV = escribeCSV(registros)
 rutaZip = comprime(registros, rutaCSV)
 
-arcpy.SetParameterAsText(5, rutaZip)
+arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
 
