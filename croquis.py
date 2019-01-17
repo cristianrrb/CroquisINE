@@ -610,7 +610,7 @@ def procesaManzana(codigo, viviendasEncuestar):
             if parametroSoloAnalisis == 'si':
                 mensaje("** Solo se realiza analisis, no se generará el croquis.")
             else:
-                if registro.estado != "Rechazado" and :
+                if registro.estado != "Rechazado":
                     datosManzana, extent = obtieneInfoManzana(codigo, token)
                     if datosManzana != None:
                         registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
