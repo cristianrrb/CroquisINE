@@ -571,12 +571,12 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estado = "Rechazado"
         registro.motivoRechazo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
-        mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
-        #return False
+        mensaje(registro.motivoRechazo)
 
     if viviendasEncuestar == -1:    # no se evalua
-        mensaje("No se evalua cantidad de viviendas a encuestar.")
-        #return True
+        registro.motivoRechazo = "No se evalua cantidad de viviendas a encuestar."
+        mensaje(registro.motivoRechazo)
+
     else:
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
@@ -585,19 +585,20 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
-                #return True
+
             else:
                 mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
-                mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
                 registro.estado = "Rechazado"
                 registro.motivoRechazo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
-                #return False
+                mensaje(registro.motivoRechazo)
+
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
-            #return False
+            registro.estado = "Rechazado"
+            registro.motivoRechazo = "No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar)
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
@@ -607,14 +608,15 @@ def procesaManzana(codigo, viviendasEncuestar):
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
             validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
-            if parametroSoloAnalisis == 'si':
-                mensaje("** Solo se realiza analisis, no se generará el croquis.")
-            else:
-                if registro.estado != "Rechazado":
-                    datosManzana, extent = obtieneInfoManzana(codigo, token)
-                    if datosManzana != None:
-                        registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                        registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+            datosManzana, extent = obtieneInfoManzana(codigo, token)
+            if datosManzana != None:
+                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+
+                if parametroSoloAnalisis == 'si':
+                    mensaje("** Solo se realiza analisis, no se generará el croquis.")
+                else:
+                    if registro.estado != "Rechazado":
                         mxd, infoMxd, escala = buscaTemplateManzana(extent)
                         if mxd != None:
                             if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -883,7 +885,6 @@ def normalizaPalabra(s):
     return s
 
 def generaPDF(mxd, nombrePDF, datos):
-
     nueva_region = normalizaPalabra(nombreRegion(datos[2]))
     nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
@@ -1065,13 +1066,13 @@ class InfoMarco:
     def leeConfiguracion(self, codigo, config):
         for marco in config['marcos']:
             if marco['id'] == codigo:
-                self.urlManzanas =         marco['config']['urlManzanas']
-                self.urlSecciones_RAU =    marco['config']['urlSecciones_RAU']
-                self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
-                self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
-                self.urlPE =               marco['config']['urlPE']
-                self.urlCRF =              marco['config']['urlCRF']
-                self.urlHomologacion =     marco['config']['urlHomologacion']
+                self.urlManzanas =        marco['config']['urlManzanas']
+                self.urlSecciones_RAU =   marco['config']['urlSecciones_RAU']
+                self.urlSecciones_Rural = marco['config']['urlSecciones_Rural']
+                self.urlAreaDestacada =   marco['config']['urlAreaDestacada']
+                self.urlPE =           marco['config']['urlPE']
+                self.urlCRF =          marco['config']['urlCRF']
+                self.urlHomologacion = marco['config']['urlHomologacion']
                 self.nombreCampoIdHomologacion = marco['config']['nombreCampoIdHomologacion']
                 self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
                 self.nombreCampoTotalViviendas = marco['config']['nombreCampoTotalViviendas']
@@ -1088,7 +1089,6 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-
 
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
