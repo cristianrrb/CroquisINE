@@ -1,11 +1,11 @@
 {
    "rutabase": "D:\\CROQUIS\\",
    "encuestas": [
-      "ENE",
-      "EPF",
-      "ENUSC",
-      "CASEN",
-      "SENDA"
+      {"nombre":"ENE", "minimoViviendas": 8},
+      {"nombre":"EPF", "minimoViviendas": 8},
+      {"nombre":"ENUSC", "minimoViviendas": 8},
+      {"nombre":"CASEN", "minimoViviendas": 8},
+      {"nombre":"SENDA", "minimoViviendas": 8}
    ],
    "marcos": [
       {
