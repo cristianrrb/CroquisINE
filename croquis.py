@@ -765,7 +765,6 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         nombre_urbano = nombreUrbano(datosManzana[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         mensaje(codigo_barra)
-        mensaje(parametroEncuesta)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -774,7 +773,6 @@ def actualizaVinetaManzanas(mxd,datosManzana):
             else:
                 if elm.name == "Nombre_Muestra":
                     elm.text = parametroEncuesta+" "+parametroMarco
-
             if elm.name == "Nombre_Region":
                 elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
@@ -807,9 +805,13 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
         mensaje(codigo_barra)
 
-        for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
-            if elm.name == "Nombre_Muestra":
-                elm.text = parametroEncuesta+" "+parametroMarco
+        for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+            if parametroEncuesta == "ENE":
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta + "_____"
+            else:
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
                 elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
@@ -839,11 +841,14 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         nombre_provincia = nombreProvincia(datosRural[3])
         nombre_comuna = nombreComuna(datosRural[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
-        mensaje(codigo_barra)
 
-        for elm in arcpy.mapping.ListLayoutElements(mxd,"TEXT_ELEMENT"):
-            if elm.name == "Nombre_Muestra":
-                elm.text = parametroEncuesta+" "+parametroMarco
+        for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+            if parametroEncuesta == "ENE":
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta + "_____"
+            else:
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta+" "+parametroMarco
             if elm.name == "Nombre_Region":
                 elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
