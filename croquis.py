@@ -1088,6 +1088,8 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
+
+
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
