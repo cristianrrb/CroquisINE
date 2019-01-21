@@ -3,6 +3,7 @@
 import arcpy
 import os, urllib, urllib2, json, sys
 import datetime, csv, uuid, zipfile
+import smtplib
 
 def mensaje(m):
     n = datetime.datetime.now()

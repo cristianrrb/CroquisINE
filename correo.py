@@ -1,7 +1,7 @@
 fromaddrMail = "marcelojimenez9@gmail.com"
-toaddrsMail  = "marcelojimenez9@gmail.com"
+toaddrsMail  = "mjimenez@esri.cl"
 usernameMail = "marcelojimenez9@gmail.com"
-passwordMail = "clave"
+passwordMail = ""
 
 import smtplib
 
