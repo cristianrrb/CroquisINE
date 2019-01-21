@@ -435,9 +435,7 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         mensaje("Limpieza de mapa 'Sección Rural' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
-        mensaje("Limpieza de mapa iniciada.")
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
-        mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
@@ -447,10 +445,8 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         seccionRural = datosRural[0]
-        mensaje("Proyectando")
         ext = seccionRural.projectAs(df.spatialReference)
-        mensaje("Proyectado")
-        dist = calculaDistanciaBufferRAU(ext.area)
+        dist = calculaDistanciaBufferRural(ext.area)
         dist_buff = float(dist.replace(" Meters", ""))
         polgrande = ext.buffer(dist_buff * 100)
         polchico = ext.buffer(dist_buff)
@@ -463,6 +459,9 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         df1 = arcpy.mapping.ListDataFrames(mxd)[1]
         lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
         lyr1.definitionQuery = sql_exp
+        lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
+        sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(datosRural[4]))
+        lyr2.definitionQuery = sql_exp
         mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
@@ -507,14 +506,12 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:
-            clusTol = "0.05 Meters"
             tm_path = os.path.join("in_memory", "seudo_lyr")
             tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.FeatureToPolygon_management(lyr_sal, lyr_man, clusTol, "NO_ATTRIBUTES", "")
-            arcpy.Buffer_analysis(lyr_man, tm_path_buff, "-4 Meters", "FULL", "ROUND")
+            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "4 Meters", "FULL", "FLAT", "ALL")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
+            lyr_seudo = r"C:\Desarrollo\INE\Aplicacion\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
             #mensaje("aqui")
