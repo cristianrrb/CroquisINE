@@ -1,966 +1,966 @@
-"urbanos": [
-  {
-    "codigo": "11011",
-    "nombre": "IQUIQUE"
-  },
-  {
-    "codigo": "11071",
-    "nombre": "ALTO HOSPICIO"
-  },
-  {
-    "codigo": "14011",
-    "nombre": "POZO ALMONTE"
-  },
-  {
-    "codigo": "21011",
-    "nombre": "ANTOFAGASTA"
-  },
-  {
-    "codigo": "21021",
-    "nombre": "MEJILLONES"
-  },
-  {
-    "codigo": "21041",
-    "nombre": "TALTAL"
-  },
-  {
-    "codigo": "22011",
-    "nombre": "CALAMA"
-  },
-  {
-    "codigo": "23011",
-    "nombre": "TOCOPILLA"
-  },
-  {
-    "codigo": "23021",
-    "nombre": "MARÍA ELENA"
-  },
-  {
-    "codigo": "31011",
-    "nombre": "COPIAPÓ"
-  },
-  {
-    "codigo": "31021",
-    "nombre": "CALDERA"
-  },
-  {
-    "codigo": "31031",
-    "nombre": "TIERRA AMARILLA"
-  },
-  {
-    "codigo": "32011",
-    "nombre": "CHAÑARAL"
-  },
-  {
-    "codigo": "32021",
-    "nombre": "DIEGO DE ALMAGRO"
-  },
-  {
-    "codigo": "32022",
-    "nombre": "EL SALVADOR"
-  },
-  {
-    "codigo": "33011",
-    "nombre": "VALLENAR"
-  },
-  {
-    "codigo": "33031",
-    "nombre": "FREIRINA"
-  },
-  {
-    "codigo": "33041",
-    "nombre": "HUASCO"
-  },
-  {
-    "codigo": "41011",
-    "nombre": "LA SERENA"
-  },
-  {
-    "codigo": "41021",
-    "nombre": "COQUIMBO"
-  },
-  {
-    "codigo": "41031",
-    "nombre": "ANDACOLLO"
-  },
-  {
-    "codigo": "41061",
-    "nombre": "VICUÑA"
-  },
-  {
-    "codigo": "42011",
-    "nombre": "ILLAPEL"
-  },
-  {
-    "codigo": "42031",
-    "nombre": "LOS VILOS"
-  },
-  {
-    "codigo": "42041",
-    "nombre": "SALAMANCA"
-  },
-  {
-    "codigo": "43011",
-    "nombre": "OVALLE"
-  },
-  {
-    "codigo": "43021",
-    "nombre": "COMBARBALÁ"
-  },
-  {
-    "codigo": "43031",
-    "nombre": "EL PALQUI"
-  },
-  {
-    "codigo": "43032",
-    "nombre": "MONTE PATRIA"
-  },
-  {
-    "codigo": "51011",
-    "nombre": "PLACILLA DE PEÑUELAS"
-  },
-  {
-    "codigo": "51012",
-    "nombre": "VALPARAÍSO"
-  },
-  {
-    "codigo": "51021",
-    "nombre": "CASABLANCA"
-  },
-  {
-    "codigo": "51031",
-    "nombre": "CONCÓN"
-  },
-  {
-    "codigo": "51051",
-    "nombre": "LAS VENTANAS"
-  },
-  {
-    "codigo": "51052",
-    "nombre": "PUCHUNCAVÍ"
-  },
-  {
-    "codigo": "51071",
-    "nombre": "QUINTERO"
-  },
-  {
-    "codigo": "51091",
-    "nombre": "VIÑA DEL MAR"
-  },
-  {
-    "codigo": "53011",
-    "nombre": "LOS ANDES"
-  },
-  {
-    "codigo": "53021",
-    "nombre": "CALLE LARGA"
-  },
-  {
-    "codigo": "53031",
-    "nombre": "RINCONADA"
-  },
-  {
-    "codigo": "53041",
-    "nombre": "SAN ESTEBAN"
-  },
-  {
-    "codigo": "54011",
-    "nombre": "LA LIGUA"
-  },
-  {
-    "codigo": "54021",
-    "nombre": "CABILDO"
-  },
-  {
-    "codigo": "55011",
-    "nombre": "QUILLOTA"
-  },
-  {
-    "codigo": "55021",
-    "nombre": "LA CALERA"
-  },
-  {
-    "codigo": "55031",
-    "nombre": "HIJUELAS"
-  },
-  {
-    "codigo": "55041",
-    "nombre": "LA CRUZ"
-  },
-  {
-    "codigo": "55061",
-    "nombre": "EL MELÓN"
-  },
-  {
-    "codigo": "55062",
-    "nombre": "NOGALES"
-  },
-  {
-    "codigo": "56011",
-    "nombre": "SAN ANTONIO"
-  },
-  {
-    "codigo": "56021",
-    "nombre": "ALGARROBO"
-  },
-  {
-    "codigo": "56031",
-    "nombre": "CARTAGENA"
-  },
-  {
-    "codigo": "56041",
-    "nombre": "EL QUISCO"
-  },
-  {
-    "codigo": "56051",
-    "nombre": "LAS CRUCES"
-  },
-  {
-    "codigo": "57011",
-    "nombre": "SAN FELIPE"
-  },
-  {
-    "codigo": "57021",
-    "nombre": "CATEMU"
-  },
-  {
-    "codigo": "57031",
-    "nombre": "LLAILLAY"
-  },
-  {
-    "codigo": "57051",
-    "nombre": "PUTAENDO"
-  },
-  {
-    "codigo": "57061",
-    "nombre": "SANTA MARÍA"
-  },
-  {
-    "codigo": "58011",
-    "nombre": "QUILPUÉ"
-  },
-  {
-    "codigo": "58021",
-    "nombre": "LIMACHE"
-  },
-  {
-    "codigo": "58031",
-    "nombre": "OLMUÉ"
-  },
-  {
-    "codigo": "58041",
-    "nombre": "VILLA ALEMANA"
-  },
-  {
-    "codigo": "61011",
-    "nombre": "RANCAGUA"
-  },
-  {
-    "codigo": "61021",
-    "nombre": "CODEGUA"
-  },
-  {
-    "codigo": "61051",
-    "nombre": "DOÑIHUE"
-  },
-  {
-    "codigo": "61052",
-    "nombre": "LO MIRANDA"
-  },
-  {
-    "codigo": "61061",
-    "nombre": "GRANEROS"
-  },
-  {
-    "codigo": "61071",
-    "nombre": "LAS CABRAS"
-  },
-  {
-    "codigo": "61081",
-    "nombre": "MACHALÍ"
-  },
-  {
-    "codigo": "61101",
-    "nombre": "SAN FRANCISCO DE MOSTAZAL"
-  },
-  {
-    "codigo": "61111",
-    "nombre": "GULTRO"
-  },
-  {
-    "codigo": "61112",
-    "nombre": "OLIVAR ALTO"
-  },
-  {
-    "codigo": "61121",
-    "nombre": "PEUMO"
-  },
-  {
-    "codigo": "61131",
-    "nombre": "PICHIDEGUA"
-  },
-  {
-    "codigo": "61141",
-    "nombre": "QUINTA DE TILCOCO"
-  },
-  {
-    "codigo": "61151",
-    "nombre": "RENGO"
-  },
-  {
-    "codigo": "61161",
-    "nombre": "REQUÍNOA"
-  },
-  {
-    "codigo": "61171",
-    "nombre": "SAN VICENTE DE TAGUA TAGUA"
-  },
-  {
-    "codigo": "62011",
-    "nombre": "PICHILEMU"
-  },
-  {
-    "codigo": "62031",
-    "nombre": "LITUECHE"
-  },
-  {
-    "codigo": "62041",
-    "nombre": "MARCHIHUE"
-  },
-  {
-    "codigo": "63011",
-    "nombre": "SAN FERNANDO"
-  },
-  {
-    "codigo": "63021",
-    "nombre": "CHÉPICA"
-  },
-  {
-    "codigo": "63031",
-    "nombre": "CHIMBARONGO"
-  },
-  {
-    "codigo": "63051",
-    "nombre": "NANCAGUA"
-  },
-  {
-    "codigo": "63101",
-    "nombre": "SANTA CRUZ"
-  },
-  {
-    "codigo": "71011",
-    "nombre": "TALCA"
-  },
-  {
-    "codigo": "71021",
-    "nombre": "CONSTITUCIÓN"
-  },
-  {
-    "codigo": "71091",
-    "nombre": "SAN CLEMENTE"
-  },
-  {
-    "codigo": "72011",
-    "nombre": "CAUQUENES"
-  },
-  {
-    "codigo": "72021",
-    "nombre": "CHANCO"
-  },
-  {
-    "codigo": "73011",
-    "nombre": "CURICÓ"
-  },
-  {
-    "codigo": "73012",
-    "nombre": "SARMIENTO"
-  },
-  {
-    "codigo": "73021",
-    "nombre": "HUALAÑÉ"
-  },
-  {
-    "codigo": "73041",
-    "nombre": "MOLINA"
-  },
-  {
-    "codigo": "73081",
-    "nombre": "TENO"
-  },
-  {
-    "codigo": "74011",
-    "nombre": "LINARES"
-  },
-  {
-    "codigo": "74031",
-    "nombre": "LONGAVÍ"
-  },
-  {
-    "codigo": "74041",
-    "nombre": "PARRAL"
-  },
-  {
-    "codigo": "74061",
-    "nombre": "SAN JAVIER"
-  },
-  {
-    "codigo": "74071",
-    "nombre": "VILLA ALEGRE"
-  },
-  {
-    "codigo": "81011",
-    "nombre": "CONCEPCIÓN"
-  },
-  {
-    "codigo": "81021",
-    "nombre": "CORONEL"
-  },
-  {
-    "codigo": "81031",
-    "nombre": "CHIGUAYANTE"
-  },
-  {
-    "codigo": "81041",
-    "nombre": "FLORIDA"
-  },
-  {
-    "codigo": "81051",
-    "nombre": "HUALQUI"
-  },
-  {
-    "codigo": "81061",
-    "nombre": "LOTA"
-  },
-  {
-    "codigo": "81071",
-    "nombre": "PENCO"
-  },
-  {
-    "codigo": "81081",
-    "nombre": "SAN PEDRO DE LA PAZ"
-  },
-  {
-    "codigo": "81091",
-    "nombre": "SANTA JUANA"
-  },
-  {
-    "codigo": "81101",
-    "nombre": "TALCAHUANO"
-  },
-  {
-    "codigo": "81111",
-    "nombre": "TOMÉ"
-  },
-  {
-    "codigo": "81121",
-    "nombre": "HUALPÉN"
-  },
-  {
-    "codigo": "82011",
-    "nombre": "LEBU"
-  },
-  {
-    "codigo": "82021",
-    "nombre": "ARAUCO"
-  },
-  {
-    "codigo": "82031",
-    "nombre": "CAÑETE"
-  },
-  {
-    "codigo": "82051",
-    "nombre": "CURANILAHUE"
-  },
-  {
-    "codigo": "82061",
-    "nombre": "LOS ÁLAMOS"
-  },
-  {
-    "codigo": "83011",
-    "nombre": "LOS ÁNGELES"
-  },
-  {
-    "codigo": "83031",
-    "nombre": "CABRERO"
-  },
-  {
-    "codigo": "83032",
-    "nombre": "MONTE ÁGUILA"
-  },
-  {
-    "codigo": "83041",
-    "nombre": "LA LAJA"
-  },
-  {
-    "codigo": "83051",
-    "nombre": "MULCHÉN"
-  },
-  {
-    "codigo": "83061",
-    "nombre": "NACIMIENTO"
-  },
-  {
-    "codigo": "83111",
-    "nombre": "SANTA BÁRBARA"
-  },
-  {
-    "codigo": "83121",
-    "nombre": "HUÉPIL"
-  },
-  {
-    "codigo": "83122",
-    "nombre": "TUCAPEL"
-  },
-  {
-    "codigo": "83131",
-    "nombre": "YUMBEL"
-  },
-  {
-    "codigo": "84011",
-    "nombre": "CHILLÁN"
-  },
-  {
-    "codigo": "84021",
-    "nombre": "BULNES"
-  },
-  {
-    "codigo": "84041",
-    "nombre": "COELEMU"
-  },
-  {
-    "codigo": "84051",
-    "nombre": "COIHUECO"
-  },
-  {
-    "codigo": "84061",
-    "nombre": "CHILLÁN VIEJO"
-  },
-  {
-    "codigo": "84131",
-    "nombre": "QUILLÓN"
-  },
-  {
-    "codigo": "84141",
-    "nombre": "QUIRIHUE"
-  },
-  {
-    "codigo": "84161",
-    "nombre": "SAN CARLOS"
-  },
-  {
-    "codigo": "84211",
-    "nombre": "YUNGAY"
-  },
-  {
-    "codigo": "91011",
-    "nombre": "LABRANZA"
-  },
-  {
-    "codigo": "91012",
-    "nombre": "TEMUCO"
-  },
-  {
-    "codigo": "91021",
-    "nombre": "CARAHUE"
-  },
-  {
-    "codigo": "91031",
-    "nombre": "CUNCO"
-  },
-  {
-    "codigo": "91051",
-    "nombre": "FREIRE"
-  },
-  {
-    "codigo": "91071",
-    "nombre": "GORBEA"
-  },
-  {
-    "codigo": "91081",
-    "nombre": "LAUTARO"
-  },
-  {
-    "codigo": "91091",
-    "nombre": "LONCOCHE"
-  },
-  {
-    "codigo": "91111",
-    "nombre": "NUEVA IMPERIAL"
-  },
-  {
-    "codigo": "91121",
-    "nombre": "PADRE LAS CASAS"
-  },
-  {
-    "codigo": "91141",
-    "nombre": "PITRUFQUÉN"
-  },
-  {
-    "codigo": "91151",
-    "nombre": "PUCÓN"
-  },
-  {
-    "codigo": "91201",
-    "nombre": "VILLARRICA"
-  },
-  {
-    "codigo": "92011",
-    "nombre": "ANGOL"
-  },
-  {
-    "codigo": "92021",
-    "nombre": "COLLIPULLI"
-  },
-  {
-    "codigo": "92031",
-    "nombre": "CURACAUTÍN"
-  },
-  {
-    "codigo": "92081",
-    "nombre": "PURÉN"
-  },
-  {
-    "codigo": "92091",
-    "nombre": "RENAICO"
-  },
-  {
-    "codigo": "92101",
-    "nombre": "TRAIGUÉN"
-  },
-  {
-    "codigo": "92111",
-    "nombre": "VICTORIA"
-  },
-  {
-    "codigo": "101011",
-    "nombre": "ALERCE"
-  },
-  {
-    "codigo": "101012",
-    "nombre": "PUERTO MONTT"
-  },
-  {
-    "codigo": "101021",
-    "nombre": "CALBUCO"
-  },
-  {
-    "codigo": "101041",
-    "nombre": "FRESIA"
-  },
-  {
-    "codigo": "101051",
-    "nombre": "FRUTILLAR"
-  },
-  {
-    "codigo": "101061",
-    "nombre": "LOS MUERMOS"
-  },
-  {
-    "codigo": "101071",
-    "nombre": "LLANQUIHUE"
-  },
-  {
-    "codigo": "101091",
-    "nombre": "PUERTO VARAS"
-  },
-  {
-    "codigo": "102011",
-    "nombre": "CASTRO"
-  },
-  {
-    "codigo": "102021",
-    "nombre": "ANCUD"
-  },
-  {
-    "codigo": "102081",
-    "nombre": "QUELLÓN"
-  },
-  {
-    "codigo": "103011",
-    "nombre": "OSORNO"
-  },
-  {
-    "codigo": "103031",
-    "nombre": "PURRANQUE"
-  },
-  {
-    "codigo": "103051",
-    "nombre": "RÍO NEGRO"
-  },
-  {
-    "codigo": "111011",
-    "nombre": "COYHAIQUE"
-  },
-  {
-    "codigo": "112011",
-    "nombre": "PUERTO AYSÉN"
-  },
-  {
-    "codigo": "112012",
-    "nombre": "VILLA MAÑIGUALES"
-  },
-  {
-    "codigo": "121011",
-    "nombre": "PUNTA ARENAS"
-  },
-  {
-    "codigo": "124011",
-    "nombre": "PUERTO NATALES"
-  },
-  {
-    "codigo": "131011",
-    "nombre": "SANTIAGO"
-  },
-  {
-    "codigo": "131021",
-    "nombre": "CERRILLOS"
-  },
-  {
-    "codigo": "131031",
-    "nombre": "CERRO NAVIA"
-  },
-  {
-    "codigo": "131041",
-    "nombre": "CONCHALÍ"
-  },
-  {
-    "codigo": "131051",
-    "nombre": "EL BOSQUE"
-  },
-  {
-    "codigo": "131061",
-    "nombre": "ESTACIÓN CENTRAL"
-  },
-  {
-    "codigo": "131071",
-    "nombre": "HUECHURABA"
-  },
-  {
-    "codigo": "131081",
-    "nombre": "INDEPENDENCIA"
-  },
-  {
-    "codigo": "131091",
-    "nombre": "LA CISTERNA"
-  },
-  {
-    "codigo": "131101",
-    "nombre": "LA FLORIDA"
-  },
-  {
-    "codigo": "131111",
-    "nombre": "LA GRANJA"
-  },
-  {
-    "codigo": "131121",
-    "nombre": "LA PINTANA"
-  },
-  {
-    "codigo": "131131",
-    "nombre": "LA REINA"
-  },
-  {
-    "codigo": "131141",
-    "nombre": "LAS CONDES"
-  },
-  {
-    "codigo": "131151",
-    "nombre": "LO BARNECHEA"
-  },
-  {
-    "codigo": "131161",
-    "nombre": "LO ESPEJO"
-  },
-  {
-    "codigo": "131171",
-    "nombre": "LO PRADO"
-  },
-  {
-    "codigo": "131181",
-    "nombre": "MACUL"
-  },
-  {
-    "codigo": "131191",
-    "nombre": "MAIPÚ"
-  },
-  {
-    "codigo": "131201",
-    "nombre": "ÑUÑOA"
-  },
-  {
-    "codigo": "131211",
-    "nombre": "PEDRO AGUIRRE CERDA"
-  },
-  {
-    "codigo": "131221",
-    "nombre": "PEÑALOLÉN"
-  },
-  {
-    "codigo": "131231",
-    "nombre": "PROVIDENCIA"
-  },
-  {
-    "codigo": "131241",
-    "nombre": "PUDAHUEL"
-  },
-  {
-    "codigo": "131251",
-    "nombre": "QUILICURA"
-  },
-  {
-    "codigo": "131261",
-    "nombre": "QUINTA NORMAL"
-  },
-  {
-    "codigo": "131271",
-    "nombre": "RECOLETA"
-  },
-  {
-    "codigo": "131281",
-    "nombre": "RENCA"
-  },
-  {
-    "codigo": "131291",
-    "nombre": "SAN JOAQUÍN"
-  },
-  {
-    "codigo": "131301",
-    "nombre": "SAN MIGUEL"
-  },
-  {
-    "codigo": "131311",
-    "nombre": "SAN RAMÓN"
-  },
-  {
-    "codigo": "131321",
-    "nombre": "VITACURA"
-  },
-  {
-    "codigo": "132011",
-    "nombre": "PUENTE ALTO"
-  },
-  {
-    "codigo": "132021",
-    "nombre": "PIRQUE"
-  },
-  {
-    "codigo": "132031",
-    "nombre": "SAN JOSÉ DE MAIPO"
-  },
-  {
-    "codigo": "133011",
-    "nombre": "COLINA"
-  },
-  {
-    "codigo": "133021",
-    "nombre": "BATUCO"
-  },
-  {
-    "codigo": "133022",
-    "nombre": "LAMPA"
-  },
-  {
-    "codigo": "133031",
-    "nombre": "TILTIL"
-  },
-  {
-    "codigo": "134011",
-    "nombre": "SAN BERNARDO"
-  },
-  {
-    "codigo": "134021",
-    "nombre": "ALTO JAHUEL"
-  },
-  {
-    "codigo": "134022",
-    "nombre": "BUIN"
-  },
-  {
-    "codigo": "134031",
-    "nombre": "BAJOS DE SAN AGUSTÍN"
-  },
-  {
-    "codigo": "134041",
-    "nombre": "HOSPITAL"
-  },
-  {
-    "codigo": "134042",
-    "nombre": "PAINE"
-  },
-  {
-    "codigo": "135011",
-    "nombre": "MELIPILLA"
-  },
-  {
-    "codigo": "135031",
-    "nombre": "CURACAVÍ"
-  },
-  {
-    "codigo": "136011",
-    "nombre": "TALAGANTE"
-  },
-  {
-    "codigo": "136021",
-    "nombre": "EL MONTE"
-  },
-  {
-    "codigo": "136031",
-    "nombre": "ISLA DE MAIPO"
-  },
-  {
-    "codigo": "136032",
-    "nombre": "LA ISLITA"
-  },
-  {
-    "codigo": "136041",
-    "nombre": "PADRE HURTADO"
-  },
-  {
-    "codigo": "136051",
-    "nombre": "PEÑAFLOR"
-  },
-  {
-    "codigo": "141011",
-    "nombre": "VALDIVIA"
-  },
-  {
-    "codigo": "141031",
-    "nombre": "LANCO"
-  },
-  {
-    "codigo": "141041",
-    "nombre": "LOS LAGOS"
-  },
-  {
-    "codigo": "141061",
-    "nombre": "SAN JOSÉ DE LA MARIQUINA"
-  },
-  {
-    "codigo": "141071",
-    "nombre": "PAILLACO"
-  },
-  {
-    "codigo": "141081",
-    "nombre": "PANGUIPULLI"
-  },
-  {
-    "codigo": "142011",
-    "nombre": "LA UNIÓN"
-  },
-  {
-    "codigo": "142021",
-    "nombre": "FUTRONO"
-  },
-  {
-    "codigo": "142022",
-    "nombre": "LLIFÉN"
-  },
-  {
-    "codigo": "142041",
-    "nombre": "RÍO BUENO"
-  },
-  {
-    "codigo": "151011",
-    "nombre": "ARICA"
-  }
+"urbanosManzana": [
+   {
+      "codigo": "11011",
+      "nombre": "IQUIQUE"
+   },
+   {
+      "codigo": "11071",
+      "nombre": "ALTO HOSPICIO"
+   },
+   {
+      "codigo": "14011",
+      "nombre": "POZO ALMONTE"
+   },
+   {
+      "codigo": "21011",
+      "nombre": "ANTOFAGASTA"
+   },
+   {
+      "codigo": "21021",
+      "nombre": "MEJILLONES"
+   },
+   {
+      "codigo": "21041",
+      "nombre": "TALTAL"
+   },
+   {
+      "codigo": "22011",
+      "nombre": "CALAMA"
+   },
+   {
+      "codigo": "23011",
+      "nombre": "TOCOPILLA"
+   },
+   {
+      "codigo": "23021",
+      "nombre": "MARÍA ELENA"
+   },
+   {
+      "codigo": "31011",
+      "nombre": "COPIAPÓ"
+   },
+   {
+      "codigo": "31021",
+      "nombre": "CALDERA"
+   },
+   {
+      "codigo": "31031",
+      "nombre": "TIERRA AMARILLA"
+   },
+   {
+      "codigo": "32011",
+      "nombre": "CHAÑARAL"
+   },
+   {
+      "codigo": "32021",
+      "nombre": "DIEGO DE ALMAGRO"
+   },
+   {
+      "codigo": "32022",
+      "nombre": "EL SALVADOR"
+   },
+   {
+      "codigo": "33011",
+      "nombre": "VALLENAR"
+   },
+   {
+      "codigo": "33031",
+      "nombre": "FREIRINA"
+   },
+   {
+      "codigo": "33041",
+      "nombre": "HUASCO"
+   },
+   {
+      "codigo": "41011",
+      "nombre": "LA SERENA"
+   },
+   {
+      "codigo": "41021",
+      "nombre": "COQUIMBO"
+   },
+   {
+      "codigo": "41031",
+      "nombre": "ANDACOLLO"
+   },
+   {
+      "codigo": "41061",
+      "nombre": "VICUÑA"
+   },
+   {
+      "codigo": "42011",
+      "nombre": "ILLAPEL"
+   },
+   {
+      "codigo": "42031",
+      "nombre": "LOS VILOS"
+   },
+   {
+      "codigo": "42041",
+      "nombre": "SALAMANCA"
+   },
+   {
+      "codigo": "43011",
+      "nombre": "OVALLE"
+   },
+   {
+      "codigo": "43021",
+      "nombre": "COMBARBALÁ"
+   },
+   {
+      "codigo": "43031",
+      "nombre": "EL PALQUI"
+   },
+   {
+      "codigo": "43032",
+      "nombre": "MONTE PATRIA"
+   },
+   {
+      "codigo": "51011",
+      "nombre": "PLACILLA DE PEÑUELAS"
+   },
+   {
+      "codigo": "51012",
+      "nombre": "VALPARAÍSO"
+   },
+   {
+      "codigo": "51021",
+      "nombre": "CASABLANCA"
+   },
+   {
+      "codigo": "51031",
+      "nombre": "CONCÓN"
+   },
+   {
+      "codigo": "51051",
+      "nombre": "LAS VENTANAS"
+   },
+   {
+      "codigo": "51052",
+      "nombre": "PUCHUNCAVÍ"
+   },
+   {
+      "codigo": "51071",
+      "nombre": "QUINTERO"
+   },
+   {
+      "codigo": "51091",
+      "nombre": "VIÑA DEL MAR"
+   },
+   {
+      "codigo": "53011",
+      "nombre": "LOS ANDES"
+   },
+   {
+      "codigo": "53021",
+      "nombre": "CALLE LARGA"
+   },
+   {
+      "codigo": "53031",
+      "nombre": "RINCONADA"
+   },
+   {
+      "codigo": "53041",
+      "nombre": "SAN ESTEBAN"
+   },
+   {
+      "codigo": "54011",
+      "nombre": "LA LIGUA"
+   },
+   {
+      "codigo": "54021",
+      "nombre": "CABILDO"
+   },
+   {
+      "codigo": "55011",
+      "nombre": "QUILLOTA"
+   },
+   {
+      "codigo": "55021",
+      "nombre": "LA CALERA"
+   },
+   {
+      "codigo": "55031",
+      "nombre": "HIJUELAS"
+   },
+   {
+      "codigo": "55041",
+      "nombre": "LA CRUZ"
+   },
+   {
+      "codigo": "55061",
+      "nombre": "EL MELÓN"
+   },
+   {
+      "codigo": "55062",
+      "nombre": "NOGALES"
+   },
+   {
+      "codigo": "56011",
+      "nombre": "SAN ANTONIO"
+   },
+   {
+      "codigo": "56021",
+      "nombre": "ALGARROBO"
+   },
+   {
+      "codigo": "56031",
+      "nombre": "CARTAGENA"
+   },
+   {
+      "codigo": "56041",
+      "nombre": "EL QUISCO"
+   },
+   {
+      "codigo": "56051",
+      "nombre": "LAS CRUCES"
+   },
+   {
+      "codigo": "57011",
+      "nombre": "SAN FELIPE"
+   },
+   {
+      "codigo": "57021",
+      "nombre": "CATEMU"
+   },
+   {
+      "codigo": "57031",
+      "nombre": "LLAILLAY"
+   },
+   {
+      "codigo": "57051",
+      "nombre": "PUTAENDO"
+   },
+   {
+      "codigo": "57061",
+      "nombre": "SANTA MARÍA"
+   },
+   {
+      "codigo": "58011",
+      "nombre": "QUILPUÉ"
+   },
+   {
+      "codigo": "58021",
+      "nombre": "LIMACHE"
+   },
+   {
+      "codigo": "58031",
+      "nombre": "OLMUÉ"
+   },
+   {
+      "codigo": "58041",
+      "nombre": "VILLA ALEMANA"
+   },
+   {
+      "codigo": "61011",
+      "nombre": "RANCAGUA"
+   },
+   {
+      "codigo": "61021",
+      "nombre": "CODEGUA"
+   },
+   {
+      "codigo": "61051",
+      "nombre": "DOÑIHUE"
+   },
+   {
+      "codigo": "61052",
+      "nombre": "LO MIRANDA"
+   },
+   {
+      "codigo": "61061",
+      "nombre": "GRANEROS"
+   },
+   {
+      "codigo": "61071",
+      "nombre": "LAS CABRAS"
+   },
+   {
+      "codigo": "61081",
+      "nombre": "MACHALÍ"
+   },
+   {
+      "codigo": "61101",
+      "nombre": "SAN FRANCISCO DE MOSTAZAL"
+   },
+   {
+      "codigo": "61111",
+      "nombre": "GULTRO"
+   },
+   {
+      "codigo": "61112",
+      "nombre": "OLIVAR ALTO"
+   },
+   {
+      "codigo": "61121",
+      "nombre": "PEUMO"
+   },
+   {
+      "codigo": "61131",
+      "nombre": "PICHIDEGUA"
+   },
+   {
+      "codigo": "61141",
+      "nombre": "QUINTA DE TILCOCO"
+   },
+   {
+      "codigo": "61151",
+      "nombre": "RENGO"
+   },
+   {
+      "codigo": "61161",
+      "nombre": "REQUÍNOA"
+   },
+   {
+      "codigo": "61171",
+      "nombre": "SAN VICENTE DE TAGUA TAGUA"
+   },
+   {
+      "codigo": "62011",
+      "nombre": "PICHILEMU"
+   },
+   {
+      "codigo": "62031",
+      "nombre": "LITUECHE"
+   },
+   {
+      "codigo": "62041",
+      "nombre": "MARCHIHUE"
+   },
+   {
+      "codigo": "63011",
+      "nombre": "SAN FERNANDO"
+   },
+   {
+      "codigo": "63021",
+      "nombre": "CHÉPICA"
+   },
+   {
+      "codigo": "63031",
+      "nombre": "CHIMBARONGO"
+   },
+   {
+      "codigo": "63051",
+      "nombre": "NANCAGUA"
+   },
+   {
+      "codigo": "63101",
+      "nombre": "SANTA CRUZ"
+   },
+   {
+      "codigo": "71011",
+      "nombre": "TALCA"
+   },
+   {
+      "codigo": "71021",
+      "nombre": "CONSTITUCIÓN"
+   },
+   {
+      "codigo": "71091",
+      "nombre": "SAN CLEMENTE"
+   },
+   {
+      "codigo": "72011",
+      "nombre": "CAUQUENES"
+   },
+   {
+      "codigo": "72021",
+      "nombre": "CHANCO"
+   },
+   {
+      "codigo": "73011",
+      "nombre": "CURICÓ"
+   },
+   {
+      "codigo": "73012",
+      "nombre": "SARMIENTO"
+   },
+   {
+      "codigo": "73021",
+      "nombre": "HUALAÑÉ"
+   },
+   {
+      "codigo": "73041",
+      "nombre": "MOLINA"
+   },
+   {
+      "codigo": "73081",
+      "nombre": "TENO"
+   },
+   {
+      "codigo": "74011",
+      "nombre": "LINARES"
+   },
+   {
+      "codigo": "74031",
+      "nombre": "LONGAVÍ"
+   },
+   {
+      "codigo": "74041",
+      "nombre": "PARRAL"
+   },
+   {
+      "codigo": "74061",
+      "nombre": "SAN JAVIER"
+   },
+   {
+      "codigo": "74071",
+      "nombre": "VILLA ALEGRE"
+   },
+   {
+      "codigo": "81011",
+      "nombre": "CONCEPCIÓN"
+   },
+   {
+      "codigo": "81021",
+      "nombre": "CORONEL"
+   },
+   {
+      "codigo": "81031",
+      "nombre": "CHIGUAYANTE"
+   },
+   {
+      "codigo": "81041",
+      "nombre": "FLORIDA"
+   },
+   {
+      "codigo": "81051",
+      "nombre": "HUALQUI"
+   },
+   {
+      "codigo": "81061",
+      "nombre": "LOTA"
+   },
+   {
+      "codigo": "81071",
+      "nombre": "PENCO"
+   },
+   {
+      "codigo": "81081",
+      "nombre": "SAN PEDRO DE LA PAZ"
+   },
+   {
+      "codigo": "81091",
+      "nombre": "SANTA JUANA"
+   },
+   {
+      "codigo": "81101",
+      "nombre": "TALCAHUANO"
+   },
+   {
+      "codigo": "81111",
+      "nombre": "TOMÉ"
+   },
+   {
+      "codigo": "81121",
+      "nombre": "HUALPÉN"
+   },
+   {
+      "codigo": "82011",
+      "nombre": "LEBU"
+   },
+   {
+      "codigo": "82021",
+      "nombre": "ARAUCO"
+   },
+   {
+      "codigo": "82031",
+      "nombre": "CAÑETE"
+   },
+   {
+      "codigo": "82051",
+      "nombre": "CURANILAHUE"
+   },
+   {
+      "codigo": "82061",
+      "nombre": "LOS ÁLAMOS"
+   },
+   {
+      "codigo": "83011",
+      "nombre": "LOS ÁNGELES"
+   },
+   {
+      "codigo": "83031",
+      "nombre": "CABRERO"
+   },
+   {
+      "codigo": "83032",
+      "nombre": "MONTE ÁGUILA"
+   },
+   {
+      "codigo": "83041",
+      "nombre": "LA LAJA"
+   },
+   {
+      "codigo": "83051",
+      "nombre": "MULCHÉN"
+   },
+   {
+      "codigo": "83061",
+      "nombre": "NACIMIENTO"
+   },
+   {
+      "codigo": "83111",
+      "nombre": "SANTA BÁRBARA"
+   },
+   {
+      "codigo": "83121",
+      "nombre": "HUÉPIL"
+   },
+   {
+      "codigo": "83122",
+      "nombre": "TUCAPEL"
+   },
+   {
+      "codigo": "83131",
+      "nombre": "YUMBEL"
+   },
+   {
+      "codigo": "84011",
+      "nombre": "CHILLÁN"
+   },
+   {
+      "codigo": "84021",
+      "nombre": "BULNES"
+   },
+   {
+      "codigo": "84041",
+      "nombre": "COELEMU"
+   },
+   {
+      "codigo": "84051",
+      "nombre": "COIHUECO"
+   },
+   {
+      "codigo": "84061",
+      "nombre": "CHILLÁN VIEJO"
+   },
+   {
+      "codigo": "84131",
+      "nombre": "QUILLÓN"
+   },
+   {
+      "codigo": "84141",
+      "nombre": "QUIRIHUE"
+   },
+   {
+      "codigo": "84161",
+      "nombre": "SAN CARLOS"
+   },
+   {
+      "codigo": "84211",
+      "nombre": "YUNGAY"
+   },
+   {
+      "codigo": "91011",
+      "nombre": "LABRANZA"
+   },
+   {
+      "codigo": "91012",
+      "nombre": "TEMUCO"
+   },
+   {
+      "codigo": "91021",
+      "nombre": "CARAHUE"
+   },
+   {
+      "codigo": "91031",
+      "nombre": "CUNCO"
+   },
+   {
+      "codigo": "91051",
+      "nombre": "FREIRE"
+   },
+   {
+      "codigo": "91071",
+      "nombre": "GORBEA"
+   },
+   {
+      "codigo": "91081",
+      "nombre": "LAUTARO"
+   },
+   {
+      "codigo": "91091",
+      "nombre": "LONCOCHE"
+   },
+   {
+      "codigo": "91111",
+      "nombre": "NUEVA IMPERIAL"
+   },
+   {
+      "codigo": "91121",
+      "nombre": "PADRE LAS CASAS"
+   },
+   {
+      "codigo": "91141",
+      "nombre": "PITRUFQUÉN"
+   },
+   {
+      "codigo": "91151",
+      "nombre": "PUCÓN"
+   },
+   {
+      "codigo": "91201",
+      "nombre": "VILLARRICA"
+   },
+   {
+      "codigo": "92011",
+      "nombre": "ANGOL"
+   },
+   {
+      "codigo": "92021",
+      "nombre": "COLLIPULLI"
+   },
+   {
+      "codigo": "92031",
+      "nombre": "CURACAUTÍN"
+   },
+   {
+      "codigo": "92081",
+      "nombre": "PURÉN"
+   },
+   {
+      "codigo": "92091",
+      "nombre": "RENAICO"
+   },
+   {
+      "codigo": "92101",
+      "nombre": "TRAIGUÉN"
+   },
+   {
+      "codigo": "92111",
+      "nombre": "VICTORIA"
+   },
+   {
+      "codigo": "101011",
+      "nombre": "ALERCE"
+   },
+   {
+      "codigo": "101012",
+      "nombre": "PUERTO MONTT"
+   },
+   {
+      "codigo": "101021",
+      "nombre": "CALBUCO"
+   },
+   {
+      "codigo": "101041",
+      "nombre": "FRESIA"
+   },
+   {
+      "codigo": "101051",
+      "nombre": "FRUTILLAR"
+   },
+   {
+      "codigo": "101061",
+      "nombre": "LOS MUERMOS"
+   },
+   {
+      "codigo": "101071",
+      "nombre": "LLANQUIHUE"
+   },
+   {
+      "codigo": "101091",
+      "nombre": "PUERTO VARAS"
+   },
+   {
+      "codigo": "102011",
+      "nombre": "CASTRO"
+   },
+   {
+      "codigo": "102021",
+      "nombre": "ANCUD"
+   },
+   {
+      "codigo": "102081",
+      "nombre": "QUELLÓN"
+   },
+   {
+      "codigo": "103011",
+      "nombre": "OSORNO"
+   },
+   {
+      "codigo": "103031",
+      "nombre": "PURRANQUE"
+   },
+   {
+      "codigo": "103051",
+      "nombre": "RÍO NEGRO"
+   },
+   {
+      "codigo": "111011",
+      "nombre": "COYHAIQUE"
+   },
+   {
+      "codigo": "112011",
+      "nombre": "PUERTO AYSÉN"
+   },
+   {
+      "codigo": "112012",
+      "nombre": "VILLA MAÑIGUALES"
+   },
+   {
+      "codigo": "121011",
+      "nombre": "PUNTA ARENAS"
+   },
+   {
+      "codigo": "124011",
+      "nombre": "PUERTO NATALES"
+   },
+   {
+      "codigo": "131011",
+      "nombre": "SANTIAGO"
+   },
+   {
+      "codigo": "131021",
+      "nombre": "CERRILLOS"
+   },
+   {
+      "codigo": "131031",
+      "nombre": "CERRO NAVIA"
+   },
+   {
+      "codigo": "131041",
+      "nombre": "CONCHALÍ"
+   },
+   {
+      "codigo": "131051",
+      "nombre": "EL BOSQUE"
+   },
+   {
+      "codigo": "131061",
+      "nombre": "ESTACIÓN CENTRAL"
+   },
+   {
+      "codigo": "131071",
+      "nombre": "HUECHURABA"
+   },
+   {
+      "codigo": "131081",
+      "nombre": "INDEPENDENCIA"
+   },
+   {
+      "codigo": "131091",
+      "nombre": "LA CISTERNA"
+   },
+   {
+      "codigo": "131101",
+      "nombre": "LA FLORIDA"
+   },
+   {
+      "codigo": "131111",
+      "nombre": "LA GRANJA"
+   },
+   {
+      "codigo": "131121",
+      "nombre": "LA PINTANA"
+   },
+   {
+      "codigo": "131131",
+      "nombre": "LA REINA"
+   },
+   {
+      "codigo": "131141",
+      "nombre": "LAS CONDES"
+   },
+   {
+      "codigo": "131151",
+      "nombre": "LO BARNECHEA"
+   },
+   {
+      "codigo": "131161",
+      "nombre": "LO ESPEJO"
+   },
+   {
+      "codigo": "131171",
+      "nombre": "LO PRADO"
+   },
+   {
+      "codigo": "131181",
+      "nombre": "MACUL"
+   },
+   {
+      "codigo": "131191",
+      "nombre": "MAIPÚ"
+   },
+   {
+      "codigo": "131201",
+      "nombre": "ÑUÑOA"
+   },
+   {
+      "codigo": "131211",
+      "nombre": "PEDRO AGUIRRE CERDA"
+   },
+   {
+      "codigo": "131221",
+      "nombre": "PEÑALOLÉN"
+   },
+   {
+      "codigo": "131231",
+      "nombre": "PROVIDENCIA"
+   },
+   {
+      "codigo": "131241",
+      "nombre": "PUDAHUEL"
+   },
+   {
+      "codigo": "131251",
+      "nombre": "QUILICURA"
+   },
+   {
+      "codigo": "131261",
+      "nombre": "QUINTA NORMAL"
+   },
+   {
+      "codigo": "131271",
+      "nombre": "RECOLETA"
+   },
+   {
+      "codigo": "131281",
+      "nombre": "RENCA"
+   },
+   {
+      "codigo": "131291",
+      "nombre": "SAN JOAQUÍN"
+   },
+   {
+      "codigo": "131301",
+      "nombre": "SAN MIGUEL"
+   },
+   {
+      "codigo": "131311",
+      "nombre": "SAN RAMÓN"
+   },
+   {
+      "codigo": "131321",
+      "nombre": "VITACURA"
+   },
+   {
+      "codigo": "132011",
+      "nombre": "PUENTE ALTO"
+   },
+   {
+      "codigo": "132021",
+      "nombre": "PIRQUE"
+   },
+   {
+      "codigo": "132031",
+      "nombre": "SAN JOSÉ DE MAIPO"
+   },
+   {
+      "codigo": "133011",
+      "nombre": "COLINA"
+   },
+   {
+      "codigo": "133021",
+      "nombre": "BATUCO"
+   },
+   {
+      "codigo": "133022",
+      "nombre": "LAMPA"
+   },
+   {
+      "codigo": "133031",
+      "nombre": "TILTIL"
+   },
+   {
+      "codigo": "134011",
+      "nombre": "SAN BERNARDO"
+   },
+   {
+      "codigo": "134021",
+      "nombre": "ALTO JAHUEL"
+   },
+   {
+      "codigo": "134022",
+      "nombre": "BUIN"
+   },
+   {
+      "codigo": "134031",
+      "nombre": "BAJOS DE SAN AGUSTÍN"
+   },
+   {
+      "codigo": "134041",
+      "nombre": "HOSPITAL"
+   },
+   {
+      "codigo": "134042",
+      "nombre": "PAINE"
+   },
+   {
+      "codigo": "135011",
+      "nombre": "MELIPILLA"
+   },
+   {
+      "codigo": "135031",
+      "nombre": "CURACAVÍ"
+   },
+   {
+      "codigo": "136011",
+      "nombre": "TALAGANTE"
+   },
+   {
+      "codigo": "136021",
+      "nombre": "EL MONTE"
+   },
+   {
+      "codigo": "136031",
+      "nombre": "ISLA DE MAIPO"
+   },
+   {
+      "codigo": "136032",
+      "nombre": "LA ISLITA"
+   },
+   {
+      "codigo": "136041",
+      "nombre": "PADRE HURTADO"
+   },
+   {
+      "codigo": "136051",
+      "nombre": "PEÑAFLOR"
+   },
+   {
+      "codigo": "141011",
+      "nombre": "VALDIVIA"
+   },
+   {
+      "codigo": "141031",
+      "nombre": "LANCO"
+   },
+   {
+      "codigo": "141041",
+      "nombre": "LOS LAGOS"
+   },
+   {
+      "codigo": "141061",
+      "nombre": "SAN JOSÉ DE LA MARIQUINA"
+   },
+   {
+      "codigo": "141071",
+      "nombre": "PAILLACO"
+   },
+   {
+      "codigo": "141081",
+      "nombre": "PANGUIPULLI"
+   },
+   {
+      "codigo": "142011",
+      "nombre": "LA UNIÓN"
+   },
+   {
+      "codigo": "142021",
+      "nombre": "FUTRONO"
+   },
+   {
+      "codigo": "142022",
+      "nombre": "LLIFÉN"
+   },
+   {
+      "codigo": "142041",
+      "nombre": "RÍO BUENO"
+   },
+   {
+      "codigo": "151011",
+      "nombre": "ARICA"
+   }
 ]
