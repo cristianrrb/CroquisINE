@@ -597,7 +597,6 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
-            #return False
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
@@ -1088,8 +1087,6 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-
-
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
@@ -1116,12 +1113,14 @@ parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "RAU"
 parametroViviendas = ""
+parametroSoloAnalisis = "si"
 # --------------------------------------------------------------------
 parametroCodigos = "2203900013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
 parametroViviendas = ""
+parametroSoloAnalisis = "si"
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
