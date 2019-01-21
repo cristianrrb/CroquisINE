@@ -597,6 +597,7 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
+            #return False
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
@@ -1113,14 +1114,12 @@ parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "RAU"
 parametroViviendas = ""
-parametroSoloAnalisis = "si"
 # --------------------------------------------------------------------
 parametroCodigos = "2203900013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Rural"
 parametroViviendas = ""
-parametroSoloAnalisis = "si"
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
