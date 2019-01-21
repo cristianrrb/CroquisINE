@@ -765,10 +765,16 @@ def actualizaVinetaManzanas(mxd,datosManzana):
         nombre_urbano = nombreUrbano(datosManzana[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         mensaje(codigo_barra)
+        mensaje(parametroEncuesta)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
-            if elm.name == "Nombre_Muestra":
-                elm.text = parametroEncuesta+" "+parametroMarco
+            if parametroEncuesta == "ENE":
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta + "_____"
+            else:
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta+" "+parametroMarco
+
             if elm.name == "Nombre_Region":
                 elm.text = nombre_region
             if elm.name == "Nombre_Provincia":
