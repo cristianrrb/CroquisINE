@@ -511,7 +511,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
             arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "4 Meters", "FULL", "FLAT", "ALL")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            lyr_seudo = r"C:\Desarrollo\INE\Aplicacion\seudo_lyr.lyr"
+            lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
             #mensaje("aqui")
