@@ -51,3 +51,55 @@ if __name__ == "__main__":
 
 
 --------------------------
+
+import email
+import smtplib
+
+msg = email.message_from_string("warning")
+msg["From"] = "marcelojimenez9@gmail.com"
+msg["To"] = "marcelojimenez9@gmail.com"
+msg["Subject"] = "helOoooOo"
+
+s = smtplib.SMTP("smtp.live.com",587)
+s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
+s.starttls() #Puts connection to SMTP server in TLS mode
+s.ehlo()
+s.login("marcelojimenez9@gmail.com", "Titito.05052017")
+
+s.sendmail("marcelojimenez9@gmail.com", "marcelojimenez9@gmail.com", msg.as_string())
+
+s.quit()
+
+-------------------------------------------------------------------------------------------
+FUNKAAAAAAAA
+
+import smtplib
+
+mailserver = smtplib.SMTP('smtp.office365.com',587)
+mailserver.ehlo()
+mailserver.starttls()
+mailserver.login('mjimenez@esri.cl', 'Marce6550esRi')
+mailserver.sendmail('mjimenez@esri.cl','marcelojimenez9@gmail.com','PRUEBAAAAAAAAAA')
+mailserver.quit()
+
+---------------------------------------------------------------------------------------------
+
+
+import smtplib
+import base64
+
+sendto = 'marcelojimenez9@gmail.com'
+user= 'mjimenez@esri.cl'
+password = base64.b64encode("Marce6550esRi")
+smtpserver = smtplib.SMTP('smtp.office365.com',587)
+
+smtpserver.ehlo()
+smtpserver.starttls()
+smtpserver.ehlo
+smtpserver.login(user, password)
+header = 'To:' + sendto + 'n' + 'From: ' + user + 'n' + 'Subject:testing n'
+print header
+msgbody = header + 'n This is a test Email send using Python nn'
+smtpserver.sendmail(user, sendto, msgbody)
+print 'done!'
+smtpserver.close()
