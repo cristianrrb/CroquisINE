@@ -1046,8 +1046,9 @@ def nombreUrbano(codigo):
         return codigo
 
 def enviarMail(registros):
+
     fromMail = "mjimenez@esri.cl"
-    passwordFromMail = 'Marce6550esRi'
+    passwordFromMail = 'clave'
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
 	toMail = "mjimenez@esri.cl"
@@ -1269,7 +1270,7 @@ rutaZip = comprime(registros, rutaCSV)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-enviarMail(registros)
+#enviarMail(registros)
 
 """
 for mxd in mxd_list:
