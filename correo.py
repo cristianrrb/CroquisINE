@@ -64,7 +64,7 @@ s = smtplib.SMTP("smtp.live.com",587)
 s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
 s.starttls() #Puts connection to SMTP server in TLS mode
 s.ehlo()
-s.login("marcelojimenez9@gmail.com", "Titito.05052017")
+s.login("marcelojimenez9@gmail.com", "clave")
 
 s.sendmail("marcelojimenez9@gmail.com", "marcelojimenez9@gmail.com", msg.as_string())
 
@@ -78,7 +78,7 @@ import smtplib
 mailserver = smtplib.SMTP('smtp.office365.com',587)
 mailserver.ehlo()
 mailserver.starttls()
-mailserver.login('mjimenez@esri.cl', 'Marce6550esRi')
+mailserver.login('mjimenez@esri.cl', 'clave')
 mailserver.sendmail('mjimenez@esri.cl','marcelojimenez9@gmail.com','PRUEBAAAAAAAAAA')
 mailserver.quit()
 
@@ -90,7 +90,7 @@ import base64
 
 sendto = 'marcelojimenez9@gmail.com'
 user= 'mjimenez@esri.cl'
-password = base64.b64encode("Marce6550esRi")
+password = base64.b64encode("clave")
 smtpserver = smtplib.SMTP('smtp.office365.com',587)
 
 smtpserver.ehlo()
