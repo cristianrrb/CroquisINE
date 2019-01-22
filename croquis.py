@@ -1,5 +1,4 @@
 # -*- coding: iso-8859-1 -*-
-
 import arcpy
 import os, urllib, urllib2, json, sys
 import datetime, csv, uuid, zipfile
@@ -139,7 +138,6 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
 def listaMXDs(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
-
     lista = []
     for e in config['estratos']:
         if e['nombre'] == estrato:
@@ -188,9 +186,7 @@ def calculaExtent(fs, metrosBuffer):
         fcBuffer = arcpy.Buffer_analysis(fs, buffer, metrosBuffer)
         with arcpy.da.SearchCursor(fcBuffer, ['SHAPE@']) as rows:
             lista = [r[0] for r in rows]
-
         arcpy.Delete_management(buffer)
-
         if lista != None and len(lista) > 0:
             mensaje('Extension del poligono obtenida correctamente.')
             return lista[0].extent
@@ -357,7 +353,6 @@ def limpiaMapaManzana(mxd, manzana,cod_manz):
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([poli,0])
         cursor.insertRow([ext,1])
-        #   "https://gis.ine.cl/public/rest/services/ESRI/servicio_manzana/MapServer/0"
         url = infoMarco.urlManzanas
         manz_excluidas = areasExcluidas(ext, url)
         if manz_excluidas != None:
@@ -413,7 +408,6 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         poli = polgrande.difference(polchico)
         cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
         cursor.insertRow([poli,0])
-        # "https://gis.ine.cl/public/rest/services/ESRI/servicio_rau/MapServer/1"
         url = infoMarco.urlSecciones_RAU
         manz_excluidas = areasExcluidas(ext, url)
         if manz_excluidas != None:
@@ -480,7 +474,6 @@ def cortaEtiqueta(mxd, elLyr, poly):
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
         if cuantos > 0:
-            #mensaje(path_scratchGDB)
             if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
                 arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
             arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
@@ -808,7 +801,7 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
                 if elm.name == "Nombre_Muestra":
-                    elm.text = parametroEncuesta + "_____"
+                    elm.text = parametroEncuesta
             else:
                 if elm.name == "Nombre_Muestra":
                     elm.text = parametroEncuesta+" "+parametroMarco
@@ -845,7 +838,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
                 if elm.name == "Nombre_Muestra":
-                    elm.text = parametroEncuesta + "_____"
+                    elm.text = parametroEncuesta
             else:
                 if elm.name == "Nombre_Muestra":
                     elm.text = parametroEncuesta+" "+parametroMarco
@@ -927,7 +920,7 @@ def generaPDF(mxd, nombrePDF, datos):
 def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     if estrato == "Manzana":
         tipo = "MZ"
-        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], datosEntidad[11], infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], int(datosEntidad[11]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
@@ -936,14 +929,16 @@ def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[5], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
-def generaCodigoBarra(estrato, datosEstrato):
+def generaCodigoBarra(estrato, datosEntidad):
     if estrato == "Manzana":
         tipo = "MZ"
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[6], int(datosEntidad[11]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[6], int(datosEntidad[10]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEstrato[4], int(datosEstrato[10]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[5], int(datosEntidad[10]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
