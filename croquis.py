@@ -52,7 +52,7 @@ def obtieneInfoManzana(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(infoMarco.urlManzanas, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -623,7 +623,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                                 registro.orientacion = infoMxd['orientacion']
                                 registro.escala = escala
 
-                                nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                                nombrePDF = generaNombrePDF(parametroEstrato, datosManzana, infoMxd, parametroEncuesta, parametroMarco)
                                 registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
 
                                 if registro.rutaPDF != "":
@@ -651,7 +651,7 @@ def procesaRAU(codigo):
                         registro.orientacion = infoMxd['orientacion']
                         registro.escala = escala
 
-                        nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                        nombrePDF = generaNombrePDF(parametroEstrato, datosRAU, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
@@ -680,7 +680,7 @@ def procesaRural(codigo):
                     registro.orientacion = infoMxd['orientacion']
                     registro.escala = escala
 
-                    nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+                    nombrePDF = generaNombrePDF(parametroEstrato, datosRural, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
@@ -716,7 +716,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
             codigo = "{}_{}".format(codigoSeccion, area[2])
-            nombrePDF = generaNombrePDF(parametroEstrato, codigo, infoMxd, parametroEncuesta, parametroMarco)
+            nombrePDF = generaNombrePDF(parametroEstrato, datosSeccion, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
             mensaje("Se procesó el área destacada correctamente.")
@@ -887,7 +887,6 @@ def normalizaPalabra(s):
         ("Ñ", "N"),
         (" ", "_"),
         ("'", ""),
-
     )
     for a, b in replacements:
         s = s.replace(a, b).replace(a.upper(), b.upper())
@@ -899,11 +898,10 @@ def generaPDF(mxd, nombrePDF, datos):
     nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
     if parametroEstrato == "Rural":
-        rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna)
+        rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
     else:
         nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-        rutaDestino = os.path.join(config['rutabase'],"MUESTRAS_PDF","ENE",nueva_region,nueva_comuna,nueva_urbano)
-    mensaje(rutaDestino)
+        rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
 
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
@@ -921,18 +919,21 @@ def generaPDF(mxd, nombrePDF, datos):
         os.makedirs(rutaDestino)
 
     destinoPDF = os.path.join(rutaDestino, nombrePDF)
+    mensaje(destinoPDF)
     arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
     mensaje("Exportado a pdf")
     return destinoPDF
 
-def generaNombrePDF(estrato, codigo, infoMxd, encuesta, marco):
+def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     if estrato == "Manzana":
-        tipo = "Mz"
+        tipo = "MZ"
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], datosEntidad[11], infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "Rural":
         tipo = "S_RUR"
-    nombre = "{}_{}_{}_{}_{}_{}.pdf".format(tipo, codigo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco)
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[5], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
 def generaCodigoBarra(estrato, datosEstrato):
@@ -1199,8 +1200,6 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-
-
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
@@ -1266,7 +1265,6 @@ for indice, codigo in enumerate(listaCodigos):
 
 rutaCSV = escribeCSV(registros)
 rutaZip = comprime(registros, rutaCSV)
-
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
