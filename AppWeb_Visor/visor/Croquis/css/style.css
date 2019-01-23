@@ -1,0 +1,152 @@
+.jimu-widget-croquis-ine {
+	position: relative;
+	font-size: 12px;
+	width: 100%;
+	height: 100%;
+    overflow: hidden;
+}
+.jimu-widget-croquis-ine .div-estrato {
+    position: relative;
+    line-height: 24px;
+    height: 24px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+.jimu-widget-croquis-ine .div-encuesta {
+    position: relative;
+    line-height: 24px;
+    height: 24px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+.jimu-widget-croquis-ine .div-marco {
+    position: relative;
+    line-height: 24px;
+    height: 24px;
+	width: 100%;
+	margin-bottom: 5px;
+}
+.jimu-widget-croquis-ine .div-descarga {
+	float: left;
+}
+.jimu-widget-croquis-ine .div-archivo {
+    position: relative;
+    line-height: 24px;
+    height: 24px;
+	width: 100%;
+	margin-bottom: 5px;
+}
+.jimu-widget-croquis-ine .div-archivo input {
+    display: none;
+}
+.jimu-widget-croquis-ine .div-codigos {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 120px;
+	bottom: 35px;
+	background-color: #eeeeee;
+    overflow-y: auto;
+}
+.jimu-widget-croquis-ine .div-acciones {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.jimu-widget-croquis-ine .div-etiqueta {
+	position: absolute;
+	height: 100%;
+	width: 60px;
+    padding-left: 5px;
+}
+.jimu-widget-croquis-ine .div-valor {
+	position: absolute;
+    left: 65px;
+    right: 0;
+}
+.jimu-widget-croquis-ine table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.jimu-widget-croquis-ine tr {
+	height: 25px;
+	/* background-color: #eeeeee; */
+	cursor: pointer;
+}
+.jimu-widget-croquis-ine tr:hover {
+	background-color: #aaaaaa;
+	/* color: white; */
+}
+.jimu-widget-croquis-ine td {
+	overflow: hidden;
+	padding: 2px 7px;
+}
+.jimu-widget-croquis-ine .td-codigo {
+	/* font-family: 'Courier New', Courier, monospace;
+	font-size: 14px; */
+	/* text-align: right; */
+	padding-right: 10px;
+}
+.jimu-widget-croquis-ine .td-viviendas {
+	width: 50px;
+}
+.jimu-widget-croquis-ine .td-estado {
+	width: 150px;
+}
+
+/* ================================================================================= */
+/* CSS para los botones */
+.jimu-widget-croquis-ine .jimu-btn {
+	font-size: 12px;
+	float: right;
+	padding: 0 7px;
+	height: 25px;
+	line-height: 25px;
+	margin: 0 0 0 5px;
+	min-width: 70px;
+}
+.jimu-widget-croquis-ine .jimu-btn2 {
+	float: left;
+	margin: 0;
+}
+.jimu-widget-croquis-ine .jimu-btn-selected {
+	background-color: #596d87;
+}
+
+/* ================================================================================= */
+/* CONTROLA LOS DROP LIST DOJO */
+.jimu-widget-croquis-ine .dijitSelect {
+	height: 22px;
+}
+.jimu-widget-croquis-ine .dijitSelect .dijitArrowButton {
+	width: 23px;
+}
+.jimu-widget-croquis-ine .dijitTextBox {
+	height: 24px;
+	line-height: 24px;
+}
+.jimu-widget-croquis-ine .dijitTextBox .dijitPlaceHolder {
+	height: 20px;
+	line-height: 20px !important;
+	font-size: inherit;
+	overflow: hidden;
+} 
+.jimu-widget-croquis-ine .dijitTextBox .dijitInputInner {
+	height: 20px;
+	line-height: 20px !important;
+	font-size: inherit;
+}
+.jimu-widget-croquis-ine .dijitTextBoxError {
+	border-color: #d46464 !important;
+	box-shadow: 0px 0px 5px #d46464;
+}
+.jimu-widget-croquis-ine .dijitComboBox .dijitDownArrowButton {
+	height: 22px;
+}
+.jimu-widget-croquis-ine .dijitValidationTextl {
+	height: 22px !important;
+}
+.jimu-widget-croquis-ine .dijitComboBoxMenu {
+    height: 200px;
+}

@@ -920,25 +920,25 @@ def generaPDF(mxd, nombrePDF, datos):
 def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     if estrato == "Manzana":
         tipo = "MZ"
-        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], int(datosEntidad[11]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
-        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[6], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "Rural":
         tipo = "S_RUR"
-        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, datosEntidad[5], int(datosEntidad[10]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
 def generaCodigoBarra(estrato, datosEntidad):
     if estrato == "Manzana":
         tipo = "MZ"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[6], int(datosEntidad[11]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[6], int(datosEntidad[10]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "Rural":
         tipo = "S_RUR"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, datosEntidad[5], int(datosEntidad[10]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
@@ -1047,16 +1047,16 @@ def enviarMail(registros):
     passwordFromMail = 'clave'
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
-	toMail = "mjimenez@esri.cl"
+    toMail = "mjimenez@esri.cl"
 
-	# Create message container - the correct MIME type is multipart/alternative.
-	msg = MIMEMultipart('alternative')
-	msg['Subject'] = "Reporte INE Muestra: " + parametroEncuesta + ", Estrato: " + parametroEstrato
-	msg['From'] = fromMail
-	msg['To'] = toMail
+    # Create message container - the correct MIME type is multipart/alternative.
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "Reporte INE Muestra: " + parametroEncuesta + ", Estrato: " + parametroEstrato
+    msg['From'] = fromMail
+    msg['To'] = toMail
 
-	# Create the body of the message (a plain-text and an HTML version).
-	html = """\
+    # Create the body of the message (a plain-text and an HTML version).
+    html = """\
     <html>
     <head>
     <style>
@@ -1128,13 +1128,13 @@ def enviarMail(registros):
     """
     part1 = MIMEText(html, 'html')
     msg.attach(part1)
-	mailserver = smtplib.SMTP('smtp.office365.com',587)
-	mailserver.ehlo()
-	mailserver.starttls()
-	mailserver.login(fromMail, passwordFromMail)
-	mailserver.sendmail(fromMail, toMail, msg.as_string())
+    mailserver = smtplib.SMTP('smtp.office365.com',587)
+    mailserver.ehlo()
+    mailserver.starttls()
+    mailserver.login(fromMail, passwordFromMail)
+    mailserver.sendmail(fromMail, toMail, msg.as_string())
     mensaje("Reporte Enviado")
-	mailserver.quit()
+    mailserver.quit()
 
 class Registro:
     def __init__(self, codigo):
