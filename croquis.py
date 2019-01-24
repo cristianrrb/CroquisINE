@@ -701,6 +701,7 @@ def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
 def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     registro = Registro(codigoSeccion)
     extent = area[0].extent
+    nroAnexo = area[2]
     mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
     if mxd != None:
         if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
@@ -708,7 +709,6 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
-            nroAnexo = area[2]
             nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
