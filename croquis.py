@@ -694,6 +694,11 @@ def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     if len(listaAreas) > 0:
         mensaje("Se detectaron areas destacadas dentro de la sección.")
         for area in listaAreas:
+            mensaje("-------------------ATENTI---------------------------")
+            mensaje(area)
+            mensaje(listaAreas)
+            mensaje("largo areas destacadas")
+            mensaje(len(listaAreas))
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
     else:
         mensaje("No se detectaron areas destacadas dentro de la sección.")
@@ -709,13 +714,13 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
             codigo = "{}_{}".format(codigoSeccion, area[2])
-            nombrePDF = generaNombrePDF(parametroEstrato, datosSeccion, infoMxd, parametroEncuesta, parametroMarco)
+            nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
             mensaje("Se procesó el área destacada correctamente.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-    actualizaVinetaManzanas(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
+    actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
         if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
@@ -864,6 +869,43 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las viñetas para Rural.")
 
+def actualizaVinetaAreaDestacada(mxd,datosSeccion):
+    #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
+    try:
+        nombre_region = nombreRegion(datosSeccion[2])
+        nombre_provincia = nombreProvincia(datosSeccion[3])
+        nombre_comuna = nombreComuna(datosSeccion[4])
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosSeccion)
+
+        for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
+            if parametroEncuesta == "ENE":
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta
+            else:
+                if elm.name == "Nombre_Muestra":
+                    elm.text = parametroEncuesta+" "+parametroMarco
+            if elm.name == "Nombre_Region":
+                elm.text = nombre_region
+            if elm.name == "Nombre_Provincia":
+                elm.text = nombre_provincia
+            if elm.name == "Nombre_Comuna":
+                elm.text = nombre_comuna
+            if elm.name == "CUT":
+                elm.text = datosSeccion[5]
+            if elm.name == "COD_SECCION":
+                elm.text = datosSeccion[6]
+            if elm.name == "COD_DISTRI":
+                elm.text = datosSeccion[7]
+            if elm.name == "EST_GEOGRAFICO":
+                elm.text = datosSeccion[8]
+            if elm.name == "COD_CARTO":
+                elm.text = datosSeccion[9]
+            if elm.name == "barcode":
+                elm.text = codigo_barra
+        mensaje("Se actualizaron las viñetas para Área Destacada.")
+    except:
+        mensaje("No se pudo actualizar las viñetas para Área Destacada.")
+
 def normalizaPalabra(s):
     replacements = (
         ("á", "a"),
@@ -927,6 +969,11 @@ def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     elif estrato == "Rural":
         tipo = "S_RUR"
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    return nombre
+
+def generaNombrePDFAreaDestacada(estrato, datosEntidad, infoMxd, encuesta, marco):
+    tipo = "S_RUR"
+    nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), "Anexo_X", infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
 def generaCodigoBarra(estrato, datosEntidad):
