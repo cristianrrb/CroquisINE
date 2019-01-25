@@ -1248,7 +1248,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion1.json'
+urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev.json'
 urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
