@@ -1099,7 +1099,7 @@ def enviarMail(registros):
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Reporte de Alertas/Rechazos Croquis - INE Nro.: "+str(nroReporte)+" - Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
+    msg['Subject'] = "Reporte de Alertas/Rechazos Croquis - INE - Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
     msg['From'] = fromMail
     msg['To'] = toMail
 
@@ -1122,7 +1122,7 @@ def enviarMail(registros):
     </style>
     </head>
     <body>
-    <h2>Reporte de Alertas/Rechazos Croquis - INE Nro.: """+str(nroReporte)+"""</h2>
+    <h2>Reporte de Alertas/Rechazos Croquis - INE </h2>
     <h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>
     <p>Reporte croquis de geohabilitación para Instituto Nacional de Estadísticas de Chile</p>
     <u>Motivos de Rechazo y/o Alertas:</u>
@@ -1209,7 +1209,7 @@ class Registro:
         self.intersectaPE = "No"
         self.intersectaCRF = "No"
         self.intersectaAV = "No"
-        self.homologacion = ""
+        self.homologacion = "No encontrado"
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
