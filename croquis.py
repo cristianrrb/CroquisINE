@@ -565,11 +565,9 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
         registro.estado = "Rechazado"
         registro.motivoRechazo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
-        #return False
 
     if viviendasEncuestar == -1:    # no se evalua
         mensaje("No se evalua cantidad de viviendas a encuestar.")
-        #return True
     else:
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
@@ -578,7 +576,6 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
-                #return True
             else:
                 mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
@@ -587,7 +584,6 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
 
                 registro.estado = "Rechazado"
                 registro.motivoRechazo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
-                #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
 
@@ -1020,29 +1016,41 @@ def obtieneHomologacion(codigo, urlServicio, token):
         pass
     return "", -1
 
-def escribeCSV(registros):
+def escribeCSV(registros, f):
     try:
-        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-        nombre = 'log_{}_{}.csv'.format(f, str(uuid.uuid1()).replace("-",""))
+        if parametroEstrato == "Manzana":
+            tipo = "MZ"
+        elif parametroEstrato == "RAU":
+            tipo = "RAU"
+        elif parametroEstrato == "Rural":
+            tipo = "Rural"
+
+        nombre = 'Reporte_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
-                if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica':
+                if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
                     cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                    a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                    a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                     wr.writerow(a)
         return rutaCsv
     except:
         return None
 
-def comprime(registros, rutaCSV):
+def comprime(registros, rutaCSV, f):
     try:
-        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-        nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
+        if parametroEstrato == "Manzana":
+            tipo = "MZ"
+        elif parametroEstrato == "RAU":
+            tipo = "RAU"
+        elif parametroEstrato == "Rural":
+            tipo = "Rural"
+
+        nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
         mensaje("Ruta ZIP {}".format(rutaZip))
         listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
@@ -1088,18 +1096,18 @@ def nombreUrbano(codigo):
     else:
         return codigo
 
-def enviarMail(registros):
+def enviarMail(registros, f):
 
     fromMail = "mjimenez@esri.cl"
     passwordFromMail = 'Marce6550esRi'
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
     toMail = "mjimenez@esri.cl"
-    nroReporte = 126586
+    nroReporte = f
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Reporte de Alertas/Rechazos Croquis - INE - Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
+    msg['Subject'] = "Reporte Croquis INE Nro: "+str(f)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
     msg['From'] = fromMail
     msg['To'] = toMail
 
@@ -1122,9 +1130,9 @@ def enviarMail(registros):
     </style>
     </head>
     <body>
-    <h2>Reporte de Alertas/Rechazos Croquis - INE </h2>
+    <h2>Reporte Croquis INE Nro: """+str(f)+"""</h2>
     <h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>
-    <p>Reporte croquis de geohabilitación para Instituto Nacional de Estadísticas de Chile</p>
+    <p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
     <u>Motivos de Rechazo y/o Alertas:</u>
     <ul>
         <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Motivo Rechazo' es, Rechazado.</li>
@@ -1143,7 +1151,6 @@ def enviarMail(registros):
             <th>Motivo Rechazo</th>
             <th>CUT</th>
             <th>C.DISTRITO</th>
-            <th>C.ÁREA</th>
             <th>C.ZONA</th>
             <th>C.ENTIDAD</th>
             <th>Ruta PDF</th>
@@ -1158,9 +1165,9 @@ def enviarMail(registros):
         """
 
     for i, r in enumerate(registros,1):
-        if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica':
+        if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
             cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
             html +="""<tr>"""
             html += """<th>%s</th>""" % str(i)
             html += """<td>%s</td>""" % str(a[0])
@@ -1179,7 +1186,6 @@ def enviarMail(registros):
             html += """<td>%s</td>""" % str(a[13])
             html += """<td>%s</td>""" % str(a[14])
             html += """<td>%s</td>""" % str(a[15])
-            html += """<td>%s</td>""" % str(a[16])
             html += """</tr>"""
     html+="""</table>
     </div>
@@ -1190,7 +1196,6 @@ def enviarMail(registros):
     </body>
     </html>
     """
-
     part1 = MIMEText(html, 'html')
     msg.attach(part1)
     mailserver = smtplib.SMTP('smtp.office365.com',587)
@@ -1209,7 +1214,7 @@ class Registro:
         self.intersectaPE = "No"
         self.intersectaCRF = "No"
         self.intersectaAV = "No"
-        self.homologacion = "No encontrado"
+        self.homologacion = ""
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
@@ -1298,10 +1303,10 @@ parametroViviendas = ""
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
-
 infoMarco = InfoMarco(parametroMarco, config)
 listaCodigos = generaListaCodigos(parametroCodigos)
 listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
+f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
@@ -1326,12 +1331,12 @@ for indice, codigo in enumerate(listaCodigos):
         quit()
     mensaje("-------------------------------------------------\n")
 
-rutaCSV = escribeCSV(registros)
-rutaZip = comprime(registros, rutaCSV)
+rutaCSV = escribeCSV(registros,f)
+rutaZip = comprime(registros, rutaCSV,f)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-enviarMail(registros)
+enviarMail(registros,f)
 
 """
 for mxd in mxd_list:
