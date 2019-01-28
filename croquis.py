@@ -507,7 +507,6 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
             lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            #mensaje("aqui")
         else:
             mensaje("No hay registros de {}".format(elLyr))
         return True
