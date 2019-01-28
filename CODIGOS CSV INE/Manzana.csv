@@ -6,3 +6,70 @@
 
 
 4204011002019,4102031003020,4101161004045,4301011001042,5301021001184
+
+Executing: croquis ENE 2016 Manzana 6101101001281,6101101001021 # #
+Start Time: Mon Jan 28 12:49:24 2019
+Running script croquis...
+[12:49:24]: Estrato: Manzana
+[12:49:25]: Token obtenido correctamente.
+[12:49:25]: No se evalua cantidad de viviendas a encuestar.
+[12:49:27]: Extension del poligono obtenida correctamente.
+[12:49:27]: Datos de manzana obtenidos correctamente.
+[12:49:27]: Se selecciono layout para manzana.
+[12:49:27]: *MZ-6101-1001281-ENE_16*
+[12:49:32]: Se actualizaron las viñetas para manzana.
+[12:49:32]: Se ajusto el extent del mapa.
+[12:49:32]: Limpieza de mapa iniciada.
+[12:49:33]: False
+[12:49:33]: Limpieza de esquicio iniciada.
+[12:49:33]: manzent = 6101101001281
+[12:49:33]: Limpieza de mapa correcta.
+[12:49:33]: Inicio preparación de etiquetas Manzana.
+[12:49:33]: Layer encontrado Eje_Vial
+[12:49:48]: Etiquetas correcta de Eje_Vial
+[12:49:48]: Layer encontrado Etiquetas_Limites
+[12:49:48]: No hay registros de Etiquetas_Limites
+[12:49:48]: Layer encontrado Cursos_Hidricos_Marco
+[12:49:49]: No hay registros de Cursos_Hidricos_Marco
+[12:49:49]: Fin preparación de etiquetas.
+[12:49:49]: D:\CROQUIS\MUESTRAS_PDF\ENE\DE_OHIGGINS\RANCAGUA\RANCAGUA\MZ_6101_1001281_Oficio_Horizontal_ENE_16.pdf
+[12:49:51]: Exportado a pdf
+#6101101001281#:No,No,Si,I
+[12:49:51]: Se genero el croquis correctamente.
+[12:49:52]: -------------------------------------------------
+
+[12:49:52]: Token obtenido correctamente.
+[12:49:52]: No se evalua cantidad de viviendas a encuestar.
+[12:49:55]: Extension del poligono obtenida correctamente.
+[12:49:55]: Datos de manzana obtenidos correctamente.
+[12:49:55]: Se selecciono layout para manzana.
+[12:49:55]: *MZ-6101-1001021-ENE_16*
+[12:50:00]: Se actualizaron las viñetas para manzana.
+[12:50:00]: Se ajusto el extent del mapa.
+[12:50:00]: Limpieza de mapa iniciada.
+[12:50:01]: False
+[12:50:01]: Limpieza de esquicio iniciada.
+[12:50:01]: manzent = 6101101001021
+[12:50:01]: Limpieza de mapa correcta.
+[12:50:01]: Inicio preparación de etiquetas Manzana.
+[12:50:01]: Layer encontrado Eje_Vial
+[12:50:16]: Etiquetas correcta de Eje_Vial
+[12:50:16]: Layer encontrado Etiquetas_Limites
+[12:50:17]: No hay registros de Etiquetas_Limites
+[12:50:17]: Layer encontrado Cursos_Hidricos_Marco
+[12:50:18]: No hay registros de Cursos_Hidricos_Marco
+[12:50:18]: Fin preparación de etiquetas.
+[12:50:18]: D:\CROQUIS\MUESTRAS_PDF\ENE\DE_OHIGGINS\RANCAGUA\RANCAGUA\MZ_6101_1001021_Oficio_Horizontal_ENE_16.pdf
+[12:50:20]: Exportado a pdf
+#6101101001021#:No,No,No,I
+[12:50:20]: Se genero el croquis correctamente.
+[12:50:20]: -------------------------------------------------
+
+[12:50:20]: Ruta CSV :D:\CROQUIS\LOG\Reporte_MZ_ENE_28012019124924.csv
+[12:50:20]: Ruta ZIP C:\Users\Caranda\Documents\ArcGIS\scratch\Comprimido_MZ_ENE_28012019124924.zip
+[12:50:20]: Comprimiendo MZ_6101_1001281_Oficio_Horizontal_ENE_16.pdf
+[12:50:20]: Comprimiendo MZ_6101_1001021_Oficio_Horizontal_ENE_16.pdf
+[12:50:20]: El GeoProceso ha terminado correctamente
+[12:50:26]: Reporte Enviado
+Completed script croquis...
+Succeeded at Mon Jan 28 12:50:26 2019 (Elapsed Time: 1 minutes 1 seconds)
