@@ -17,7 +17,7 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica':
         homologacion = 'NI'
 
-    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, registro.estado)
+    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
     print(s)
     arcpy.AddMessage(s)
 
@@ -590,7 +590,6 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
-            #return False
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
@@ -607,6 +606,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                     datosManzana, extent = obtieneInfoManzana(codigo, token)
                     if datosManzana != None:
                         registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                        registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
                         registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
                         mxd, infoMxd, escala = buscaTemplateManzana(extent)
                         if mxd != None:
@@ -704,19 +704,18 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     nroAnexo = area[2]
     mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
     if mxd != None:
-        if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
+        if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
             mensaje("Registrando la operación.")
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
-
             nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
             registros.append(registro)
             mensaje("Se procesó el área destacada correctamente.")
 
-def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
-    actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
+def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
+    actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
         if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
@@ -865,7 +864,7 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las viñetas para Rural.")
 
-def actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo):
+def actualizaVinetaAreaDestacada(mxd,datosSeccion):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
     try:
         nombre_region = nombreRegion(datosSeccion[2])
@@ -896,8 +895,6 @@ def actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo):
                 elm.text = datosSeccion[8]
             if elm.name == "COD_CARTO":
                 elm.text = datosSeccion[9]
-            if elm.name == "nroAnexo":
-                elm.text = nroAnexo
             if elm.name == "barcode":
                 elm.text = codigo_barra
         mensaje("Se actualizaron las viñetas para Área Destacada.")
@@ -970,8 +967,12 @@ def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     return nombre
 
 def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encuesta, marco):
-    tipo = "S_RUR"
-    nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), "Anexo_"+str(nroAnexo), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    if estrato == "RAU":
+        tipo = "RAU"
+        nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), "Anexo_"+str(nroAnexo), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    elif estrato == "Rural":
+        tipo = "S_RUR"
+        nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), "Anexo_"+str(nroAnexo), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
 def generaCodigoBarra(estrato, datosEntidad):
@@ -1021,17 +1022,24 @@ def obtieneHomologacion(codigo, urlServicio, token):
 
 def escribeCSV(registros):
     try:
-        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-        nombre = 'log_{}_{}.csv'.format(f, str(uuid.uuid1()).replace("-",""))
+        if parametroEstrato == "Manzana":
+            tipo = "MZ"
+        elif parametroEstrato == "RAU":
+            tipo = "RAU"
+        elif parametroEstrato == "Rural":
+            tipo = "Rural"
+
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO DE AREA', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -1039,8 +1047,15 @@ def escribeCSV(registros):
 
 def comprime(registros, rutaCSV):
     try:
-        f = "{}".format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-        nombre = 'exportacion_{}_{}.zip'.format(f, str(uuid.uuid1()).replace("-",""))
+        if parametroEstrato == "Manzana":
+            tipo = "MZ"
+        elif parametroEstrato == "RAU":
+            tipo = "RAU"
+        elif parametroEstrato == "Rural":
+            tipo = "Rural"
+
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
         mensaje("Ruta ZIP {}".format(rutaZip))
         listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
@@ -1089,14 +1104,15 @@ def nombreUrbano(codigo):
 def enviarMail(registros):
 
     fromMail = "mjimenez@esri.cl"
-    passwordFromMail = 'clave'
+    passwordFromMail = 'Marce6550esRi'
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
     toMail = "mjimenez@esri.cl"
+    nroReporte = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Reporte INE Muestra: " + parametroEncuesta + ", Estrato: " + parametroEstrato
+    msg['Subject'] = "Reporte Croquis INE Nro: "+str(f)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
     msg['From'] = fromMail
     msg['To'] = toMail
 
@@ -1119,9 +1135,18 @@ def enviarMail(registros):
     </style>
     </head>
     <body>
-    <h2>Reporte Croquis - INE</h2>
-    <h3>Encuesta: """ + str(parametroEncuesta) + """ / Estrato: """ + str(parametroEstrato) + """</h3>
-    <p>Reporte croquis de geohabilitación para Instituto Nacional de Estadísticas de Chile </p>
+    <h2>Reporte Croquis INE Nro: """+str(f)+"""</h2>
+    <h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>
+    <p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
+    <u>Motivos de Rechazo y/o Alertas:</u>
+    <ul>
+        <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Motivo Rechazo' es, Rechazado.</li>
+        <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
+        <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
+        <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
+        <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica</li>
+        <li type="disc">Alerta, Estado es 'No generado' cuando no se pudo generar el croquis.</li>
+    </ul>
     <div style="overflow-x:auto;">
       <table>
           <tr>
@@ -1132,42 +1157,48 @@ def enviarMail(registros):
             <th>Motivo Rechazo</th>
             <th>CUT</th>
             <th>C.DISTRITO</th>
-            <th>C.ÁREA</th>
             <th>C.ZONA</th>
             <th>C.ENTIDAD</th>
             <th>Ruta PDF</th>
             <th>Intersecta PE</th>
             <th>Intersecta CRF</th>
+            <th>Intersecta AV</th>
             <th>Homologación</th>
             <th>Formato</th>
             <th>Orientación</th>
             <th>Escala</th>
           </tr>
         """
+
     for i, r in enumerate(registros,1):
-        cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-        a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, area, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
-        html +="""<tr>"""
-        html += """<th>%s</th>""" % str(i)
-        html += """<td>%s</td>""" % str(a[0])
-        html += """<td>%s</td>""" % str(a[1])
-        html += """<td>%s</td>""" % str(a[2])
-        html += """<td>%s</td>""" % str(a[3])
-        html += """<td>%s</td>""" % str(a[4])
-        html += """<td>%s</td>""" % str(a[5])
-        html += """<td>%s</td>""" % str(a[6])
-        html += """<td>%s</td>""" % str(a[7])
-        html += """<td>%s</td>""" % str(a[8])
-        html += """<td>%s</td>""" % str(a[9])
-        html += """<td>%s</td>""" % str(a[10])
-        html += """<td>%s</td>""" % str(a[11])
-        html += """<td>%s</td>""" % str(a[12])
-        html += """<td>%s</td>""" % str(a[13])
-        html += """<td>%s</td>""" % str(a[14])
-        html += """<td>%s</td>""" % str(a[15])
-        html += """</tr>"""
+        if r.estado == "No generado" or r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+            cut, dis, area, loc, ent = descomponeManzent(r.codigo)
+            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+            html +="""<tr>"""
+            html += """<th>%s</th>""" % str(i)
+            html += """<td>%s</td>""" % str(a[0])
+            html += """<td>%s</td>""" % str(a[1])
+            html += """<td>%s</td>""" % str(a[2])
+            html += """<td>%s</td>""" % str(a[3])
+            html += """<td>%s</td>""" % str(a[4])
+            html += """<td>%s</td>""" % str(a[5])
+            html += """<td>%s</td>""" % str(a[6])
+            html += """<td>%s</td>""" % str(a[7])
+            html += """<td>%s</td>""" % str(a[8])
+            html += """<td>%s</td>""" % str(a[9])
+            html += """<td>%s</td>""" % str(a[10])
+            html += """<td>%s</td>""" % str(a[11])
+            html += """<td>%s</td>""" % str(a[12])
+            html += """<td>%s</td>""" % str(a[13])
+            html += """<td>%s</td>""" % str(a[14])
+            html += """<td>%s</td>""" % str(a[15])
+            html += """</tr>"""
     html+="""</table>
     </div>
+    </br>
+    <p><b>Departamento de Geografía</b></p>
+    <p>Instituto Nacional de Estadísticas</p>
+    <p>Fono: 232461860</p>
     </body>
     </html>
     """
@@ -1188,6 +1219,7 @@ class Registro:
         self.rutaPDF = ""
         self.intersectaPE = "No"
         self.intersectaCRF = "No"
+        self.intersectaAV = "No"
         self.homologacion = ""
         self.formato = ""
         self.orientacion = ""
@@ -1201,9 +1233,10 @@ class InfoMarco:
         self.urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
         self.urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
         self.urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-        self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
-        self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
-        self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+        self.urlPE          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/0'
+        self.urlAV          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/1'
+        self.urlCRF         = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/2'
+        self.urlHomologacion= 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/3'
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
         self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
         self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
@@ -1217,6 +1250,7 @@ class InfoMarco:
                 self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
                 self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
                 self.urlPE =               marco['config']['urlPE']
+                self.urlAV =               marco['config']['urlAV']
                 self.urlCRF =              marco['config']['urlCRF']
                 self.urlHomologacion =     marco['config']['urlHomologacion']
                 self.nombreCampoIdHomologacion = marco['config']['nombreCampoIdHomologacion']
@@ -1225,7 +1259,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
+urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev.json'
 urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
@@ -1241,6 +1275,7 @@ dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
+
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
@@ -1308,7 +1343,7 @@ rutaZip = comprime(registros, rutaCSV)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-#enviarMail(registros)
+enviarMail(registros)
 
 """
 for mxd in mxd_list:

@@ -15,9 +15,12 @@
             "urlSecciones_RAU": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2",
             "urlSecciones_Rural": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0",
             "urlAreaDestacada": "https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0",
-            "urlPE": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0",
-            "urlCRF": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1",
-            "urlHomologacion": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2",
+
+            "urlPE"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/0",
+            "urlAV"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/1",
+            "urlCRF"         : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/2",
+            "urlHomologacion": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/3",
+
             "nombreCampoIdHomologacion": "MANZENT_MM2014",
             "nombreCampoTipoHomologacion": "TIPO_HOMOLOGACIÓN",
             "nombreCampoTotalViviendas": "TOT_VIV_PART_PC2016"

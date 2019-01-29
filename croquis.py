@@ -501,12 +501,13 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         if cuantos > 0:
             tm_path = os.path.join("in_memory", "seudo_lyr")
             tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "2 Meters", "FULL", "FLAT", "ALL")
+            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "4 Meters", "FULL", "FLAT", "ALL")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
             lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            #mensaje("aqui")
         else:
             mensaje("No hay registros de {}".format(elLyr))
         return True
@@ -564,9 +565,11 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
         registro.estado = "Rechazado"
         registro.motivoRechazo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
+        #return False
 
     if viviendasEncuestar == -1:    # no se evalua
         mensaje("No se evalua cantidad de viviendas a encuestar.")
+        #return True
     else:
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
@@ -575,6 +578,7 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
+                #return True
             else:
                 mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
@@ -583,6 +587,7 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
 
                 registro.estado = "Rechazado"
                 registro.motivoRechazo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
+                #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
 
@@ -931,8 +936,8 @@ def generaPDF(mxd, nombrePDF, datos):
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    resolution = 300
-    image_quality = 'BEST' #'BEST' 'FASTER'
+    resolution = 400
+    image_quality = 'NORMAL' #'BEST' 'FASTER'
     color_space = 'RGB'
     compress_vectors = True
     image_compression = 'ADAPTIVE'
@@ -1015,7 +1020,7 @@ def obtieneHomologacion(codigo, urlServicio, token):
         pass
     return "", -1
 
-def escribeCSV(registros, f):
+def escribeCSV(registros):
     try:
         if parametroEstrato == "Manzana":
             tipo = "MZ"
@@ -1024,7 +1029,8 @@ def escribeCSV(registros, f):
         elif parametroEstrato == "Rural":
             tipo = "Rural"
 
-        nombre = 'Reporte_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
         with open(rutaCsv, "wb") as f:
@@ -1032,15 +1038,14 @@ def escribeCSV(registros, f):
             a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
             wr.writerow(a)
             for r in registros:
-                if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
-                    cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                    a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
-                    wr.writerow(a)
+                cut, dis, area, loc, ent = descomponeManzent(r.codigo)
+                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                wr.writerow(a)
         return rutaCsv
     except:
         return None
 
-def comprime(registros, rutaCSV, f):
+def comprime(registros, rutaCSV):
     try:
         if parametroEstrato == "Manzana":
             tipo = "MZ"
@@ -1049,6 +1054,7 @@ def comprime(registros, rutaCSV, f):
         elif parametroEstrato == "Rural":
             tipo = "Rural"
 
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
         mensaje("Ruta ZIP {}".format(rutaZip))
@@ -1095,14 +1101,14 @@ def nombreUrbano(codigo):
     else:
         return codigo
 
-def enviarMail(registros, f):
+def enviarMail(registros):
 
     fromMail = "mjimenez@esri.cl"
     passwordFromMail = 'Marce6550esRi'
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
     toMail = "mjimenez@esri.cl"
-    nroReporte = f
+    nroReporte = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
@@ -1139,6 +1145,7 @@ def enviarMail(registros, f):
         <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
         <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
         <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica</li>
+        <li type="disc">Alerta, Estado es 'No generado' cuando no se pudo generar el croquis.</li>
     </ul>
     <div style="overflow-x:auto;">
       <table>
@@ -1164,7 +1171,7 @@ def enviarMail(registros, f):
         """
 
     for i, r in enumerate(registros,1):
-        if r.estado != "Correcto" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+        if r.estado == "No generado" or r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
             cut, dis, area, loc, ent = descomponeManzent(r.codigo)
             a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
             html +="""<tr>"""
@@ -1269,6 +1276,7 @@ dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
+
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
@@ -1302,10 +1310,10 @@ parametroViviendas = ""
 # --------------------------------------------------------------------
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
+
 infoMarco = InfoMarco(parametroMarco, config)
 listaCodigos = generaListaCodigos(parametroCodigos)
 listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
-f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
@@ -1330,12 +1338,12 @@ for indice, codigo in enumerate(listaCodigos):
         quit()
     mensaje("-------------------------------------------------\n")
 
-rutaCSV = escribeCSV(registros,f)
-rutaZip = comprime(registros, rutaCSV,f)
+rutaCSV = escribeCSV(registros)
+rutaZip = comprime(registros, rutaCSV)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-enviarMail(registros,f)
+enviarMail(registros)
 
 """
 for mxd in mxd_list:
