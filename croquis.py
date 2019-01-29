@@ -716,11 +716,11 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 if registro.rutaPDF != "":
                     registro.estado = "Correcto"
         registros.append(registro)
-        mensajeEstado(registro)
+        mensaje("Se generó el croquis correctamente para área destacada.")
         return
     except:
         pass
-    mensaje("No se completó el proceso para área destacada.")
+    mensaje("No se generó el croquis para área destacada.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
