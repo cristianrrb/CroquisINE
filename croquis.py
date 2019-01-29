@@ -699,20 +699,28 @@ def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
         mensaje("No se detectaron areas destacadas dentro de la sección.")
 
 def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
-    registro = Registro(codigoSeccion)
-    extent = area[0].extent
-    nroAnexo = area[2]
-    mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
-    if mxd != None:
-        if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-            mensaje("Registrando la operación.")
-            registro.formato = infoMxd['formato']
-            registro.orientacion = infoMxd['orientacion']
-            registro.escala = escala
-            nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
-            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
-            registros.append(registro)
-            mensaje("Se procesó el área destacada correctamente.")
+    try:
+        registro = Registro(codigoSeccion)
+        extent = area[0].extent
+        nroAnexo = area[2]
+        mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
+        if mxd != None:
+            if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
+                mensaje("Registrando la operación.")
+                registro.formato = infoMxd['formato']
+                registro.orientacion = infoMxd['orientacion']
+                registro.escala = escala
+                nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
+                registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
+
+                if registro.rutaPDF != "":
+                    registro.estado = "Correcto"
+        registros.append(registro)
+        mensajeEstado(registro)
+        return
+    except:
+        pass
+    mensaje("No se completó el proceso para área destacada.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
