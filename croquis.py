@@ -501,7 +501,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         if cuantos > 0:
             tm_path = os.path.join("in_memory", "seudo_lyr")
             tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "4 Meters", "FULL", "FLAT", "ALL")
+            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "2 Meters", "FULL", "FLAT", "ALL")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
             lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
