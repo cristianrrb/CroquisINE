@@ -263,9 +263,9 @@ def buscaTemplateRAU(extent):
             if escala != None:
                 rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                mensaje('1 Se selecciono layout para RAU.')
-                mensaje("1 el infoMxd es {}".format(infoMxd))
-                mensaje("1 la escala es {}".format(escala))
+                mensaje('Se selecciono layout para RAU.')
+                mensaje("infoMxd = {}".format(infoMxd))
+                mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
 
         # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
@@ -274,9 +274,9 @@ def buscaTemplateRAU(extent):
         if escala != None:
             rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
             mxd = arcpy.mapping.MapDocument(rutaMXD)
-            mensaje('2 Se selecciono layout para RAU.(Excede escala)')
-            mensaje("2 el infoMxd es {}".format(infoMxd))
-            mensaje("2 la escala final es {}".format(escala))
+            mensaje('Se selecciono layout para RAU.(Excede escala)')
+            mensaje("infoMxd = {}".format(infoMxd))
+            mensaje("escala = {}".format(escala))
             return mxd, infoMxd, escala
     except:
         pass
@@ -517,7 +517,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         if cuantos > 0:
             tm_path = os.path.join("in_memory", "seudo_lyr")
             tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "2 Meters", "FULL", "FLAT", "ALL")
+            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
             arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
             lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
@@ -653,9 +653,6 @@ def procesaRAU(codigo):
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
-                #mensaje(mxd)
-                #mensaje(infoMxd)
-                #mensaje(escala)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
                         mensaje("Registrando la operación.")
@@ -972,7 +969,7 @@ def generaPDF(mxd, nombrePDF, datos):
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     resolution = 300
-    image_quality = 'NORMAL' #'BEST' 'FASTER'
+    image_quality = 'BEST' #'BEST' 'FASTER'
     color_space = 'RGB'
     compress_vectors = True
     image_compression = 'ADAPTIVE'
@@ -1143,6 +1140,7 @@ def enviarMail(registros):
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
     toMail = "mjimenez@esri.cl"
+
     nroReporte = f
 
     # Create message container - the correct MIME type is multipart/alternative.
@@ -1204,9 +1202,8 @@ def enviarMail(registros):
             <th>Escala</th>
           </tr>
         """
-
     for i, r in enumerate(registros,1):
-        if r.estado == "No generado" or r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+        if r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
             cut, dis, area, loc, ent = descomponeManzent(r.codigo)
             a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
             html +="""<tr>"""
@@ -1227,6 +1224,27 @@ def enviarMail(registros):
             html += """<td>%s</td>""" % str(a[13])
             html += """<td>%s</td>""" % str(a[14])
             html += """<td>%s</td>""" % str(a[15])
+            html += """</tr>"""
+        elif r.estado == "No generado":
+            a = [r.hora, r.codigo, r.estado]
+            html +="""<tr>"""
+            html += """<th>%s</th>""" % str(i)
+            html += """<td>%s</td>""" % str(a[0])
+            html += """<td>%s</td>""" % str(a[1])
+            html += """<td>%s</td>""" % str(a[2])
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
+            html += """<td></td>"""
             html += """</tr>"""
     html+="""</table>
     </div>
@@ -1379,7 +1397,7 @@ rutaZip = comprime(registros, rutaCSV,f)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-enviarMail(registros)
+#enviarMail(registros)
 
 """
 for mxd in mxd_list:
