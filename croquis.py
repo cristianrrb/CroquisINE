@@ -82,12 +82,13 @@ def obtieneInfoSeccionRAU(codigo, token):
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
             extent = calculaExtent(fs, metrosBuffer)
+            mensaje('Datos de RAU obtenidos correctamente.')
             return lista[0], extent
         else:
             mensaje("Error: El registro RAU no existe")
             return None, None
     except:
-        mensaje("Error URL servicio_RAU")
+        mensaje("** Error en obtieneInfoSeccionRAU")
         return None, None
 
 def obtieneInfoSeccionRural(codigo, token):
@@ -104,6 +105,7 @@ def obtieneInfoSeccionRural(codigo, token):
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRural(lista[0][1])
             extent = calculaExtent(fs, metrosBuffer)
+            mensaje('Datos de Rural obtenidos correctamente.')
             return lista[0], extent
         else:
             mensaje("Error: El registro no existe")
@@ -637,6 +639,9 @@ def procesaRAU(codigo):
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
+                mensaje(mxd)
+                mensaje(infoMxd)
+                mensaje(escala)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
                         mensaje("Registrando la operación.")
@@ -725,15 +730,19 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
-        """ poligono = limpiaMapaManzana(mxd, datosSeccion[0])
-        if limpiaMapaManzanaEsquicio(mxd, datosSeccion[0]):
-            if poligono != None:
-                lista_etiquetas = listaEtiquetas("Manzana")
-                mensaje("Inicio preparación de etiquetas.")
-                for capa in lista_etiquetas:
-                    mensaje(capa)
-                    cortaEtiqueta(mxd, capa, poligono)
-                mensaje("Fin preparación de etiquetas.") """
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
+        lyr.visible = False
+        mensaje("visible false destacado")
+        """nombreCapa = leeNombreCapa("Rural")
+        poligono = limpiaMapaRural(mxd, datosSeccion[0], nombreCapa)
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Rural")
+            mensaje("Inicio preparación de etiquetas Rural.")
+            for capa in lista_etiquetas:
+                mensaje(capa)
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")"""
         mensaje("Se completo la preparación del mapa para area destacada.")
         return True
     mensaje("No se completo la preparación del mapa para area destacada.")
@@ -1028,7 +1037,7 @@ def obtieneHomologacion(codigo, urlServicio, token):
         pass
     return "", -1
 
-def escribeCSV(registros):
+def escribeCSV(registros,f):
     try:
         if parametroEstrato == "Manzana":
             tipo = "MZ"
@@ -1037,7 +1046,7 @@ def escribeCSV(registros):
         elif parametroEstrato == "Rural":
             tipo = "Rural"
 
-        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        #f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
@@ -1053,7 +1062,7 @@ def escribeCSV(registros):
     except:
         return None
 
-def comprime(registros, rutaCSV):
+def comprime(registros, rutaCSV,f):
     try:
         if parametroEstrato == "Manzana":
             tipo = "MZ"
@@ -1062,7 +1071,7 @@ def comprime(registros, rutaCSV):
         elif parametroEstrato == "Rural":
             tipo = "Rural"
 
-        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        #f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
         mensaje("Ruta ZIP {}".format(rutaZip))
@@ -1116,11 +1125,11 @@ def enviarMail(registros):
     #fromMail = "sig@ine.cl"
     #passwordFromMail = "(ine2018)"
     toMail = "mjimenez@esri.cl"
-    nroReporte = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+    nroReporte = f
 
     # Create message container - the correct MIME type is multipart/alternative.
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Reporte Croquis INE Nro: "+str(f)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
+    msg['Subject'] = "Reporte Croquis INE Nro: "+str(nroReporte)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
     msg['From'] = fromMail
     msg['To'] = toMail
 
@@ -1143,7 +1152,7 @@ def enviarMail(registros):
     </style>
     </head>
     <body>
-    <h2>Reporte Croquis INE Nro: """+str(f)+"""</h2>
+    <h2>Reporte Croquis INE Nro: """+str(nroReporte)+"""</h2>
     <h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>
     <p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
     <u>Motivos de Rechazo y/o Alertas:</u>
@@ -1346,8 +1355,9 @@ for indice, codigo in enumerate(listaCodigos):
         quit()
     mensaje("-------------------------------------------------\n")
 
-rutaCSV = escribeCSV(registros)
-rutaZip = comprime(registros, rutaCSV)
+f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+rutaCSV = escribeCSV(registros,f)
+rutaZip = comprime(registros, rutaCSV,f)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
