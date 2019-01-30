@@ -263,9 +263,9 @@ def buscaTemplateRAU(extent):
             if escala != None:
                 rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                mensaje('1 Se selecciono layout para RAU.')
-                mensaje("1 el infoMxd es {}".format(infoMxd))
-                mensaje("1 la escala es {}".format(escala))
+                mensaje('Se selecciono layout para RAU.')
+                mensaje("infoMxd = {}".format(infoMxd))
+                mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
 
         # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
@@ -274,9 +274,9 @@ def buscaTemplateRAU(extent):
         if escala != None:
             rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
             mxd = arcpy.mapping.MapDocument(rutaMXD)
-            mensaje('2 Se selecciono layout para RAU.(Excede escala)')
-            mensaje("2 el infoMxd es {}".format(infoMxd))
-            mensaje("2 la escala final es {}".format(escala))
+            mensaje('Se selecciono layout para RAU.(Excede escala)')
+            mensaje("infoMxd = {}".format(infoMxd))
+            mensaje("escala = {}".format(escala))
             return mxd, infoMxd, escala
     except:
         pass
@@ -653,9 +653,6 @@ def procesaRAU(codigo):
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
                 mxd, infoMxd, escala = buscaTemplateRAU(extent)
-                #mensaje(mxd)
-                #mensaje(infoMxd)
-                #mensaje(escala)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
                         mensaje("Registrando la operación.")
