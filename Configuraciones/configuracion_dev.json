@@ -178,8 +178,8 @@
             "Cuerpos_De_Agua",
             "Cotas",
             "ET_RELIEVE",
-            "ET_RELIEVE_OTROS"
-
+            "ET_RELIEVE_OTROS",
+            "Hipsometria"
          ],
          "mxds": [
             {
@@ -209,13 +209,6 @@
                "formato": "P1",
                "orientacion": "Vertical",
                "ruta": "Rural\\Sec_P1_V"
-            },
-            {
-               "ancho": 58.501,
-               "alto": 57.999,
-               "formato": "Anexos70x60",
-               "orientacion": "Horizontal",
-               "ruta": "Rural\\Anexos_70x60"
             },
             {
                "ancho": 67.865,

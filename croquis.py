@@ -631,6 +631,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                                 registro.formato = infoMxd['formato']
                                 registro.orientacion = infoMxd['orientacion']
                                 registro.escala = escala
+                                registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
 
                                 nombrePDF = generaNombrePDF(parametroEstrato, datosManzana, infoMxd, parametroEncuesta, parametroMarco)
                                 registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
@@ -659,6 +660,7 @@ def procesaRAU(codigo):
                         registro.formato = infoMxd['formato']
                         registro.orientacion = infoMxd['orientacion']
                         registro.escala = escala
+                        registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRAU)
 
                         nombrePDF = generaNombrePDF(parametroEstrato, datosRAU, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
@@ -688,6 +690,8 @@ def procesaRural(codigo):
                     registro.formato = infoMxd['formato']
                     registro.orientacion = infoMxd['orientacion']
                     registro.escala = escala
+                    registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRAU)
+
                     nombrePDF = generaNombrePDF(parametroEstrato, datosRural, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
                     procesaAreasDestacadas(codigo, datosRural, token)
@@ -1003,13 +1007,13 @@ def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encue
 def generaCodigoBarra(estrato, datosEntidad):
     if estrato == "Manzana":
         tipo = "MZ"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "RAU":
         tipo = "RAU"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "Rural":
         tipo = "S_RUR"
-        nombre = "*{}-{}-{}-{}_{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), parametroEncuesta, parametroMarco[2:4])
+        nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
 def intersectaConArea(poligono, urlServicio, token):
@@ -1058,9 +1062,10 @@ def escribeCSV(registros,f):
         nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
+        generaCodigoBarra(parametroMarco,)
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala']
+            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala', 'Código barra']
             wr.writerow(a)
             for r in registros:
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)
@@ -1272,6 +1277,7 @@ class Registro:
         self.escala = ""
         self.estado = "No generado"
         self.motivoRechazo = ""
+        self.codigoBarra = ""
 
 class InfoMarco:
     def __init__(self, codigo, config):
