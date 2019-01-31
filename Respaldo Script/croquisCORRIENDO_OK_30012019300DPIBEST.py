@@ -968,8 +968,8 @@ def generaPDF(mxd, nombrePDF, datos):
     data_frame = 'PAGE_LAYOUT'
     df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
     df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    resolution = 300
-    image_quality = 'BEST' #'BEST' 'FASTER'
+    resolution = 400
+    image_quality = 'NORMAL' #'BEST' 'FASTER'
     color_space = 'RGB'
     compress_vectors = True
     image_compression = 'ADAPTIVE'
@@ -1397,7 +1397,7 @@ rutaZip = comprime(registros, rutaCSV,f)
 arcpy.SetParameterAsText(6, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-#enviarMail(registros)
+enviarMail(registros)
 
 """
 for mxd in mxd_list:

@@ -2,11 +2,11 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-#fromMail = "mjimenez@esri.cl"
-#passwordFromMail = 'Marce6550esRi'
+fromMail = "mjimenez@esri.cl"
+passwordFromMail = 'Marce6550esRi'
 #
-fromMail = "marcelojimenez9@gmail.com"
-passwordFromMail = "Titito.05052017"
+#fromMail = "marcelojimenez9@gmail.com"
+#passwordFromMail = "Titito.05052017"
 #fromMail = "sig@ine.cl"
 #passwordFromMail = "(ine2018)"
 toMail = "marcelojimenez9@gmail.com"

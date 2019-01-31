@@ -173,11 +173,13 @@
             "Equipamiento",
             "Etiquetado_Auxiliar",
             "Etiquetado_Limites",
-            "toponimos_mm2016",
             "Localidades",
             "Entidades",
             "Cuerpos_De_Agua",
-            "Cotas"
+            "Cotas",
+            "ET_RELIEVE",
+            "ET_RELIEVE_OTROS"
+
          ],
          "mxds": [
             {
