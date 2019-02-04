@@ -632,6 +632,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                                 registro.orientacion = infoMxd['orientacion']
                                 registro.escala = escala
                                 registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
+                                #mensaje("codigo barra = {}".format(registro.codigoBarra))
 
                                 nombrePDF = generaNombrePDF(parametroEstrato, datosManzana, infoMxd, parametroEncuesta, parametroMarco)
                                 registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
@@ -661,6 +662,7 @@ def procesaRAU(codigo):
                         registro.orientacion = infoMxd['orientacion']
                         registro.escala = escala
                         registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRAU)
+                        mensaje("codigo barra = {}".format(registro.codigoBarra))
 
                         nombrePDF = generaNombrePDF(parametroEstrato, datosRAU, infoMxd, parametroEncuesta, parametroMarco)
                         registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRAU)
@@ -690,7 +692,8 @@ def procesaRural(codigo):
                     registro.formato = infoMxd['formato']
                     registro.orientacion = infoMxd['orientacion']
                     registro.escala = escala
-                    registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRAU)
+                    registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRural)
+                    mensaje("codigo barra = {}".format(registro.codigoBarra))
 
                     nombrePDF = generaNombrePDF(parametroEstrato, datosRural, infoMxd, parametroEncuesta, parametroMarco)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
@@ -727,6 +730,8 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 registro.formato = infoMxd['formato']
                 registro.orientacion = infoMxd['orientacion']
                 registro.escala = escala
+                registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosSeccion)
+
                 nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
                 registro.rutaPDF = generaPDF(mxd, nombrePDF, datosSeccion)
 
@@ -1012,7 +1017,7 @@ def generaCodigoBarra(estrato, datosEntidad):
         tipo = "RAU"
         nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), parametroEncuesta, parametroMarco[2:4])
     elif estrato == "Rural":
-        tipo = "S_RUR"
+        tipo = "SRUR"
         nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
@@ -1049,7 +1054,7 @@ def obtieneHomologacion(codigo, urlServicio, token):
         pass
     return "", -1
 
-def escribeCSV(registros,f):
+def escribeCSV(registros, f):
     try:
         if parametroEstrato == "Manzana":
             tipo = "MZ"
@@ -1058,18 +1063,16 @@ def escribeCSV(registros,f):
         elif parametroEstrato == "Rural":
             tipo = "Rural"
 
-        #f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
         rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
         mensaje("Ruta CSV :{}".format(rutaCsv))
-        generaCodigoBarra(parametroMarco,)
         with open(rutaCsv, "wb") as f:
             wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato', 'Orientacion', 'Escala', 'Código barra']
+            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
             wr.writerow(a)
             for r in registros:
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                 wr.writerow(a)
         return rutaCsv
     except:
@@ -1171,12 +1174,12 @@ def enviarMail(registros):
     <p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
     <u>Motivos de Rechazo y/o Alertas:</u>
     <ul>
-        <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Motivo Rechazo' es, Rechazado.</li>
+        <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
         <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
         <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
         <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
-        <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica</li>
-        <li type="disc">Alerta, Estado es 'No generado' cuando no se pudo generar el croquis.</li>
+        <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica(s)</li>
+        <li type="disc">Alerta, Estado es 'No generado'; Cuando no se pudo generar el croquis.</li>
     </ul>
     <div style="overflow-x:auto;">
       <table>
@@ -1195,54 +1198,54 @@ def enviarMail(registros):
             <th>Intersecta CRF</th>
             <th>Intersecta AV</th>
             <th>Homologación</th>
-            <th>Formato</th>
-            <th>Orientación</th>
+            <th>Formato / Orientación</th>
             <th>Escala</th>
+            <th>Código barra<th/>
           </tr>
         """
-    for i, r in enumerate(registros,1):
+    for i, r in enumerate(registros, 1):
         if r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
             cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato, r.orientacion, r.escala]
+            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
             html +="""<tr>"""
             html += """<th>%s</th>""" % str(i)
-            html += """<td>%s</td>""" % str(a[0])
-            html += """<td>%s</td>""" % str(a[1])
-            html += """<td>%s</td>""" % str(a[2])
-            html += """<td>%s</td>""" % str(a[3])
-            html += """<td>%s</td>""" % str(a[4])
-            html += """<td>%s</td>""" % str(a[5])
-            html += """<td>%s</td>""" % str(a[6])
-            html += """<td>%s</td>""" % str(a[7])
-            html += """<td>%s</td>""" % str(a[8])
-            html += """<td>%s</td>""" % str(a[9])
-            html += """<td>%s</td>""" % str(a[10])
-            html += """<td>%s</td>""" % str(a[11])
-            html += """<td>%s</td>""" % str(a[12])
-            html += """<td>%s</td>""" % str(a[13])
-            html += """<td>%s</td>""" % str(a[14])
-            html += """<td>%s</td>""" % str(a[15])
+            html += """<td>%s</td>""" % str(a[0]) #hora
+            html += """<td>%s</td>""" % str(a[1]) #codigo
+            html += """<td>%s</td>""" % str(a[2]) #estado
+            html += """<td>%s</td>""" % str(a[3]) #motivoRechazo
+            html += """<td>%s</td>""" % str(a[4]) #cut
+            html += """<td>%s</td>""" % str(a[5]) #dis
+            html += """<td>%s</td>""" % str(a[6]) #loc
+            html += """<td>%s</td>""" % str(a[7]) #ent
+            html += """<td>%s</td>""" % str(a[8]) #rutapdf
+            html += """<td>%s</td>""" % str(a[9]) #intersectaPE
+            html += """<td>%s</td>""" % str(a[10]) #intersectaCRF
+            html += """<td>%s</td>""" % str(a[11]) #intersectaAV
+            html += """<td>%s</td>""" % str(a[12]) #Homologacion
+            html += """<td>%s</td>""" % str(a[13]) #formato orientacion
+            html += """<td>%s</td>""" % str(a[14]) #escala
+            html += """<td>%s</td>""" % str(a[15]) #codigoBarra
             html += """</tr>"""
         elif r.estado == "No generado":
             a = [r.hora, r.codigo, r.estado]
             html +="""<tr>"""
             html += """<th>%s</th>""" % str(i)
-            html += """<td>%s</td>""" % str(a[0])
-            html += """<td>%s</td>""" % str(a[1])
-            html += """<td>%s</td>""" % str(a[2])
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
-            html += """<td></td>"""
+            html += """<td>%s</td>""" % str(a[0]) #hora
+            html += """<td>%s</td>""" % str(a[1]) #codigo
+            html += """<td>%s</td>""" % str(a[2]) #estado
+            html += """<td>%s</td>""" #motivoRechazo
+            html += """<td>%s</td>""" #cut
+            html += """<td>%s</td>""" #dis
+            html += """<td>%s</td>""" #loc
+            html += """<td>%s</td>""" #ent
+            html += """<td>%s</td>""" #rutapdf
+            html += """<td>%s</td>""" #intersectaPE
+            html += """<td>%s</td>""" #intersectaCRF
+            html += """<td>%s</td>""" #intersectaAV
+            html += """<td>%s</td>""" #Homologacion
+            html += """<td>%s</td>""" #formato orientacion
+            html += """<td>%s</td>""" #escala
+            html += """<td>%s</td>""" #codigoBarra
             html += """</tr>"""
     html+="""</table>
     </div>
