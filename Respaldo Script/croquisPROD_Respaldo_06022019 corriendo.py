@@ -17,7 +17,7 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
         homologacion = 'NI'
 
-    s = "#{}#:{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, homologacion, registro.estado)
+    s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
     print(s)
     arcpy.AddMessage(s)
 
@@ -51,7 +51,7 @@ def obtieneInfoManzana(codigo, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(infoMarco.urlManzanas, token, codigo))
 
-        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_LOCALIDAD_ZONA','COD_ENTIDAD_MANZANA','MANZENT','MANZ']
+        fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]

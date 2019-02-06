@@ -326,17 +326,12 @@ def zoom(mxd, extent, escala):
 
 def zoomEsquicio(mxd, extent):
     try:
-        mensaje("zoomEsquicio")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
         mensaje(extent)
         newExtent = df.extent
-        mensaje("1")
         newExtent.XMin, newExtent.YMin = extent.XMin, extent.YMin
-        mensaje("2")
         newExtent.XMax, newExtent.YMax = extent.XMax, extent.YMax
-        mensaje("3")
         df.extent = newExtent
-        mensaje("4")
         #df.scale = escala
         mensaje('Se ajusto el extent Esquicio del mapa.')
         #return True
