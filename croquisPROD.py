@@ -137,6 +137,40 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
         mensaje("Error obtieneListaAreasDestacadas")
         return []
 
+def obtieneInfoManzanaCenso2017(codigo, token):
+    try:
+        url = '{}/query?token={}&where=MANZENT+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(infoMarco.urlManzanasCenso2017, token, codigo))
+
+        fields = ['SHAPE@AREA','MANZENT']
+
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r for r in rows]
+
+        if  lista != None and len(lista) == 1:
+            mensaje('Datos de manzana Censo 2017 obtenidos correctamente.')
+            return lista[0]
+        else:
+            mensaje("** Error: El registro de manzana no existe")
+            return None, None
+    except:
+        mensaje("** Error en obtieneInfoManzana")
+        return None, None
+
+def comparaManzanas(poligono, urlServicio, token):
+    try:
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        if ids['objectIds'] != None:
+            return "Si"
+    except:
+        pass
+    return "No"
+
 def listaMXDs(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
@@ -637,10 +671,15 @@ def procesaManzana(codigo, viviendasEncuestar):
             else:
                 if registro.estado != "Rechazado":
                     datosManzana, extent = obtieneInfoManzana(codigo, token)
+                    datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
+                    mensaje("##################################################################")
+                    mensaje(datosManzana[1])
+                    mensaje(datosManzana2017[0])
                     if datosManzana != None:
                         registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
                         registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
                         registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+
                         mxd, infoMxd, escala = buscaTemplateManzana(extent)
                         if mxd != None:
                             if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -1243,19 +1282,19 @@ def enviarMail(registros):
             html += """<td>%s</td>""" % str(a[0]) #hora
             html += """<td>%s</td>""" % str(a[1]) #codigo
             html += """<td>%s</td>""" % str(a[2]) #estado
-            html += """<td>%s</td>""" #motivoRechazo
-            html += """<td>%s</td>""" #cut
-            html += """<td>%s</td>""" #dis
-            html += """<td>%s</td>""" #loc
-            html += """<td>%s</td>""" #ent
-            html += """<td>%s</td>""" #rutapdf
-            html += """<td>%s</td>""" #intersectaPE
-            html += """<td>%s</td>""" #intersectaCRF
-            html += """<td>%s</td>""" #intersectaAV
-            html += """<td>%s</td>""" #Homologacion
-            html += """<td>%s</td>""" #formato orientacion
-            html += """<td>%s</td>""" #escala
-            html += """<td>%s</td>""" #codigoBarra
+            html += """<td></td>""" #motivoRechazo
+            html += """<td></td>""" #cut
+            html += """<td></td>""" #dis
+            html += """<td></td>""" #loc
+            html += """<td></td>""" #ent
+            html += """<td></td>""" #rutapdf
+            html += """<td></td>""" #intersectaPE
+            html += """<td></td>""" #intersectaCRF
+            html += """<td></td>""" #intersectaAV
+            html += """<td></td>""" #Homologacion
+            html += """<td></td>""" #formato orientacion
+            html += """<td></td>""" #escala
+            html += """<td></td>""" #codigoBarra
             html += """</tr>"""
     html+="""</table>
     </div>
@@ -1298,6 +1337,7 @@ class InfoMarco:
         self.urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
         self.urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
         self.urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+        self.urlManzanasCenso2017 = 'https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0'
         self.urlPE          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/0'
         self.urlAV          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/1'
         self.urlCRF         = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/2'
@@ -1314,6 +1354,7 @@ class InfoMarco:
                 self.urlSecciones_RAU =    marco['config']['urlSecciones_RAU']
                 self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
                 self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
+                self.urlManzanasCenso2017 = marco['config']['urlManzanasCenso2017']
                 self.urlPE =               marco['config']['urlPE']
                 self.urlAV =               marco['config']['urlAV']
                 self.urlCRF =              marco['config']['urlCRF']
@@ -1324,7 +1365,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev.json'
+urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev2.json'
 urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
