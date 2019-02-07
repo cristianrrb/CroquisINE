@@ -68,6 +68,34 @@ def obtieneInfoManzana(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
+
+def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
+    lista = []
+    try:
+        condiciones = []
+        for codigo in codigos:
+            condicion = "{}+%3D+{}".format(campo, codigo)   #MANZENT
+            condiciones.append(condicion)
+
+        query = "+OR+".join(condiciones)
+        #MANZENT%3D10201020+OR+MANZENT+%3D+1030203050
+
+        url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+        fs = arcpy.FeatureSet()
+        fs.load(url.format(urlServicio, token, query))
+        #fs.load(url.format(infoMarco.urlManzanas, token, query))
+
+        fields = ['SHAPE@']
+
+        with arcpy.da.SearchCursor(fs, fields) as rows:
+            lista = [r[0] for r in rows]
+
+    except:
+        mensaje("** Error en obtieneInfoManzana")
+
+    return lista
+
+
 def obtieneInfoSeccionRAU(codigo, token):
     try:
         url = '{}/query?token={}&where=CU_SECCION+%3D+{}&text=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&having=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&queryByDistance=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&f=pjson'
@@ -1381,6 +1409,7 @@ parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
 parametroCodigos = arcpy.GetParameterAsText(3)
 parametroViviendas = arcpy.GetParameterAsText(4)
 parametroSoloAnalisis = arcpy.GetParameterAsText(5)
+parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 
 # ---------------------- PARAMETROS EN DURO ---------------------------
@@ -1411,34 +1440,60 @@ parametroViviendas = ""
 infoMarco = InfoMarco(parametroMarco, config)
 listaCodigos = generaListaCodigos(parametroCodigos)
 listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
+
 registros = []
 
 mensaje("Estrato: {}".format(parametroEstrato))
 
-if parametroEstrato == "Manzana":
-    diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
-elif parametroEstrato == "RAU":
-    diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+if parametroSoloPlanoUbicacion == 'Si':
+    token = obtieneToken(usuario, clave, urlPortal)
+    if token != None:
+        if parametroEstrato == "Manzanas":
+            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlManzanas, "MANZENT", listaCodigos, token):
+        if parametroEstrato == "RAU":
+            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token):
+        if parametroEstrato == "Rural":
+            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token):
 
-for indice, codigo in enumerate(listaCodigos):
-    if parametroEstrato == 'Manzana':
-        viviendas = -1
-        if len(listaViviendasEncuestar) > 0:
-            viviendas = listaViviendasEncuestar[indice]
-        procesaManzana(codigo, viviendas)
-    elif parametroEstrato == 'RAU':
-        procesaRAU(codigo)
-    elif parametroEstrato == 'Rural':
-        procesaRural(codigo)
-    else:
-        mensaje("El estrato no existe")
-        quit()
-    mensaje("-------------------------------------------------\n")
+
+        # TODO: calcular un extent para todos los poligonos
+        # TODO: determinar el mxd con el extent y el estrato
+        # TODO: ajustar zoom
+        # TODO: preparar mapa
+        # TODO: pintar los poligonos
+        # TODO: generar pdf
+
+        registro = Registro(codigo)
+        registro.rutaPDF = ""
+        registros.append(registro)
+
+
+else:
+    if parametroEstrato == "Manzana":
+        diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+    elif parametroEstrato == "RAU":
+        diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+
+    for indice, codigo in enumerate(listaCodigos):
+        if parametroEstrato == 'Manzana':
+            viviendas = -1
+            if len(listaViviendasEncuestar) > 0:
+                viviendas = listaViviendasEncuestar[indice]
+            procesaManzana(codigo, viviendas)
+        elif parametroEstrato == 'RAU':
+            procesaRAU(codigo)
+        elif parametroEstrato == 'Rural':
+            procesaRural(codigo)
+        else:
+            mensaje("El estrato no existe")
+            quit()
+        mensaje("-------------------------------------------------\n")
+
 
 f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 rutaCSV = escribeCSV(registros,f)
 rutaZip = comprime(registros, rutaCSV,f)
-arcpy.SetParameterAsText(6, rutaZip)
+arcpy.SetParameterAsText(7, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
 #enviarMail(registros)
