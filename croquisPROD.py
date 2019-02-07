@@ -197,6 +197,23 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
         mensaje("** Error en obtieneListaPoligonosServicio")
     return lista
 
+def calculaExtentPlanoUbicacion(fs, metrosBuffer):
+    try:
+        buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
+        fcBuffer = arcpy.Buffer_analysis(fs, buffer, metrosBuffer)
+        with arcpy.da.SearchCursor(fcBuffer, ['SHAPE@']) as rows:
+            lista = [r[0] for r in rows]
+        arcpy.Delete_management(buffer)
+        if lista != None and len(lista) > 0:
+            mensaje('Extension del poligono obtenida correctamente.')
+            return lista[0].extent
+        else:
+            mensaje("No se pudo calcular extension del poligono.")
+            return None
+    except:
+        mensaje("** Error en calculaExtent.")
+        return None
+
 def listaMXDsPlanoUbicacion(estrato, ancho):
 
     d = {"Manzana":0,"RAU":1,"Rural":2}
@@ -1578,8 +1595,8 @@ if parametroSoloPlanoUbicacion == 'Si':
             listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
         if parametroEstrato == "Rural":
             listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
-        
-        extent = calculaExtent(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
+
+        extent = calculaExtentPlanoUbicacion(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
         actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
         zoom(mxd, extent, escala) # TODO: ajustar zoom
