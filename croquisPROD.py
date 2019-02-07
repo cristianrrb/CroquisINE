@@ -1578,8 +1578,7 @@ if parametroSoloPlanoUbicacion == 'Si':
             listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
         if parametroEstrato == "Rural":
             listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
-
-        #mensaje(listaPoligonos) # OK
+        
         extent = calculaExtent(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
         actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
