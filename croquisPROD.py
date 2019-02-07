@@ -158,18 +158,8 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
-def comparaManzanas(poligono, urlServicio, token):
-    try:
-        queryURL = "{}/query".format(urlServicio)
-        params = {'token':token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
-        req = urllib2.Request(queryURL, urllib.urlencode(params))
-        response = urllib2.urlopen(req)
-        ids = json.load(response)
-        if ids['objectIds'] != None:
-            return "Si"
-    except:
-        pass
-    return "No"
+def comparaManzanas(areaManzana2016, areaManzana2017):
+    pass
 
 def listaMXDs(estrato, ancho):
 
@@ -673,6 +663,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                     datosManzana, extent = obtieneInfoManzana(codigo, token)
                     datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
                     mensaje("##################################################################")
+                    #respuesta = comparaManzanas(datosManzana[1],datosManzana2017[0])
                     mensaje(datosManzana[1])
                     mensaje(datosManzana2017[0])
                     if datosManzana != None:
