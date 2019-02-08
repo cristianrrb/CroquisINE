@@ -185,8 +185,14 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
 
         query = "+OR+".join(condiciones) #MANZENT%3D10201020+OR+MANZENT+%3D+1030203050
         url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlServicio, token, query))
+
+        fc = arcpy.CreateFeatureclass_management("in_memory", "fc", "POLYGON")
+        fc.load(fs)
+        # a fc le hago extent y luego zoomtolayer
+        extent = calculaExtentPlanoUbicacion(fc, metrosBuffer)
 
         fields = ['SHAPE@']
 
@@ -1556,12 +1562,13 @@ parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
 # --------------------------------------------------------------------
-parametroCodigos = "15101021001002"
+parametroCodigos = "15101021001002,4301011001042,4102031003020"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
 parametroSoloAnalisis = "si"
+parametroSoloPlanoUbicacion = "Si"
 # --------------------------------------------------------------------
 parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
@@ -1596,7 +1603,7 @@ if parametroSoloPlanoUbicacion == 'Si':
         if parametroEstrato == "Rural":
             listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
 
-        extent = calculaExtentPlanoUbicacion(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
+        #extent = calculaExtentPlanoUbicacion(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
         actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
         zoom(mxd, extent, escala) # TODO: ajustar zoom
