@@ -1499,15 +1499,17 @@ class Registro:
 
 class InfoMarco:
     def __init__(self, codigo, config):
-        self.urlManzanas        = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-        self.urlSecciones_RAU   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
-        self.urlSecciones_Rural = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-        self.urlAreaDestacada   = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
+        self.urlManzanas          = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
+        self.urlSecciones_RAU     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
+        self.urlSecciones_Rural   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
+        self.urlAreaDestacada     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
         self.urlManzanasCenso2017 = 'https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0'
-        self.urlPE          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/0'
-        self.urlAV          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/1'
-        self.urlCRF         = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/2'
-        self.urlHomologacion= 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/3'
+
+        self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
+        self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
+        self.urlAV           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
+        self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/3'
+
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
         self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
         self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
@@ -1642,7 +1644,7 @@ rutaZip = comprime(registros, rutaCSV,f)
 arcpy.SetParameterAsText(7, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-#enviarMail(registros)
+enviarMail(registros)
 
 """
 for mxd in mxd_list:
