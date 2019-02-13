@@ -189,10 +189,11 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlServicio, token, query))
 
-        fc = arcpy.CreateFeatureclass_management("in_memory", "fc", "POLYGON")
-        fc.load(fs)
-        # a fc le hago extent y luego zoomtolayer
-        extent = calculaExtentPlanoUbicacion(fc, metrosBuffer)
+        fc = os.path.join("in_memory","fc")
+        fs.save(fc)
+
+        desc = arcpy.Describe(fc)
+        extent = desc.extent
 
         fields = ['SHAPE@']
 
@@ -201,12 +202,12 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
             mensaje("** OK en obtieneListaPoligonosServicio")
     except:
         mensaje("** Error en obtieneListaPoligonosServicio")
-    return lista
+    return lista, extent
 
-def calculaExtentPlanoUbicacion(fs, metrosBuffer):
+def calculaExtentPlanoUbicacion(fc, metrosBuffer):
     try:
         buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
-        fcBuffer = arcpy.Buffer_analysis(fs, buffer, metrosBuffer)
+        fcBuffer = arcpy.Buffer_analysis(fc, buffer, metrosBuffer)
         with arcpy.da.SearchCursor(fcBuffer, ['SHAPE@']) as rows:
             lista = [r[0] for r in rows]
         arcpy.Delete_management(buffer)
@@ -246,7 +247,7 @@ def buscaTemplatePlanoUbicacion(extent, estrato):
                 return mxd, infoMxd, escala
     except:
         pass
-    mensaje('** Error: No se selecciono layout para manzana.')
+    mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
     return None, None, None
 
 def mejorEscalaMXDPlanoUbicacion(mxd, alto, ancho):
@@ -1599,13 +1600,12 @@ if parametroSoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
         if parametroEstrato == "Manzana":
-            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
+            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
         if parametroEstrato == "RAU":
-            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
+            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
         if parametroEstrato == "Rural":
-            listaPoligonos = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
+            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
 
-        #extent = calculaExtentPlanoUbicacion(fs, metrosBuffer) # TODO: calcular un extent para todos los poligonos
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
         actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
         zoom(mxd, extent, escala) # TODO: ajustar zoom
