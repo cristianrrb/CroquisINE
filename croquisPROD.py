@@ -1225,6 +1225,30 @@ def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encue
         nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), "Anexo_"+str(nroAnexo), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
+def generaNombrePDFPlanoUbicacion(estrato, infoMxd, encuesta, marco):
+    if estrato == "Manzana":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "MZ_Plano_Ubicacion"
+            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        else:
+            tipo = "MZ"
+            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    elif estrato == "RAU":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "RAU_Plano_Ubicacion"
+            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        else:
+            tipo = "RAU"
+            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    elif estrato == "Rural":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "S_RUR"
+            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+        else:
+            tipo = "S_RUR"
+            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+    return nombre
+
 def generaCodigoBarra(estrato, datosEntidad):
     if estrato == "Manzana":
         tipo = "MZ"
@@ -1607,15 +1631,32 @@ if parametroSoloPlanoUbicacion == 'Si':
             listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
 
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
-        actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
+
+        mensaje("lista de poligonos")
+        mensaje(listaPoligonos)
+        mensaje("****************************************")
+        mensaje("extent")
+        mensaje(extent)
+        mensaje("****************************************")
+        mensaje("infoMXD")
+        mensaje(infoMxd)
+        mensaje("****************************************")
+        mensaje("escala")
+        mensaje(escala)
+        mensaje("****************************************")
+
+
+        #actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
         zoom(mxd, extent, escala) # TODO: ajustar zoom
         # TODO: pintar los poligonos
 
-        nombrePDF = generaNombrePDF(parametroEstrato, datosManzana, infoMxd, parametroEncuesta, parametroMarco) # TODO: generar pdf
+        nombrePDF = generaNombrePDFPlanoUbicacion(parametroEstrato, infoMxd, parametroEncuesta, parametroMarco) # TODO: generar pdf
+        mensaje(nombrePDF)
+        quit()
 
-        registro = Registro(codigo)
-        registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
-        registros.append(registro)
+        #registro = Registro(codigo)
+        #registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+        #registros.append(registro)
 else:
     if parametroEstrato == "Manzana":
         diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
