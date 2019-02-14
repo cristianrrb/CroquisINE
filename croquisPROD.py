@@ -1699,15 +1699,3 @@ for mxd in mxd_list:
         os.remove(page_pdf)  # delete the file
     pdfDoc.saveAndClose()  # save the pdf for the mxd
 """
-
-""" def generaMensajeProceso(registro):
-    m = []
-    m.append(registro.homologacion)
-    m.append(registro.intersectaPE)
-    m.append(registro.intersectaCRF)
-    m.append()
-    if registro.intersectaPE == "Si":
-        m.append("Intersecta con PE")
-    if registro.intersectaCRF == "Si":
-        m.append("Intersecta con CRF")
-    return ", ".join(m) """
