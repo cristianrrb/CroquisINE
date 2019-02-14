@@ -175,12 +175,16 @@ def listaMXDs(estrato, ancho):
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
+# urlServicio = infoMarco.urlManzanas
+# campo = "MANZENT"
+# codigos = listaCodigos
+# token
 def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
     lista = []
     try:
         condiciones = []
         for codigo in codigos:
-            condicion = "{}+%3D+{}".format(campo, codigo) #MANZENT
+            condicion = "{}+%3D+{}".format(campo, codigo)
             condiciones.append(condicion)
 
         query = "+OR+".join(condiciones) #MANZENT%3D10201020+OR+MANZENT+%3D+1030203050
@@ -195,31 +199,20 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
         desc = arcpy.Describe(fc)
         extent = desc.extent
 
-        fields = ['SHAPE@']
+        if parametroEstrato == "Manzana":
+            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
+        elif parametroEstrato == "RAU":
+            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
+        elif parametroEstrato == "Rural":
+            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
+        mensaje(fields)
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
-            lista = [r[0] for r in rows]
+            lista = [r for r in rows]
             mensaje("** OK en obtieneListaPoligonosServicio")
     except:
         mensaje("** Error en obtieneListaPoligonosServicio")
-    return lista, extent
-
-def calculaExtentPlanoUbicacion(fc, metrosBuffer):
-    try:
-        buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
-        fcBuffer = arcpy.Buffer_analysis(fc, buffer, metrosBuffer)
-        with arcpy.da.SearchCursor(fcBuffer, ['SHAPE@']) as rows:
-            lista = [r[0] for r in rows]
-        arcpy.Delete_management(buffer)
-        if lista != None and len(lista) > 0:
-            mensaje('Extension del poligono obtenida correctamente.')
-            return lista[0].extent
-        else:
-            mensaje("No se pudo calcular extension del poligono.")
-            return None
-    except:
-        mensaje("** Error en calculaExtent.")
-        return None
+    return lista, extent, fc
 
 def listaMXDsPlanoUbicacion(estrato, ancho):
 
@@ -245,6 +238,16 @@ def buscaTemplatePlanoUbicacion(extent, estrato):
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 mensaje('Se selecciono layout para Plano Ubicacion.')
                 return mxd, infoMxd, escala
+
+        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
+        escala = mejorEscalaMXD(infoMxd, alto, ancho)
+        if escala != None:
+            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+            mxd = arcpy.mapping.MapDocument(rutaMXD)
+            mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
+            mensaje("infoMxd = {}".format(infoMxd))
+            mensaje("escala = {}".format(escala))
+            return mxd, infoMxd, escala
     except:
         pass
     mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
@@ -258,13 +261,13 @@ def mejorEscalaMXDPlanoUbicacion(mxd, alto, ancho):
             return e * 100
     return None
 
-def actualizaVinetaManzanas_PlanoUbicacion(mxd,datosManzana):
+def actualizaVinetaManzanas_PlanoUbicacion(mxd, listaPoligonos):
 
     try:
-        nombre_region = nombreRegion(datosManzana[2])
-        nombre_provincia = nombreProvincia(datosManzana[3])
-        nombre_comuna = nombreComuna(datosManzana[4])
-        nombre_urbano = nombreUrbano(datosManzana[5])
+        nombre_region = nombreRegion(listaPoligonos[2])
+        nombre_provincia = nombreProvincia(listaPoligonos[3])
+        nombre_comuna = nombreComuna(listaPoligonos[4])
+        nombre_urbano = nombreUrbano(listaPoligonos[5])
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -336,6 +339,17 @@ def actualizaVinetaSeccionRural_PlanoUbicacion(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las viñetas para Rural Plano Ubicacion.")
 
+def destacaListado(mxd, FC):
+    mensaje("Pintando recien")
+    df = arcpy.mapping.ListDataFrames(mxd)[0]
+    arcpy.AddField_management(FC, "tipo", "LONG")
+    tm_path = os.path.join("in_memory", "graphic2_lyr")
+    arcpy.MakeFeatureLayer_management(FC, tm_path)
+    tm_layer = arcpy.mapping.Layer(tm_path)
+    sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic2_lyr.lyr")
+    arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+    mensaje("pINTADO")
+
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
 def listaEtiquetas(estrato):
@@ -398,8 +412,6 @@ def mejorEscalaMXDManzana(mxd, alto, ancho):
 
 def mejorEscalaMXDRAU(mxd, alto, ancho):
     #5 a 76x100 (500 a 7500)
-    mensaje("mejorEscalaMXDRAU")
-    mensaje("escala rango 500 a 7.500")
     escalas = [e for e in range(5, 76)]
     for e in escalas:
         if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
@@ -458,7 +470,6 @@ def buscaTemplateRAU(extent):
                 return mxd, infoMxd, escala
 
         # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
-        mensaje("2 template rau")
         escala = mejorEscalaMXD(infoMxd, alto, ancho)
         if escala != None:
             rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
@@ -499,9 +510,7 @@ def buscaTemplateRural(extent):
 
 def zoom(mxd, extent, escala):
     try:
-        mensaje("zoom")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        mensaje(extent)
         newExtent = df.extent
         newExtent.XMin, newExtent.YMin = extent.XMin, extent.YMin
         newExtent.XMax, newExtent.YMax = extent.XMax, extent.YMax
@@ -1162,34 +1171,60 @@ def normalizaPalabra(s):
 
 def generaPDF(mxd, nombrePDF, datos):
 
-    nueva_region = normalizaPalabra(nombreRegion(datos[2]))
-    nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
+    if parametroSoloPlanoUbicacion == "":
+        nueva_region = normalizaPalabra(nombreRegion(datos[2]))
+        nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
-    if parametroEstrato == "Rural":
-        rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
+        if parametroEstrato == "Rural":
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
+        else:
+            nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+
+        data_frame = 'PAGE_LAYOUT'
+        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        resolution = 200
+        image_quality = 'BETTER' #'BEST' 'FASTER'
+        color_space = 'RGB'
+        compress_vectors = True
+        image_compression = 'ADAPTIVE'
+        picture_symbol = 'RASTERIZE_BITMAP'
+        convert_markers = True
+        embed_fonts = True
+        georef_info = True
+
+        if not os.path.exists(rutaDestino):
+            os.makedirs(rutaDestino)
+
+        destinoPDF = os.path.join(rutaDestino, nombrePDF)
+        mensaje(destinoPDF)
+        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
+        mensaje("Exportado a pdf")
     else:
-        nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-        rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+        rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
 
-    data_frame = 'PAGE_LAYOUT'
-    df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-    resolution = 200
-    image_quality = 'BETTER' #'BEST' 'FASTER'
-    color_space = 'RGB'
-    compress_vectors = True
-    image_compression = 'ADAPTIVE'
-    picture_symbol = 'RASTERIZE_BITMAP'
-    convert_markers = True
-    embed_fonts = True
+        data_frame = 'PAGE_LAYOUT'
+        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        resolution = 200
+        image_quality = 'BETTER' #'BEST' 'FASTER'
+        color_space = 'RGB'
+        compress_vectors = True
+        image_compression = 'ADAPTIVE'
+        picture_symbol = 'RASTERIZE_BITMAP'
+        convert_markers = True
+        embed_fonts = True
+        georef_info = True
 
-    if not os.path.exists(rutaDestino):
-        os.makedirs(rutaDestino)
+        if not os.path.exists(rutaDestino):
+            os.makedirs(rutaDestino)
 
-    destinoPDF = os.path.join(rutaDestino, nombrePDF)
-    mensaje(destinoPDF)
-    arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
-    mensaje("Exportado a pdf")
+        destinoPDF = os.path.join(rutaDestino, nombrePDF)
+        mensaje(destinoPDF)
+        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts)
+        mensaje("Exportado a pdf")
+
     return destinoPDF
 
 def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
@@ -1203,13 +1238,13 @@ def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
     elif estrato == "RAU":
         if parametroSoloPlanoUbicacion == "Si":
             tipo = "RAU_Plano_Ubicacion"
-            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
+            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
         else:
             tipo = "RAU"
             nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     elif estrato == "Rural":
         if parametroSoloPlanoUbicacion == "Si":
-            tipo = "S_RUR"
+            tipo = "Rural_Plano_Ubicacion"
             nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
         else:
             tipo = "S_RUR"
@@ -1223,30 +1258,6 @@ def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encue
     elif estrato == "Rural":
         tipo = "S_RUR"
         nombre = "{}_{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), "Anexo_"+str(nroAnexo), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-    return nombre
-
-def generaNombrePDFPlanoUbicacion(estrato, infoMxd, encuesta, marco):
-    if estrato == "Manzana":
-        if parametroSoloPlanoUbicacion == "Si":
-            tipo = "MZ_Plano_Ubicacion"
-            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-        else:
-            tipo = "MZ"
-            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[6]), int(datosEntidad[11]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-    elif estrato == "RAU":
-        if parametroSoloPlanoUbicacion == "Si":
-            tipo = "RAU_Plano_Ubicacion"
-            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-        else:
-            tipo = "RAU"
-            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[9]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-    elif estrato == "Rural":
-        if parametroSoloPlanoUbicacion == "Si":
-            tipo = "S_RUR"
-            nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
-        else:
-            tipo = "S_RUR"
-            nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], encuesta, marco[2:4])
     return nombre
 
 def generaCodigoBarra(estrato, datosEntidad):
@@ -1589,12 +1600,12 @@ parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
 # --------------------------------------------------------------------
-parametroCodigos = "15101021001002,4301011001042,4102031003020"
+parametroCodigos = "1101021005059,1101021004013,1101081001009,1101081001006"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
-parametroSoloAnalisis = "si"
+parametroSoloAnalisis = ""
 parametroSoloPlanoUbicacion = "Si"
 # --------------------------------------------------------------------
 parametroCodigos = "3202200055"
@@ -1624,39 +1635,27 @@ if parametroSoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
         if parametroEstrato == "Manzana":
-            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
+            listaPoligonos, extent, FC = obtieneListaPoligonosServicio(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato)
+            diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+            actualizaVinetaManzanas_PlanoUbicacion(mxd, listaPoligonos[0])
         if parametroEstrato == "RAU":
-            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
+            listaPoligonos, extent, FC = obtieneListaPoligonosServicio(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato)
+            diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+            actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, listaPoligonos[0])
         if parametroEstrato == "Rural":
-            listaPoligonos, extent = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
+            listaPoligonos, extent, FC = obtieneListaPoligonosServicio(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato)
+            actualizaVinetaSeccionRural_PlanoUbicacion(mxd, listaPoligonos[0])
 
-        mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato) # TODO: determinar el mxd con el extent y el estrato
+        destacaListado(mxd, FC)
+        zoom(mxd, extent, escala)
+        nombrePDF = generaNombrePDF(parametroEstrato,"", infoMxd, parametroEncuesta, parametroMarco)
 
-        mensaje("lista de poligonos")
-        mensaje(listaPoligonos)
-        mensaje("****************************************")
-        mensaje("extent")
-        mensaje(extent)
-        mensaje("****************************************")
-        mensaje("infoMXD")
-        mensaje(infoMxd)
-        mensaje("****************************************")
-        mensaje("escala")
-        mensaje(escala)
-        mensaje("****************************************")
-
-
-        #actualizaVinetaManzanas_PlanoUbicacion(mxd, datosManzana) # TODO: preparar mapa
-        zoom(mxd, extent, escala) # TODO: ajustar zoom
-        # TODO: pintar los poligonos
-
-        nombrePDF = generaNombrePDFPlanoUbicacion(parametroEstrato, infoMxd, parametroEncuesta, parametroMarco) # TODO: generar pdf
-        mensaje(nombrePDF)
-        quit()
-
-        #registro = Registro(codigo)
-        #registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
-        #registros.append(registro)
+        registro = Registro("codigo")
+        registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+        registros.append(registro)
 else:
     if parametroEstrato == "Manzana":
         diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
