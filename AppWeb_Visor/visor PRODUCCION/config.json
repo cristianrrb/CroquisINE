@@ -1,6 +1,6 @@
 {
-    "urlServicio": "https://gis.ine.cl/public/rest/services/ESRI/genera_croquis_dev/GPServer/croquis",
-    "urlConfiguracion": "https://gis.ine.cl/croquis/configuracion_dev.json",
+    "urlServicio": "https://gis.ine.cl/public/rest/services/ESRI/croquis_prod/GPServer/croquis",
+    "urlConfiguracion": "https://gis.ine.cl/croquis/configuracion.json",
     "estratos":[
         "Manzana",
         "RAU",

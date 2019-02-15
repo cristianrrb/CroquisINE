@@ -210,12 +210,12 @@ function(
             var listaCodigos = arrayUtils.map(this.tablaCodigos.rows, function(row) {
                 return row.codigo
             }, this);
-			
-			var listaTemp = arrayUtils.map(this.tablaCodigos.rows, function(row) {
+            
+            var listaTemp = arrayUtils.map(this.tablaCodigos.rows, function(row) {
                 return row.viviendas
             }, this);
-			
-			var listaViviendas = arrayUtils.filter(listaTemp, function(e) {
+            
+            var listaViviendas = arrayUtils.filter(listaTemp, function(e) {
                 return e != ""
             }, this);
 
@@ -270,7 +270,7 @@ function(
             return deferred.promise;
         },
 
-        analizaMensajesGeoproceso(jobInfo) {
+        analizaMensajesGeoproceso: function(jobInfo) {
             console.log("Analizando mensajes");
             arrayUtils.forEach(jobInfo.messages, function(mensaje) {
                 if (mensaje.description.substr(0, 1) == "#") {   // si comienza con #
@@ -282,15 +282,16 @@ function(
 
                     var intersectaPE = valores[0];
                     var intersectaCFT = valores[1];
-                    var homologacion = valores[2];
-                    var estado = valores[3];
+                    var intersectaAV = valores[2];
+                    var homologacion = valores[3];
+                    var estado = valores[4];
 
-                    this.actualizaEstadoTablaCodigos(codigo, intersectaPE, intersectaCFT, homologacion, estado);
+                    this.actualizaEstadoTablaCodigos(codigo, intersectaPE, intersectaCFT, intersectaAV, homologacion, estado);
                 }
             }, this);
         },
 
-        actualizaEstadoTablaCodigos: function(codigo, intersectaPE, intersectaCFT, homologacion, estado) {
+        actualizaEstadoTablaCodigos: function(codigo, intersectaPE, intersectaCFT, intersectaAV, homologacion, estado) {
             arrayUtils.forEach(this.tablaCodigos.rows, function(row) {
                 if (row.cells[0].innerText == codigo) {
                     row.cells[2].innerText = estado;
