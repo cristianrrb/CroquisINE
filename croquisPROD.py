@@ -573,7 +573,7 @@ def limpiaMapaManzana(mxd, manzana,cod_manz):
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic2_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         ext = manzana.projectAs(df.spatialReference)
         dist = calculaDistanciaBufferManzana(ext.area)
@@ -1562,7 +1562,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev2.json'
+urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
@@ -1639,7 +1639,7 @@ if parametroSoloPlanoUbicacion == 'Si':
             mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato)
             actualizaVinetaSeccionRural_PlanoUbicacion(mxd, listaPoligonos[0])
 
-        destacaListaPoligonos(mxd, FC)
+        #destacaListaPoligonos(mxd, FC)
         zoom(mxd, extent, escala)
         nombrePDF = generaNombrePDF(parametroEstrato, listaPoligonos[0], infoMxd, parametroEncuesta, parametroMarco)
 
