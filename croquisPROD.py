@@ -1312,11 +1312,10 @@ def escribeCSV(registros, f):
                 tipo = "Rural"
                 contenidoCsv = 1
 
-        nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
-        rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
-        mensaje("Ruta CSV :{}".format(rutaCsv))
-
         if contenidoCsv == 1:
+            nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
+            rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
+            mensaje("Ruta CSV :{}".format(rutaCsv))
             with open(rutaCsv, "wb") as f:
                 wr = csv.writer(f, delimiter=';')
                 a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
@@ -1327,6 +1326,9 @@ def escribeCSV(registros, f):
                     wr.writerow(a)
 
         elif contenidoCsv == 2:
+            nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
+            rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
+            mensaje("Ruta CSV :{}".format(rutaCsv))
             with open(rutaCsv, "wb") as f:
                 wr = csv.writer(f, delimiter=';')
                 a = ['Hora', 'Codigo', 'Estado', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'Ruta PDF', 'Formato / Orientacion', 'Escala']
