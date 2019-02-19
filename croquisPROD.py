@@ -349,7 +349,6 @@ def destacaListaPoligonos(mxd, FC):
     sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
     arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
     mensaje("Entidades Pintadas")
-
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
 def listaEtiquetas(estrato):
@@ -1682,13 +1681,13 @@ parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
 # --------------------------------------------------------------------
-parametroCodigos = "1101021005059"
+parametroCodigos = "1101021005059,1101021004013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
 parametroSoloAnalisis = ""
-parametroSoloPlanoUbicacion = ""
+parametroSoloPlanoUbicacion = "Si"
 # --------------------------------------------------------------------
 parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
@@ -1731,12 +1730,15 @@ if parametroSoloPlanoUbicacion == 'Si':
             mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent, parametroEstrato)
             actualizaVinetaSeccionRural_PlanoUbicacion(mxd, listaPoligonos[0])
 
-        #destacaListaPoligonos(mxd, FC)
+        destacaListaPoligonos(mxd, FC)
         zoom(mxd, extent, escala)
         nombrePDF = generaNombrePDF(parametroEstrato, listaPoligonos[0], infoMxd, parametroEncuesta, parametroMarco)
 
         registro = Registro(listaCodigos)
         registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+        registro.formato = infoMxd['formato']
+        registro.orientacion = infoMxd['orientacion']
+        registro.escala = escala
         if registro.rutaPDF != "":
             registro.estado = "Correcto"
         registros.append(registro)

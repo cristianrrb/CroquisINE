@@ -1,0 +1,3 @@
+Hora;Codigo;Estado;Motivo rechazo;CUT;CODIGO DISTRITO;CODIGO LOCALIDAD O ZONA;CODIGO ENTIDAD O MANZANA;Ruta PDF;Intersecta PE;Intersecta CRF;Intersecta AV;Homologacion;Formato / Orientacion;Escala;Codigo barra
+12:23:24;1101021005059;Correcto;;1101;02;005;059;D:\CROQUIS\MUESTRAS_PDF\ENE\DE_TARAPACA\IQUIQUE\IQUIQUE\MZ_1101_205059_Oficio_Horizontal_ENE_16.pdf;Si;No;No;Homologada Idéntica;Oficio / Horizontal;1700;*MZ-1101-205059-ENE-16*
+12:23:41;1101021004013;Correcto;;1101;02;004;013;D:\CROQUIS\MUESTRAS_PDF\ENE\DE_TARAPACA\IQUIQUE\IQUIQUE\MZ_1101_204013_Oficio_Horizontal_ENE_16.pdf;No;No;No;Homologada Idéntica;Oficio / Horizontal;700;*MZ-1101-204013-ENE-16*

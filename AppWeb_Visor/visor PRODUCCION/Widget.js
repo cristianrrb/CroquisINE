@@ -237,7 +237,6 @@ function(
             );
         },
 
-
         generaCroquis: function(codigos, viviendas, analizar, esPlanoUbicacion) {
             var deferred = new Deferred();
             var gp = new Geoprocessor(this.config.urlServicio);
