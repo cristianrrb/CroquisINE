@@ -1503,7 +1503,7 @@ def enviarMail(registros):
                     html += """<td></td>""" #escala
                     html += """<td></td>""" #codigoBarra
                     html += """</tr>"""
-        else:
+        elif parametroSoloPlanoUbicacion != "Si":
             html+= """<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
             <u>Motivos de Rechazo y/o Alertas:</u>
             <ul>
@@ -1537,7 +1537,7 @@ def enviarMail(registros):
                   </tr>
                 """
             for i, r in enumerate(registros, 1):
-                if r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+                if r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion.encode('utf8') == 'Homologada No Idéntica' or r.homologacion.encode('utf8') == 'Homologada No Idénticas':
                     cut, dis, area, loc, ent = descomponeManzent(r.codigo)
                     a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                     html +="""<tr>"""
