@@ -56,15 +56,15 @@ function(
 
                 this.identificaLayer();
                 on(this.divGeneraPDF, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("");
+                    this.procesaListaCodigos("", "");
                 }));
 
                 on(this.divAnalizar, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("si");
+                    this.procesaListaCodigos("si", "");
                 }));
 
                 on(this.divPlanoUbicacion, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("Si");
+                    this.procesaListaCodigos("", "Si");
                 }));
 
                 this.fileReader = new FileReader();
@@ -208,7 +208,7 @@ function(
             }, this);
         },
 
-        procesaListaCodigos: function(analizar) {
+        procesaListaCodigos: function(analizar, esPlanoUbicacion) {
             domConstruct.empty(this.divDescarga);
             // TODO: Validar duplicados
             var listaCodigos = arrayUtils.map(this.tablaCodigos.rows, function(row) {
@@ -224,7 +224,7 @@ function(
             }, this);
 
             this.shelter.show();
-            this.generaCroquis(listaCodigos.join(","), listaViviendas.join(","), analizar).then(
+            this.generaCroquis(listaCodigos.join(","), listaViviendas.join(","), analizar, esPlanoUbicacion).then(
                 lang.hitch(this, function(url) {
                     // domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url, 'download':"Croquis.zip", 'target':'_top'}, this.divDescarga);
                     domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url}, this.divDescarga);
@@ -237,28 +237,8 @@ function(
             );
         },
 
-        procesaListaCodigos: function(esPlanoUbicacion) {
-            domConstruct.empty(this.divDescarga);
-            // TODO: Validar duplicados
-            var listaCodigos = arrayUtils.map(this.tablaCodigos.rows, function(row) {
-                return row.codigo
-            }, this);
 
-            this.shelter.show();
-            this.generaPlanoUbicacion(listaCodigos.join(","), esPlanoUbicacion).then(
-                lang.hitch(this, function(url) {
-                    // domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url, 'download':"Croquis.zip", 'target':'_top'}, this.divDescarga);
-                    domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url}, this.divDescarga);
-                    this.shelter.hide();
-                }),
-                lang.hitch(this, function() {
-                    console.log("Error");
-                    this.shelter.hide();
-                })
-            );
-        },
-
-        generaCroquis: function(codigos, viviendas, analizar) {
+        generaCroquis: function(codigos, viviendas, analizar, esPlanoUbicacion) {
             var deferred = new Deferred();
             var gp = new Geoprocessor(this.config.urlServicio);
             gp.outSpatialReference = this.map.spatialReference;
@@ -268,42 +248,7 @@ function(
                 'Marco':    this.selMarco.value,
                 'Codigos':  codigos,
                 'Viviendas': viviendas,
-                'Analizar': analizar
-            };
-            gp.setUpdateDelay(5000);
-            gp.submitJob(
-                params,
-                lang.hitch(this, function(jobInfo) {      // Completo
-                    gp.getResultData(jobInfo.jobId, "rutaRar").then(
-                        lang.hitch(this, function(result) {
-                            /* arrayUtils.forEach(jobInfo.messages, function(mensaje) {
-                                console.log(mensaje.description);
-                            }, this); */
-                            deferred.resolve(result.value.url);
-                        }
-                    ));
-                }),
-                lang.hitch(this, function(jobInfo) {      // Estado
-                    // console.log(jobInfo.jobStatus);
-                    this.analizaMensajesGeoproceso(jobInfo);
-                }),
-                lang.hitch(this, function(jobInfo) {      // Error
-                    console.log(jobInfo);
-                    deferred.reject();
-                })
-            );
-            return deferred.promise;
-        },
-
-        generaPlanoUbicacion: function(codigos, esPlanoUbicacion) {
-            var deferred = new Deferred();
-            var gp = new Geoprocessor(this.config.urlServicio);
-            gp.outSpatialReference = this.map.spatialReference;
-            var params = {
-                'Estrato':  this.selEstrato.value,
-                'Encuesta': this.selEncuesta.value,
-                'Marco':    this.selMarco.value,
-                'Codigos':  codigos,
+                'Analizar': analizar,
                 'esPlanoUbicacion': esPlanoUbicacion
             };
             gp.setUpdateDelay(5000);
