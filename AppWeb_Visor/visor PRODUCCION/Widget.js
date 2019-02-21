@@ -87,6 +87,9 @@ function(
                 this.initDropZone();
 
                 this.shelter.hide();
+                //divGeneraPDF.disabled=true;
+                //divPlanoUbicacion.disabled=true;
+                //divAnalizar.disabled=true;
             }
         },
 
