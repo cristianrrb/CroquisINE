@@ -67,10 +67,6 @@ function(
                     this.procesaListaCodigos("", "Si");
                 }));
 
-                on(this.divGeneraPlanoUbicacion, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("si");
-                }));
-
                 this.fileReader = new FileReader();
                 on(this.fileReader, "load", lang.hitch(this, function(e) {
                     if (this.tipoArchivo === "csv") {
@@ -97,7 +93,6 @@ function(
             var deferred = new Deferred();
             request(this.config.urlConfiguracion).then(
                 lang.hitch(this, function(text) {
-                    // console.log(text);
                     lang.mixin(this.config, text);
                     deferred.resolve();
                 }),
@@ -213,6 +208,8 @@ function(
                     tr.viviendas = v
                 }
             }, this);
+
+            this.seleccionaTodo();
         },
 
         procesaListaCodigos: function(analizar, esPlanoUbicacion) {
@@ -344,6 +341,25 @@ function(
                     this.map.infoWindow.setFeatures(result.features);
                 }));
             }
+        },
+
+        seleccionaTodo: function() {
+            if (this.selEstrato.value == "Manzana" && this.capaManzanas) {
+                var query = new Query();
+                query.where = this.construyeCondicionParaTodo("MANZENT");
+                this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){
+                    var extent = graphicsUtils.graphicsExtent(result.features);
+                    this.map.setExtent(extent, true);
+                    this.map.infoWindow.setFeatures(result.features);
+                }));
+            }
+        },
+
+        construyeCondicionParaTodo: function(campo) {
+            var lista = arrayUtils.map(this.tablaCodigos.rows, function(row) {
+                return campo + "=" + row.codigo
+            }, this);
+            return lista.join(" or ");
         },
 
         identificaLayer: function() {
