@@ -14,7 +14,7 @@ def mensaje(m):
 
 def mensajeEstado(registro):
     homologacion = "I"
-    if registro.homologacion == 'Homologada No Idéntica':
+    if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
         homologacion = 'NI'
 
     s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
@@ -152,44 +152,51 @@ def obtieneInfoManzanaCenso2017(codigo, token):
             mensaje('Datos de manzana Censo 2017 obtenidos correctamente.')
             return lista[0]
         else:
-            mensaje("** Error: El registro de manzana no existe")
+            mensaje("** Error: El registro de manzana Censo 2017 no existe")
             return None, None
     except:
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
 def comparaManzanas(manzana2016, manzana2017, registro):
-    #mensaje(type(manzana2016))
-    #mensaje(type(manzana2017))
-    print("----------------- Calculo ------------------------")
-    if manzana2016 > manzana2017:
-        print("manzana2016 > manzana2017")
-        diferencia = manzana2016 -  manzana2017
-        porc = diferencia/manzana2016
-        mensaje(diferencia)
-    else:
-        print("manzana2016 < manzana2017")
-        diferencia = manzana2017 - manzana2016
-        porc = diferencia/manzana2017
-        mensaje(diferencia)
+    mensaje("area manzana2016 = {}".format(manzana2016))
+    mensaje("area manzana2017 = {}".format(manzana2017))
+    if manzana2017 != None:
+        print("----------------- Calculo ------------------------")
+        if manzana2016 > manzana2017:
+            print("manzana2016 > manzana2017")
+            diferencia = manzana2016 -  manzana2017
+            porc = diferencia/manzana2016
+            mensaje(diferencia)
+        else:
+            print("manzana2016 < manzana2017")
+            diferencia = manzana2017 - manzana2016
+            porc = diferencia/manzana2017
+            mensaje(diferencia)
 
-    porcentaje = int(round(porc*100,0))
-    mensaje(porcentaje)
+        porcentaje = int(round(porc*100,0))
+        mensaje(porcentaje)
 
-    if porcentaje <= 5:
-        estadoSuperficie = "OK"
-        motivoSuperficie = "Superficie correcta"
-        mensaje("Correcta")
-    elif porcentaje >= 6 and porcentaje <= 40:
-        estadoSuperficie = "Alerta"
-        motivoSuperficie = "Alerta Diferencia en superficie"
-        mensaje("Diferencia en superficie")
-    elif porcentaje > 40:
-        estadoSuperficie = "Rechazada"
-        motivoSuperficie = "Diferencia en superficie"
-        mensaje("Rechazada por superficie")
+        if porcentaje <= 5:
+            estadoSuperficie = "OK"
+            motivoSuperficie = "Diferencia en superficie es menor a 5 porciento"
+            mensaje("OK: Diferencia en superficie es menor a 5 porciento")
+        elif porcentaje >= 6 and porcentaje <= 40:
+            estadoSuperficie = "Alerta"
+            motivoSuperficie = "Diferencia en superficie entre 6 y 40 porciento"
+            mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
+        elif porcentaje > 40:
+            estadoSuperficie = "Rechazada"
+            motivoSuperficie = "Diferencia en superficie supera 40 porciento"
+            mensaje("Rechazada: Diferencia en superficie supera 40 porciento")
+        else:
+            estadoSuperficie = "Rango Porcentaje"
+            motivoSuperficie = "Porcentaje fuera de rango"
+            mensaje("Porcentaje fuera de rango")
     else:
-        mensaje("malo")
+        estadoSuperficie = "No encontrada"
+        motivoSuperficie = "Manzana no encontrada en Censo2017"
+        mensaje("Manzana no encontrada en Censo2017")
 
     return estadoSuperficie, motivoSuperficie
 
@@ -1360,7 +1367,7 @@ def escribeCSV(registros, f):
             mensaje("Ruta CSV :{}".format(rutaCsv))
             with open(rutaCsv, "wb") as f:
                 wr = csv.writer(f, delimiter=';')
-                a = ['Hora', 'Codigo', 'Estado', 'Motivo', 'Est. Superficie','Mot. Superficie','CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
+                a = ['Hora', 'Codigo', 'Estado', 'Motivo', 'Estado Superficie','Motivo Superficie','CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
                 wr.writerow(a)
                 for r in registros:
                     cut, dis, area, loc, ent = descomponeManzent(r.codigo)
@@ -1547,9 +1554,15 @@ def enviarMail(registros):
                     html += """</tr>"""
         else:
             html+= """<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
-            <u>Motivos de Rechazo y/o Alertas:</u>
+            <u>Motivos de Rechazo:</u>
             <ul>
                 <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
+                <li type="disc">Rechazada, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 > 40%, Cuando 'Estado superficie' es, Rechazada</li>
+            </ul>
+            <u>Motivos de Alerta:</u>
+            <ul>
+                <li type="disc">Alerta, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 se encuentra entre 6% y 40% inclusive, Cuando 'Estado superficie' es, Alerta</li>
+                <li type="disc">No encontrada, Manzana no encontrada en Censo2017, Cuando 'Estado superficie' es, No encontrada</li>
                 <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
                 <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
                 <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
@@ -1564,8 +1577,8 @@ def enviarMail(registros):
                     <th>Código</th>
                     <th>Estado</th>
                     <th>Motivo</th>
-                    <th>Est. Superficie</th>
-                    <th>Mot. Superficie</th>
+                    <th>Estado Superficie</th>
+                    <th>Motivo Superficie</th>
                     <th>CUT</th>
                     <th>C.DISTRITO</th>
                     <th>C.ZONA</th>
@@ -1581,7 +1594,7 @@ def enviarMail(registros):
                   </tr>
                 """
             for i, r in enumerate(registros, 1):
-                if (r.estado == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas') or (r.estado == "Correcto" and r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas'):
+                if (r.estado == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.estadoSuperficie == "No encontrada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas') or (r.estado == "Correcto" and r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas'):
                     cut, dis, area, loc, ent = descomponeManzent(r.codigo)
                     a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                     html +="""<tr>"""
