@@ -135,7 +135,7 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
         return lista
     except:
         mensaje("Error obtieneListaAreasDestacadas")
-        return []
+        return
 
 def obtieneInfoManzanaCenso2017(codigo, token):
     try:
@@ -158,8 +158,40 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
-def comparaManzanas(areaManzana2016, areaManzana2017):
-    pass
+def comparaManzanas(manzana2016, manzana2017, registro):
+    #mensaje(type(manzana2016))
+    #mensaje(type(manzana2017))
+    print("----------------- Calculo ------------------------")
+    if manzana2016 > manzana2017:
+        print("manzana2016 > manzana2017")
+        diferencia = manzana2016 -  manzana2017
+        porc = diferencia/manzana2016
+        mensaje(diferencia)
+    else:
+        print("manzana2016 < manzana2017")
+        diferencia = manzana2017 - manzana2016
+        porc = diferencia/manzana2017
+        mensaje(diferencia)
+
+    porcentaje = int(round(porc*100,0))
+    mensaje(porcentaje)
+
+    if porcentaje <= 5:
+        estadoSuperficie = "OK"
+        motivoSuperficie = "Superficie correcta"
+        mensaje("Correcta")
+    elif porcentaje >= 6 and porcentaje <= 40:
+        estadoSuperficie = "Alerta"
+        motivoSuperficie = "Alerta Diferencia en superficie"
+        mensaje("Diferencia en superficie")
+    elif porcentaje > 40:
+        estadoSuperficie = "Rechazada"
+        motivoSuperficie = "Diferencia en superficie"
+        mensaje("Rechazada por superficie")
+    else:
+        mensaje("malo")
+
+    return estadoSuperficie, motivoSuperficie
 
 def listaMXDs(estrato, ancho):
 
@@ -205,7 +237,7 @@ def obtieneListaPoligonosServicio(urlServicio, campo, codigos, token):
             fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
         elif parametroEstrato == "Rural":
             fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
-        mensaje(fields)
+        #mensaje(fields)
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
@@ -349,7 +381,6 @@ def destacaListaPoligonos(mxd, FC):
     sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
     arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
     mensaje("Entidades Pintadas")
-
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
 def listaEtiquetas(estrato):
@@ -573,7 +604,7 @@ def limpiaMapaManzana(mxd, manzana,cod_manz):
         tm_path = os.path.join("in_memory", "graphic_lyr")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic2_lyr.lyr")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         ext = manzana.projectAs(df.spatialReference)
         dist = calculaDistanciaBufferManzana(ext.area)
@@ -795,7 +826,7 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estado = "Rechazado"
-        registro.motivoRechazo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
+        registro.motivo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
         #return False
 
@@ -818,7 +849,7 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
                 registro.estado = "Rechazado"
-                registro.motivoRechazo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
+                registro.motivo = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
                 #return False
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
@@ -836,11 +867,10 @@ def procesaManzana(codigo, viviendasEncuestar):
             else:
                 if registro.estado != "Rechazado":
                     datosManzana, extent = obtieneInfoManzana(codigo, token)
-                    #datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-                    #mensaje("##################################################################")
-                    #respuesta = comparaManzanas(datosManzana[1],datosManzana2017[0])
-                    #mensaje(datosManzana[1])
-                    #mensaje(datosManzana2017[0])
+                    datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
+                    mensaje("##################################################################")
+                    est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
+
                     if datosManzana != None:
                         registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
                         registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
@@ -860,12 +890,17 @@ def procesaManzana(codigo, viviendasEncuestar):
 
                                 if registro.rutaPDF != "":
                                     registro.estado = "Correcto"
+                                    registro.motivo = "Croquis generado"
+                                    registro.estadoSuperficie = est
+                                    registro.motivoSuperficie = mot
 
         registros.append(registro)
         mensajeEstado(registro)
         return
     except:
-        pass
+        #pass
+        registro.estado = "No generado"
+        registros.append(registro)
     mensaje("No se completó el proceso de manzana.")
 
 def procesaRAU(codigo):
@@ -897,7 +932,9 @@ def procesaRAU(codigo):
         mensajeEstado(registro)
         return
     except:
-        pass
+        #pass
+        registro.estado = "No generado"
+        registros.append(registro)
     mensaje("No se completó el proceso de sección RAU.")
 
 def procesaRural(codigo):
@@ -926,7 +963,9 @@ def procesaRural(codigo):
         mensajeEstado(registro)
         return
     except:
-        pass
+        #pass
+        registro.estado = "No generado"
+        registros.append(registro)
     mensaje("No se completó el proceso de sección Rural.")
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
@@ -962,7 +1001,9 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
         mensaje("Se generó el croquis correctamente para área destacada.")
         return
     except:
-        pass
+        #pass
+        registro.estado = "No generado"
+        registros.append(registro)
     mensaje("No se generó el croquis para área destacada.")
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
@@ -1188,7 +1229,7 @@ def generaPDF(mxd, nombrePDF, datos):
     jpeg_compression_quality = 80
 
     # VERIFICAR RUTA DE EDESTINO DE LOS PLANOS DE UBICACION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if parametroSoloPlanoUbicacion == "":
+    if parametroSoloPlanoUbicacion != "Si":
         nueva_region = normalizaPalabra(nombreRegion(datos[2]))
         nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
@@ -1197,26 +1238,16 @@ def generaPDF(mxd, nombrePDF, datos):
         else:
             nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
             rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
-
-
-        if not os.path.exists(rutaDestino):
-            os.makedirs(rutaDestino)
-
-        destinoPDF = os.path.join(rutaDestino, nombrePDF)
-        mensaje(destinoPDF)
-
-        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
-        mensaje("Exportado a pdf")
     else:
         rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
 
-        if not os.path.exists(rutaDestino):
-            os.makedirs(rutaDestino)
+    if not os.path.exists(rutaDestino):
+        os.makedirs(rutaDestino)
 
-        destinoPDF = os.path.join(rutaDestino, nombrePDF)
-        mensaje(destinoPDF)
-        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
-        mensaje("Exportado a pdf")
+    destinoPDF = os.path.join(rutaDestino, nombrePDF)
+    mensaje(destinoPDF)
+    arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
+    mensaje("Exportado a pdf")
     return destinoPDF
 
 def generaNombrePDF(estrato, datosEntidad, infoMxd, encuesta, marco):
@@ -1299,25 +1330,55 @@ def obtieneHomologacion(codigo, urlServicio, token):
     return "", -1
 
 def escribeCSV(registros, f):
+
     try:
         if parametroEstrato == "Manzana":
-            tipo = "MZ"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+                contenidoCsv = 2
+            else:
+                tipo = "MZ"
+                contenidoCsv = 1
         elif parametroEstrato == "RAU":
-            tipo = "RAU"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+                contenidoCsv = 2
+            else:
+                tipo = "RAU"
+                contenidoCsv = 1
         elif parametroEstrato == "Rural":
-            tipo = "Rural"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+                contenidoCsv = 2
+            else:
+                tipo = "Rural"
+                contenidoCsv = 1
 
-        nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
-        rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
-        mensaje("Ruta CSV :{}".format(rutaCsv))
-        with open(rutaCsv, "wb") as f:
-            wr = csv.writer(f, delimiter=';')
-            a = ['Hora', 'Codigo', 'Estado', 'Motivo rechazo', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
-            wr.writerow(a)
-            for r in registros:
-                cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-                a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+        if contenidoCsv == 1:
+            nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
+            rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
+            mensaje("Ruta CSV :{}".format(rutaCsv))
+            with open(rutaCsv, "wb") as f:
+                wr = csv.writer(f, delimiter=';')
+                a = ['Hora', 'Codigo', 'Estado', 'Motivo', 'Est. Superficie','Mot. Superficie','CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD O MANZANA', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
                 wr.writerow(a)
+                for r in registros:
+                    cut, dis, area, loc, ent = descomponeManzent(r.codigo)
+                    a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                    wr.writerow(a)
+
+        elif contenidoCsv == 2:
+            nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
+            rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
+            mensaje("Ruta CSV :{}".format(rutaCsv))
+            with open(rutaCsv, "wb") as f:
+                wr = csv.writer(f, delimiter=';')
+                a = ['Hora', 'Codigo', 'Estado', 'CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'Ruta PDF', 'Formato / Orientacion', 'Escala']
+                wr.writerow(a)
+                for r in registros:
+                    cut, dis, area, loc, ent = descomponeManzent(int(listaCodigos[0]))
+                    a = [r.hora, r.codigo, r.estado, cut, dis, loc, r.rutaPDF, r.formato +" / "+ r.orientacion, r.escala]
+                    wr.writerow(a)
         return rutaCsv
     except:
         return None
@@ -1325,13 +1386,21 @@ def escribeCSV(registros, f):
 def comprime(registros, rutaCSV,f):
     try:
         if parametroEstrato == "Manzana":
-            tipo = "MZ"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+            else:
+                tipo = "MZ"
         elif parametroEstrato == "RAU":
-            tipo = "RAU"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+            else:
+                tipo = "RAU"
         elif parametroEstrato == "Rural":
-            tipo = "Rural"
+            if parametroSoloPlanoUbicacion == "Si":
+                tipo = "PlanoUbicacion"
+            else:
+                tipo = "Rural"
 
-        #f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
         mensaje("Ruta ZIP {}".format(rutaZip))
@@ -1379,136 +1448,206 @@ def nombreUrbano(codigo):
         return codigo
 
 def enviarMail(registros):
+    try:
+        fromMail = "mjimenez@esri.cl"
+        passwordFromMail = 'Marce6550esRi'
+        #fromMail = "sig@ine.cl"
+        #passwordFromMail = "(ine2018)"
+        toMail = "soledad.valle@ine.cl"
 
-    fromMail = "mjimenez@esri.cl"
-    passwordFromMail = 'Marce6550esRi'
-    #fromMail = "sig@ine.cl"
-    #passwordFromMail = "(ine2018)"
-    toMail = "soledad.valle@ine.cl"
+        nroReporte = f
 
-    nroReporte = f
+        # Create message container - the correct MIME type is multipart/alternative.
+        msg = MIMEMultipart('alternative')
 
-    # Create message container - the correct MIME type is multipart/alternative.
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = "Reporte Croquis INE Nro: "+str(nroReporte)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
-    msg['From'] = fromMail
-    msg['To'] = toMail
+        if parametroEncuesta == "ENE":
+            msg['Subject'] = "Reporte Croquis INE Nro: "+str(nroReporte)+ " / Encuesta: "+parametroEncuesta+", Estrato: "+parametroEstrato
+        else:
+            msg['Subject'] = "Reporte Croquis INE Nro: "+str(nroReporte)+ " / Encuesta: "+parametroEncuesta+" "+parametroMarco+", Estrato: "+parametroEstrato
+        msg['From'] = fromMail
+        msg['To'] = toMail
 
-    # Create the body of the message (a plain-text and an HTML version).
-    html = """\
-    <html>
-    <head>
-    <style>
-    table, td, th {
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      padding: 15px;
-    }
-    </style>
-    </head>
-    <body>
-    <h2>Reporte Croquis INE Nro: """+str(nroReporte)+"""</h2>
-    <h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>
-    <p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
-    <u>Motivos de Rechazo y/o Alertas:</u>
-    <ul>
-        <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
-        <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
-        <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
-        <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
-        <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica(s)</li>
-        <li type="disc">Alerta, Estado es 'No generado'; Cuando no se pudo generar el croquis.</li>
-    </ul>
-    <div style="overflow-x:auto;">
-      <table>
-          <tr>
-            <th>#</th>
-            <th>Hora</th>
-            <th>Código</th>
-            <th>Estado</th>
-            <th>Motivo Rechazo</th>
-            <th>CUT</th>
-            <th>C.DISTRITO</th>
-            <th>C.ZONA</th>
-            <th>C.ENTIDAD</th>
-            <th>Ruta PDF</th>
-            <th>Intersecta PE</th>
-            <th>Intersecta CRF</th>
-            <th>Intersecta AV</th>
-            <th>Homologación</th>
-            <th>Formato / Orientación</th>
-            <th>Escala</th>
-            <th>Código barra<th/>
-          </tr>
+        # Create the body of the message (a plain-text and an HTML version).
+        html = """\
+        <html>
+        <head>
+        <style>
+        table, td, th {
+          border: 1px solid #ddd;
+          text-align: left;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        th, td {
+          padding: 15px;
+        }
+        </style>
+        </head>
+        <body>
+        <h2>Reporte Croquis INE Nro: """+str(nroReporte)+"""</h2>"""
+        if parametroEncuesta == "ENE":
+            html+= """<h3>Encuesta: """+str(parametroEncuesta)+""" / Estrato: """+str(parametroEstrato)+"""</h3>"""
+        else:
+            html+= """<h3>Encuesta: """+str(parametroEncuesta)+' '+str(parametroMarco)+""" / Estrato: """+str(parametroEstrato)+"""</h3>"""
+        if parametroSoloPlanoUbicacion == "Si":
+            html+= """<p>Reporte croquis Plano Ubicación para Instituto Nacional de Estadísticas de Chile</p>
+            <div style="overflow-x:auto;">
+              <table>
+                  <tr>
+                    <th>#</th>
+                    <th>Hora</th>
+                    <th>Listado Códigos</th>
+                    <th>Estado</th>
+                    <th>CUT</th>
+                    <th>C.DISTRITO</th>
+                    <th>C.ZONA</th>
+                    <th>Ruta PDF</th>
+                    <th>Formato / Orientación</th>
+                    <th>Escala</th>
+                  </tr>
+                """
+            for i, r in enumerate(registros, 1):
+                if r.estado == "Correcto":
+                    cut, dis, area, loc, ent = descomponeManzent(int(listaCodigos[0]))
+                    a = [r.hora, r.codigo, r.estado, cut, dis, loc, r.rutaPDF, r.formato +" / "+r.orientacion, r.escala]
+                    html +="""<tr>"""
+                    html += """<th>%s</th>""" % str(i)
+                    html += """<td>%s</td>""" % str(a[0]) #hora
+                    html += """<td>%s</td>""" % str(a[1]) #codigo
+                    html += """<td>%s</td>""" % str(a[2]) #estado
+                    html += """<td>%s</td>""" % str(a[3]) #cut
+                    html += """<td>%s</td>""" % str(a[4]) #dis
+                    html += """<td>%s</td>""" % str(a[5]) #loc
+                    html += """<td>%s</td>""" % str(a[6]) #rutaPDF
+                    html += """<td>%s</td>""" % str(a[7])
+                    html += """<td>%s</td>""" % str(a[8])
+                    html += """</tr>"""
+                elif r.estado == "No generado":
+                    a = [r.hora, r.codigo, r.estado]
+                    html +="""<tr>"""
+                    html += """<th>%s</th>""" % str(i)
+                    html += """<td>%s</td>""" % str(a[0]) #hora
+                    html += """<td>%s</td>""" % str(a[1]) #codigo
+                    html += """<td>%s</td>""" % str(a[2]) #estado
+                    html += """<td></td>""" #motivo
+                    html += """<td></td>""" #cut
+                    html += """<td></td>""" #dis
+                    html += """<td></td>""" #loc
+                    html += """<td></td>""" #ent
+                    html += """<td></td>""" #rutapdf
+                    html += """<td></td>""" #intersectaPE
+                    html += """<td></td>""" #intersectaCRF
+                    html += """<td></td>""" #intersectaAV
+                    html += """<td></td>""" #Homologacion
+                    html += """<td></td>""" #formato orientacion
+                    html += """<td></td>""" #escala
+                    html += """<td></td>""" #codigoBarra
+                    html += """</tr>"""
+        else:
+            html+= """<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>
+            <u>Motivos de Rechazo y/o Alertas:</u>
+            <ul>
+                <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
+                <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
+                <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
+                <li type="disc">Alerta, Manzana Intersecta con Áreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
+                <li type="disc">Alerta, Manzana Homologación No es Idéntica; cuando 'Homologación' es, Homologada No Idéntica(s)</li>
+                <li type="disc">Alerta, Estado es 'No generado'; Cuando no se pudo generar el croquis.</li>
+            </ul>
+            <div style="overflow-x:auto;">
+              <table>
+                  <tr>
+                    <th>#</th>
+                    <th>Hora</th>
+                    <th>Código</th>
+                    <th>Estado</th>
+                    <th>Motivo</th>
+                    <th>Est. Superficie</th>
+                    <th>Mot. Superficie</th>
+                    <th>CUT</th>
+                    <th>C.DISTRITO</th>
+                    <th>C.ZONA</th>
+                    <th>C.ENTIDAD</th>
+                    <th>Ruta PDF</th>
+                    <th>Intersecta PE</th>
+                    <th>Intersecta CRF</th>
+                    <th>Intersecta AV</th>
+                    <th>Homologación</th>
+                    <th>Formato / Orientación</th>
+                    <th>Escala</th>
+                    <th>Código barra<th/>
+                  </tr>
+                """
+            for i, r in enumerate(registros, 1):
+                if (r.estado == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas') or (r.estado == "Correcto" and r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas'):
+                    cut, dis, area, loc, ent = descomponeManzent(r.codigo)
+                    a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                    html +="""<tr>"""
+                    html += """<th>%s</th>""" % str(i)
+                    html += """<td>%s</td>""" % str(a[0]) #hora
+                    html += """<td>%s</td>""" % str(a[1]) #codigo
+                    html += """<td>%s</td>""" % str(a[2]) #estado
+                    html += """<td>%s</td>""" % str(a[3]) #motivo
+
+                    html += """<td>%s</td>""" % str(a[4]) #estadoSup
+                    html += """<td>%s</td>""" % str(a[5]) #motivoSup
+
+                    html += """<td>%s</td>""" % str(a[6]) #cut
+                    html += """<td>%s</td>""" % str(a[7]) #dis
+                    html += """<td>%s</td>""" % str(a[8]) #loc
+                    html += """<td>%s</td>""" % str(a[9]) #ent
+                    html += """<td>%s</td>""" % str(a[10]) #rutapdf
+                    html += """<td>%s</td>""" % str(a[11]) #intersectaPE
+                    html += """<td>%s</td>""" % str(a[12]) #intersectaCRF
+                    html += """<td>%s</td>""" % str(a[13]) #intersectaAV
+                    html += """<td>%s</td>""" % str(a[14]) #Homologacion
+                    html += """<td>%s</td>""" % str(a[15]) #formato orientacion
+                    html += """<td>%s</td>""" % str(a[16]) #escala
+                    html += """<td>%s</td>""" % str(a[17]) #codigoBarra
+                    html += """</tr>"""
+                elif r.estado == "No generado":
+                    a = [r.hora, r.codigo, r.estado]
+                    html +="""<tr>"""
+                    html += """<th>%s</th>""" % str(i)
+                    html += """<td>%s</td>""" % str(a[0]) #hora
+                    html += """<td>%s</td>""" % str(a[1]) #codigo
+                    html += """<td>%s</td>""" % str(a[2]) #estado
+                    html += """<td></td>""" #motivo
+                    html += """<td></td>""" #cut
+                    html += """<td></td>""" #dis
+                    html += """<td></td>""" #loc
+                    html += """<td></td>""" #ent
+                    html += """<td></td>""" #rutapdf
+                    html += """<td></td>""" #intersectaPE
+                    html += """<td></td>""" #intersectaCRF
+                    html += """<td></td>""" #intersectaAV
+                    html += """<td></td>""" #Homologacion
+                    html += """<td></td>""" #formato orientacion
+                    html += """<td></td>""" #escala
+                    html += """<td></td>""" #codigoBarra
+                    html += """</tr>"""
+        html+="""</table>
+        </div>
+        </br>
+        <p><b>Departamento de Geografía</b></p>
+        <p>Instituto Nacional de Estadísticas</p>
+        <p>Fono: 232461860</p>
+        </body>
+        </html>
         """
-    for i, r in enumerate(registros, 1):
-        if r.estado == "Rechazado" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
-            cut, dis, area, loc, ent = descomponeManzent(r.codigo)
-            a = [r.hora, r.codigo, r.estado, r.motivoRechazo, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
-            html +="""<tr>"""
-            html += """<th>%s</th>""" % str(i)
-            html += """<td>%s</td>""" % str(a[0]) #hora
-            html += """<td>%s</td>""" % str(a[1]) #codigo
-            html += """<td>%s</td>""" % str(a[2]) #estado
-            html += """<td>%s</td>""" % str(a[3]) #motivoRechazo
-            html += """<td>%s</td>""" % str(a[4]) #cut
-            html += """<td>%s</td>""" % str(a[5]) #dis
-            html += """<td>%s</td>""" % str(a[6]) #loc
-            html += """<td>%s</td>""" % str(a[7]) #ent
-            html += """<td>%s</td>""" % str(a[8]) #rutapdf
-            html += """<td>%s</td>""" % str(a[9]) #intersectaPE
-            html += """<td>%s</td>""" % str(a[10]) #intersectaCRF
-            html += """<td>%s</td>""" % str(a[11]) #intersectaAV
-            html += """<td>%s</td>""" % str(a[12]) #Homologacion
-            html += """<td>%s</td>""" % str(a[13]) #formato orientacion
-            html += """<td>%s</td>""" % str(a[14]) #escala
-            html += """<td>%s</td>""" % str(a[15]) #codigoBarra
-            html += """</tr>"""
-        elif r.estado == "No generado":
-            a = [r.hora, r.codigo, r.estado]
-            html +="""<tr>"""
-            html += """<th>%s</th>""" % str(i)
-            html += """<td>%s</td>""" % str(a[0]) #hora
-            html += """<td>%s</td>""" % str(a[1]) #codigo
-            html += """<td>%s</td>""" % str(a[2]) #estado
-            html += """<td></td>""" #motivoRechazo
-            html += """<td></td>""" #cut
-            html += """<td></td>""" #dis
-            html += """<td></td>""" #loc
-            html += """<td></td>""" #ent
-            html += """<td></td>""" #rutapdf
-            html += """<td></td>""" #intersectaPE
-            html += """<td></td>""" #intersectaCRF
-            html += """<td></td>""" #intersectaAV
-            html += """<td></td>""" #Homologacion
-            html += """<td></td>""" #formato orientacion
-            html += """<td></td>""" #escala
-            html += """<td></td>""" #codigoBarra
-            html += """</tr>"""
-    html+="""</table>
-    </div>
-    </br>
-    <p><b>Departamento de Geografía</b></p>
-    <p>Instituto Nacional de Estadísticas</p>
-    <p>Fono: 232461860</p>
-    </body>
-    </html>
-    """
-    part1 = MIMEText(html, 'html')
-    msg.attach(part1)
-    mailserver = smtplib.SMTP('smtp.office365.com',587)
-    mailserver.ehlo()
-    mailserver.starttls()
-    mailserver.login(fromMail, passwordFromMail)
-    mailserver.sendmail(fromMail, toMail, msg.as_string())
-    mensaje("Reporte Enviado")
-    mailserver.quit()
+        part1 = MIMEText(html, 'html')
+        msg.attach(part1)
+        mailserver = smtplib.SMTP('smtp.office365.com',587)
+        mailserver.ehlo()
+        mailserver.starttls()
+        mailserver.login(fromMail, passwordFromMail)
+        mailserver.sendmail(fromMail, toMail, msg.as_string())
+        mensaje("Reporte Enviado")
+        mailserver.quit()
+    except:
+        mensaje("No se pudo enviar correo electronico de Alertas y Rechazo")
 
 class Registro:
     def __init__(self, codigo):
@@ -1522,9 +1661,11 @@ class Registro:
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
-        self.estado = "No generado"
-        self.motivoRechazo = ""
+        self.estado = "Correcto"
+        self.motivo = ""
         self.codigoBarra = ""
+        self.estadoSuperficie = ""
+        self.motivoSuperficie = ""
 
 class InfoMarco:
     def __init__(self, codigo, config):
@@ -1562,7 +1703,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion_dev2.json'
+urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
 urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
@@ -1590,13 +1731,13 @@ parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
 # --------------------------------------------------------------------
-parametroCodigos = "1101021005059"
+parametroCodigos = "1101021005059,1101021004013"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
 parametroSoloAnalisis = ""
-parametroSoloPlanoUbicacion = ""
+parametroSoloPlanoUbicacion = "Si"
 # --------------------------------------------------------------------
 parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
@@ -1643,8 +1784,13 @@ if parametroSoloPlanoUbicacion == 'Si':
         zoom(mxd, extent, escala)
         nombrePDF = generaNombrePDF(parametroEstrato, listaPoligonos[0], infoMxd, parametroEncuesta, parametroMarco)
 
-        registro = Registro("Plano_Ubicacion")
+        registro = Registro(listaCodigos)
         registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+        registro.formato = infoMxd['formato']
+        registro.orientacion = infoMxd['orientacion']
+        registro.escala = escala
+        if registro.rutaPDF != "":
+            registro.estado = "Correcto"
         registros.append(registro)
 else:
     if parametroEstrato == "Manzana":
@@ -1666,7 +1812,6 @@ else:
             mensaje("El estrato no existe")
             quit()
         mensaje("-------------------------------------------------\n")
-
 
 f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 rutaCSV = escribeCSV(registros,f)

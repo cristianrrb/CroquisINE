@@ -1,5 +1,5 @@
 define([
-    "dojo/_base/declare", 
+    "dojo/_base/declare",
     "dojo/_base/lang",
     "dojo/_base/array",
     "dojo/on",
@@ -56,11 +56,15 @@ function(
 
                 this.identificaLayer();
                 on(this.divGeneraPDF, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("");
+                    this.procesaListaCodigos("", "");
                 }));
 
                 on(this.divAnalizar, "click", lang.hitch(this, function() {
-                    this.procesaListaCodigos("si");
+                    this.procesaListaCodigos("si", "");
+                }));
+
+                on(this.divPlanoUbicacion, "click", lang.hitch(this, function() {
+                    this.procesaListaCodigos("", "Si");
                 }));
 
                 on(this.divGeneraPlanoUbicacion, "click", lang.hitch(this, function() {
@@ -208,23 +212,23 @@ function(
             }, this);
         },
 
-        procesaListaCodigos: function(analizar) {
+        procesaListaCodigos: function(analizar, esPlanoUbicacion) {
             domConstruct.empty(this.divDescarga);
-            // TODO: Validar duplicados 
+            // TODO: Validar duplicados
             var listaCodigos = arrayUtils.map(this.tablaCodigos.rows, function(row) {
                 return row.codigo
             }, this);
-            
+
             var listaTemp = arrayUtils.map(this.tablaCodigos.rows, function(row) {
                 return row.viviendas
             }, this);
-            
+
             var listaViviendas = arrayUtils.filter(listaTemp, function(e) {
                 return e != ""
             }, this);
 
             this.shelter.show();
-            this.generaCroquis(listaCodigos.join(","), listaViviendas.join(","), analizar).then(
+            this.generaCroquis(listaCodigos.join(","), listaViviendas.join(","), analizar, esPlanoUbicacion).then(
                 lang.hitch(this, function(url) {
                     // domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url, 'download':"Croquis.zip", 'target':'_top'}, this.divDescarga);
                     domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url}, this.divDescarga);
@@ -237,7 +241,7 @@ function(
             );
         },
 
-        generaCroquis: function(codigos, viviendas, analizar) {
+        generaCroquis: function(codigos, viviendas, analizar, esPlanoUbicacion) {
             var deferred = new Deferred();
             var gp = new Geoprocessor(this.config.urlServicio);
             gp.outSpatialReference = this.map.spatialReference;
@@ -248,11 +252,11 @@ function(
                 'Codigos':  codigos,
                 'Viviendas': viviendas,
                 'Analizar': analizar,
-                'esPlanoUbicacion': ''
+                'esPlanoUbicacion': esPlanoUbicacion
             };
             gp.setUpdateDelay(5000);
             gp.submitJob(
-                params, 
+                params,
                 lang.hitch(this, function(jobInfo) {      // Completo
                     gp.getResultData(jobInfo.jobId, "rutaRar").then(
                         lang.hitch(this, function(result) {
@@ -262,11 +266,11 @@ function(
                             deferred.resolve(result.value.url);
                         }
                     ));
-                }), 
+                }),
                 lang.hitch(this, function(jobInfo) {      // Estado
                     // console.log(jobInfo.jobStatus);
                     this.analizaMensajesGeoproceso(jobInfo);
-                }), 
+                }),
                 lang.hitch(this, function(jobInfo) {      // Error
                     console.log(jobInfo);
                     deferred.reject();
@@ -311,7 +315,7 @@ function(
             if (this.selEstrato.value == "Manzana" && this.capaManzanas) {
                 var query = new Query();
                 query.where = "MANZENT = " + codigo;
-                this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){  
+                this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent.expand(2),true);
                     this.map.infoWindow.setFeatures(result.features);
@@ -321,7 +325,7 @@ function(
             if (this.selEstrato.value == "RAU" && this.capaRAU) {
                 var query = new Query();
                 query.where = "CU_SECCION = " + codigo;
-                this.capaRAU.queryFeatures(query, lang.hitch(this, function(result){  
+                this.capaRAU.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent.expand(2),true);
                     this.map.infoWindow.setFeatures(result.features);
@@ -331,7 +335,7 @@ function(
             if (this.selEstrato.value == "Rural" && this.capaRural) {
                 var query = new Query();
                 query.where = "CU_SECCION = " + codigo;
-                this.capaRural.queryFeatures(query, lang.hitch(this, function(result){  
+                this.capaRural.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent.expand(2),true);
                     this.map.infoWindow.setFeatures(result.features);
@@ -344,7 +348,7 @@ function(
             this.capaRAU = null;
             this.capaRural = null;
             var layerStructure = LayerStructure.getInstance();
-            layerStructure.traversal( lang.hitch(this, 
+            layerStructure.traversal( lang.hitch(this,
                 function(layerNode) {
                     if(layerNode.title == "Manzanas") {
                         this.capaManzanas = this.map.getLayer(layerNode.id);

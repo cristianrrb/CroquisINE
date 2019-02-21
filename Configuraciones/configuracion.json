@@ -1,26 +1,27 @@
 {
    "rutabase": "D:\\CROQUIS\\",
    "encuestas": [
-      {"nombre":"ENE", "minimoViviendas": 8},
-      {"nombre":"EPF", "minimoViviendas": 8},
-      {"nombre":"ENUSC", "minimoViviendas": 8},
-      {"nombre":"CASEN", "minimoViviendas": 8},
-      {"nombre":"SENDA", "minimoViviendas": 8}
+     {"nombre":"ENE", "minimoViviendas": 8},
+     {"nombre":"EPF", "minimoViviendas": 8},
+     {"nombre":"ENUSC", "minimoViviendas": 8},
+     {"nombre":"CASEN", "minimoViviendas": 8},
+     {"nombre":"SENDA", "minimoViviendas": 8}
    ],
    "marcos": [
       {
          "id": "2016",
          "config": {
-            "urlManzanas": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1",
-            "urlSecciones_RAU": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2",
-            "urlSecciones_Rural": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0",
+            "urlManzanas": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0",
+            "urlSecciones_RAU": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1",
+            "urlSecciones_Rural": "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2",
             "urlAreaDestacada": "https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0",
+            "urlManzanasCenso2017" : "https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0",
 
-            "urlPE"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/0",
-            "urlAV"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/1",
-            "urlCRF"         : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/2",
-            "urlHomologacion": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo1/MapServer/3",
-            
+            "urlPE"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0",
+            "urlCRF"          : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1",
+            "urlAV"         : "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2",
+            "urlHomologacion": "https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/3",
+
             "nombreCampoIdHomologacion": "MANZENT_MM2014",
             "nombreCampoTipoHomologacion": "TIPO_HOMOLOGACIÓN",
             "nombreCampoTotalViviendas": "TOT_VIV_PART_PC2016"
@@ -78,21 +79,23 @@
                "formato": "Perso",
                "orientacion": "Vertical",
                "ruta": "Mz\\Mz_Perso_V"
-            },
-            {
-               "ancho": 106.859,
-               "alto": 81.110,
-               "formato": "A0",
-               "orientacion": "Horizontal",
-               "ruta": "Mz\\Urbano_A0_H"
-            },
-            {
-               "ancho": 81.096,
-               "alto": 105.915,
-               "formato": "A0",
-               "orientacion": "Vertical",
-               "ruta": "Mz\\Urbano_A0_V"
             }
+         ],
+         "mxdsPlanoUbicacion":[
+           {
+              "ancho": 106.859,
+              "alto": 81.110,
+              "formato": "A0",
+              "orientacion": "Horizontal",
+              "ruta": "Mz\\Urbano_A0_H"
+           },
+           {
+              "ancho": 81.096,
+              "alto": 105.915,
+              "formato": "A0",
+              "orientacion": "Vertical",
+              "ruta": "Mz\\Urbano_A0_V"
+           }
          ]
       },
       {
@@ -147,21 +150,24 @@
                "formato": "P1",
                "orientacion": "Vertical",
                "ruta": "RAU\\Rau_P1_V"
-            },
-            {
-               "ancho": 106.859,
-               "alto": 81.110,
-               "formato": "A0",
-               "orientacion": "Horizontal",
-               "ruta": "RAU\\RAU_A0_H"
-            },
-            {
-              "ancho": 81.096,
-              "alto": 105.915,
-              "formato": "A0",
-              "orientacion": "Vertical",
-              "ruta": "RAU\\RAU_A0_V"
             }
+
+         ],
+         "mxdsPlanoUbicacion":[
+           {
+              "ancho": 106.859,
+              "alto": 81.110,
+              "formato": "A0",
+              "orientacion": "Horizontal",
+              "ruta": "RAU\\RAU_A0_H"
+           },
+           {
+             "ancho": 81.096,
+             "alto": 105.915,
+             "formato": "A0",
+             "orientacion": "Vertical",
+             "ruta": "RAU\\RAU_A0_V"
+           }
          ]
       },
       {
@@ -173,11 +179,13 @@
             "Equipamiento",
             "Etiquetado_Auxiliar",
             "Etiquetado_Limites",
-            "toponimos_mm2016",
             "Localidades",
             "Entidades",
             "Cuerpos_De_Agua",
-            "Cotas"
+            "Cotas",
+            "ET_RELIEVE",
+            "ET_RELIEVE_OTROS",
+            "Hipsometria"
          ],
          "mxds": [
             {
@@ -209,13 +217,6 @@
                "ruta": "Rural\\Sec_P1_V"
             },
             {
-               "ancho": 58.501,
-               "alto": 57.999,
-               "formato": "Anexos70x60",
-               "orientacion": "Horizontal",
-               "ruta": "Rural\\Anexos_70x60"
-            },
-            {
                "ancho": 67.865,
                "alto": 57.038,
                "formato": "P2",
@@ -236,6 +237,22 @@
                "orientacion": "Horizontal",
                "ruta": "Rural\\Sec_P3_H"
             }
+         ],
+         "mxdsPlanoUbicacion":[
+           {
+              "ancho": 81.096,
+              "alto": 105.915,
+              "formato": "A0",
+              "orientacion": "Vertical",
+              "ruta": "Rural\\Rural_A0_V"
+           },
+           {
+              "ancho": 106.859,
+              "alto": 81.110,
+              "formato": "A0",
+              "orientacion": "Horizontal",
+              "ruta": "Rural\\Rural_A0_H"
+           }
          ]
       }
    ],
