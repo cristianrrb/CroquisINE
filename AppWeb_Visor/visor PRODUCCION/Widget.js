@@ -63,6 +63,10 @@ function(
                     this.procesaListaCodigos("si");
                 }));
 
+                on(this.divGeneraPlanoUbicacion, "click", lang.hitch(this, function() {
+                    this.procesaListaCodigos("si");
+                }));
+
                 this.fileReader = new FileReader();
                 on(this.fileReader, "load", lang.hitch(this, function(e) {
                     if (this.tipoArchivo === "csv") {
@@ -243,7 +247,8 @@ function(
                 'Marco':    this.selMarco.value,
                 'Codigos':  codigos,
                 'Viviendas': viviendas,
-                'Analizar': analizar
+                'Analizar': analizar,
+                'esPlanoUbicacion': ''
             };
             gp.setUpdateDelay(5000);
             gp.submitJob(
