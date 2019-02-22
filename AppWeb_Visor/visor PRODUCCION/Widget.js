@@ -390,8 +390,6 @@ function(
 });
 
 
-
-
         /* procesaListaManzanas: function() {
             arrayUtils.forEach(this.tablaManzanas.rows, function(row) {
                 var codigo = row.cells[0].innerText;
