@@ -347,6 +347,7 @@ function(
             if (this.selEstrato.value == "Manzana" && this.capaManzanas) {
                 var query = new Query();
                 query.where = this.construyeCondicionParaTodo("MANZENT");
+                console.log(query.where)
                 this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
