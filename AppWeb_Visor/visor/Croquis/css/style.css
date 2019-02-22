@@ -54,6 +54,13 @@
     right: 0;
     bottom: 0;
 }
+
+.jimu-widget-croquis-ine .div-comprimido {
+    line-height: 24px;
+    height: 24px;
+    width: 100%;
+}
+
 .jimu-widget-croquis-ine .div-etiqueta {
 	position: absolute;
 	height: 100%;
@@ -131,7 +138,7 @@
 	line-height: 20px !important;
 	font-size: inherit;
 	overflow: hidden;
-} 
+}
 .jimu-widget-croquis-ine .dijitTextBox .dijitInputInner {
 	height: 20px;
 	line-height: 20px !important;
