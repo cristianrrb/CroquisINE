@@ -352,6 +352,7 @@ function(
         },
 
         seleccionaTodo: function() {
+            this.capaGrafica.clear();
             if (this.selEstrato.value == "Manzana" && this.capaManzanas) {
                 var query = new Query();
                 query.where = this.construyeCondicionParaTodo("MANZENT");
@@ -360,7 +361,6 @@ function(
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
                     // this.map.infoWindow.setFeatures(result.features);
-                    this.capaGrafica.clear();
                     arrayUtils.forEach(result.features, function(feature) {
                         var g = feature.graphic;
                         g.setSymbol(this.simbolo);
