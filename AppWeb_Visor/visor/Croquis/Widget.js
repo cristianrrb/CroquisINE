@@ -12,6 +12,8 @@ define([
     "jimu/dijit/LoadingShelter",
     "jimu/LayerStructure",
     "esri/graphicsUtils",
+    "esri/symbols/SimpleFillSymbol",
+    "esri/layers/GraphicsLayer",
     "esri/tasks/Geoprocessor",
     "esri/tasks/query"
 ],
@@ -29,6 +31,8 @@ function(
     LoadingShelter,
     LayerStructure,
     graphicsUtils,
+    SimpleFillSymbol,
+    GraphicsLayer,
     Geoprocessor,
     Query
 ) {
@@ -81,6 +85,10 @@ function(
                 }))
 
                 this.initDropZone();
+
+                this.simbolo = new SimpleFillSymbol(this.config.simboloArea);
+                this.capaGrafica = new GraphicsLayer({});
+                this.map.addLayer(this.capaGrafica);
 
                 this.shelter.hide();
                 //divGeneraPDF.disabled=true;
@@ -344,6 +352,7 @@ function(
         },
 
         seleccionaTodo: function() {
+            this.capaGrafica.clear();
             if (this.selEstrato.value == "Manzana" && this.capaManzanas) {
                 var query = new Query();
                 query.where = this.construyeCondicionParaTodo("MANZENT");
@@ -351,7 +360,12 @@ function(
                 this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
-                    this.map.infoWindow.setFeatures(result.features);
+                    // this.map.infoWindow.setFeatures(result.features);
+                    arrayUtils.forEach(result.features, function(feature) {
+                        var g = feature.graphic;
+                        g.setSymbol(this.simbolo);
+                        this.capaGrafica.add(g);
+                    }, this);
                 }));
             }
         },
