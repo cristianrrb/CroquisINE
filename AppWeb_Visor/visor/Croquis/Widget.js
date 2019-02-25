@@ -362,7 +362,7 @@ function(
                     this.map.setExtent(extent, true);
                     // this.map.infoWindow.setFeatures(result.features);
                     arrayUtils.forEach(result.features, function(feature) {
-                        var g = feature.geometry;
+                        var g = feature;
                         g.setSymbol(this.simbolo);
                         this.capaGrafica.add(g);
                     }, this);
