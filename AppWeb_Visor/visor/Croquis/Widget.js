@@ -90,13 +90,7 @@ function(
 
                 this.initDropZone();
 
-                // this.simbolo = new SimpleFillSymbol(this.config.simboloArea);
-
-                this.simbolo = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-                    new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                    new Color([98,194,204]), 2), new Color([98,194,204,0.5])
-                );
-
+                this.simbolo = new SimpleFillSymbol(this.config.simboloArea);
                 this.capaGrafica = new GraphicsLayer();
                 this.map.addLayer(this.capaGrafica);
 
@@ -370,6 +364,13 @@ function(
                 this.capaManzanas.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
+                    // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
                     arrayUtils.forEach(result.features, function(feature) {
                         var graphic = feature;
                         graphic.setSymbol(symbol);
@@ -384,6 +385,13 @@ function(
                 this.capaRAU.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
+                    // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
                     arrayUtils.forEach(result.features, function(feature) {
                         var graphic = feature;
                         graphic.setSymbol(symbol);
@@ -398,6 +406,13 @@ function(
                 this.capaRural.queryFeatures(query, lang.hitch(this, function(result){
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
+                    // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
                     arrayUtils.forEach(result.features, function(feature) {
                         var graphic = feature;
                         graphic.setSymbol(symbol);
