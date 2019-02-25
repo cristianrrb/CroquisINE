@@ -361,10 +361,16 @@ function(
                     var extent = graphicsUtils.graphicsExtent(result.features);
                     this.map.setExtent(extent, true);
                     // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, 
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
                     arrayUtils.forEach(result.features, function(feature) {
-                        var g = feature;
-                        g.setSymbol(this.simbolo);
-                        this.capaGrafica.add(g);
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+                        this.capaGrafica.add(graphic);
                     }, this);
                 }));
             }
