@@ -1460,7 +1460,8 @@ def enviarMail(registros):
         passwordFromMail = 'Marce6550esRi'
         #fromMail = "sig@ine.cl"
         #passwordFromMail = "(ine2018)"
-        toMail = "soledad.valle@ine.cl"
+        #toMail = "soledad.valle@ine.cl"
+        toMail = "reinaldo.segura@ine.cl"
 
         nroReporte = f
 
@@ -1685,6 +1686,8 @@ class InfoMarco:
         self.urlManzanas          = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
         self.urlSecciones_RAU     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
         self.urlSecciones_Rural   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
+        self.urlComunas           = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/3'
+        self.urlLUC               = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/4'
         self.urlAreaDestacada     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
         self.urlManzanasCenso2017 = 'https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0'
 
@@ -1704,6 +1707,8 @@ class InfoMarco:
                 self.urlManzanas =         marco['config']['urlManzanas']
                 self.urlSecciones_RAU =    marco['config']['urlSecciones_RAU']
                 self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
+                self.urlComunas         =  marco['config']['urlComunas']
+                self.urlLUC             =  marco['config']['urlLUC']
                 self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
                 self.urlManzanasCenso2017 = marco['config']['urlManzanasCenso2017']
                 self.urlPE =               marco['config']['urlPE']
