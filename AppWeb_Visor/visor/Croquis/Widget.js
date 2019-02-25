@@ -366,7 +366,49 @@ function(
                     this.map.setExtent(extent, true);
                     // this.map.infoWindow.setFeatures(result.features);
 
-                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, 
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
+                    arrayUtils.forEach(result.features, function(feature) {
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+                        this.capaGrafica.add(graphic);
+                    }, this);
+                }));
+            }
+            if (this.selEstrato.value == "RAU" && this.capaRAU) {
+                var query = new Query();
+                query.where = this.construyeCondicionParaTodo("CU_SECCION");
+                console.log(query.where);
+                this.capaRAU.queryFeatures(query, lang.hitch(this, function(result){
+                    var extent = graphicsUtils.graphicsExtent(result.features);
+                    this.map.setExtent(extent, true);
+                    // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                        new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                    );
+
+                    arrayUtils.forEach(result.features, function(feature) {
+                        var graphic = feature;
+                        graphic.setSymbol(symbol);
+                        this.capaGrafica.add(graphic);
+                    }, this);
+                }));
+            }
+            if (this.selEstrato.value == "Rural" && this.capaRural) {
+                var query = new Query();
+                query.where = this.construyeCondicionParaTodo("CU_SECCION");
+                console.log(query.where);
+                this.capaRural.queryFeatures(query, lang.hitch(this, function(result){
+                    var extent = graphicsUtils.graphicsExtent(result.features);
+                    this.map.setExtent(extent, true);
+                    // this.map.infoWindow.setFeatures(result.features);
+
+                    var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
                         new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
                         new Color([98,194,204]), 2), new Color([98,194,204,0.5])
                     );
