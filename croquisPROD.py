@@ -832,8 +832,8 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
 
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
-        registro.estado = "Rechazado"
-        registro.motivo = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
+        registro.estadoViviendas = "Rechazado"
+        registro.motivoViviendas = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
         #return False
 
@@ -869,37 +869,37 @@ def procesaManzana(codigo, viviendasEncuestar):
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
             validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
-            if parametroSoloAnalisis == 'si':
-                mensaje("** Solo se realiza analisis, no se generará el croquis.")
-            else:
-                #if registro.estado != "Rechazado":
-                datosManzana, extent = obtieneInfoManzana(codigo, token)
-                datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-                mensaje("##################################################################")
-                est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
+            datosManzana, extent = obtieneInfoManzana(codigo, token)
+            datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
+            mensaje("##################################################################")
+            est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
 
-                if datosManzana != None:
-                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                    registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
-                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                    if registro.estado != "Rechazado":
-                        mxd, infoMxd, escala = buscaTemplateManzana(extent)
-                        if mxd != None:
-                            if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                                mensaje("Registrando la operación.")
-                                registro.formato = infoMxd['formato']
-                                registro.orientacion = infoMxd['orientacion']
-                                registro.escala = escala
-                                registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
+            registro.estadoSuperficie = est
+            registro.motivoSuperficie = mot
 
-                                nombrePDF = generaNombrePDF(datosManzana, infoMxd)
-                                registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+            if datosManzana != None:
+                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                
+                if not (registro.estado == "Rechazado" or parametroSoloAnalisis == 'si'):
 
-                                if registro.rutaPDF != "":
-                                    registro.estado = "Correcto"
-                                    registro.motivo = "Croquis generado"
-                                    registro.estadoSuperficie = est
-                                    registro.motivoSuperficie = mot
+                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                    if mxd != None:
+                        if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                            mensaje("Registrando la operación.")
+                            registro.formato = infoMxd['formato']
+                            registro.orientacion = infoMxd['orientacion']
+                            registro.escala = escala
+                            registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
+
+                            nombrePDF = generaNombrePDF(datosManzana, infoMxd)
+                            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+
+                            if registro.rutaPDF != "":
+                                registro.estado = "Generado"
+                                registro.motivo = "Croquis generado"
+                                
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1668,19 +1668,28 @@ class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
-        self.rutaPDF = ""
-        self.intersectaPE = "No"
-        self.intersectaCRF = "No"
-        self.intersectaAV = "No"
+
+        self.estado = "Inicial"
+        self.motivo = ""
+
+        self.intersectaPE = ""
+        self.intersectaCRF = ""
+        self.intersectaAV = ""
         self.homologacion = ""
+        
+        self.codigoBarra = ""
+        # Analisis de comparación de superficie de manzanas
+        self.estadoSuperficie = ""
+        self.motivoSuperficie = ""
+
+        # Analisis de Rechazo por cantidad de viviendas
+        self.estadoViviendas = ""
+        self.motivoViviendas = ""
+
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
-        self.estado = "Correcto"
-        self.motivo = ""
-        self.codigoBarra = ""
-        self.estadoSuperficie = ""
-        self.motivoSuperficie = ""
+        self.rutaPDF = ""
 
 class InfoMarco:
     def __init__(self, codigo, config):
