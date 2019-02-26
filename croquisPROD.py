@@ -1694,9 +1694,9 @@ class InfoMarco:
         self.urlAV           = ''
         self.urlHomologacion = ''
 
-        self.nombreCampoIdHomologacion = "MANZENT_MM2014"
-        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
-        self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
+        self.nombreCampoIdHomologacion = ""
+        self.nombreCampoTipoHomologacion = ""
+        self.nombreCampoTotalViviendas = ""
         self.leeConfiguracion(codigo, config)
 
     def leeConfiguracion(self, codigo, config):
