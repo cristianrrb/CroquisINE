@@ -218,15 +218,15 @@ def listaMXDs(estrato, ancho):
 # campo = "MANZENT"
 # codigos = listaCodigos
 # token
-def obtieneInfoParaPlanoUbicacion(urlServicio, campo, codigos, token):
+def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
     lista = []
     try:
         condiciones = []
         for codigo in codigos:
-            condicion = "{}+%3D+{}".format(campo, codigo)
+            condicion = "{}+%3D+{}".format( dictCamposId[parametroEstrato] , codigo)
             condiciones.append(condicion)
 
-        query = "+OR+".join(condiciones) #MANZENT%3D10201020+OR+MANZENT+%3D+1030203050
+        query = "+OR+".join(condiciones)
         url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
         fs = arcpy.FeatureSet()
@@ -234,9 +234,6 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, campo, codigos, token):
 
         fc = os.path.join("in_memory","fc")
         fs.save(fc)
-
-        desc = arcpy.Describe(fc)
-        extent = desc.extent
 
         if parametroEstrato == "Manzana":
             fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
@@ -246,12 +243,31 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, campo, codigos, token):
             fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
+            # TODO: Validar que lista tenga elementos
             lista = [r for r in rows]
-            mensaje("** OK en obtieneInfoParaPlanoUbicacion")
+
+        extent = obtieneExtentUrbano(urlUrbano, lista[0][5])
+
+        mensaje("** OK en obtieneInfoParaPlanoUbicacion")
+
     except:
         mensaje("** Error en obtieneInfoParaPlanoUbicacion")
-    # TODO: Validar que lista tenga elementos
+    
     return lista[0], extent, fc
+
+def obtieneExtentUrbano(urlUrbano, codigo):
+    url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+
+    fs = arcpy.FeatureSet()
+    fs.load(url.format(urlUrbano, token, codigo))
+
+    fc = os.path.join("in_memory","fc")
+    fs.save(fc)
+
+    desc = arcpy.Describe(fc)
+    extent = desc.extent
+
+    return extent
 
 def listaMXDsPlanoUbicacion(estrato, ancho):
 
@@ -1693,16 +1709,16 @@ class Registro:
 
 class InfoMarco:
     def __init__(self, codigo, config):
-        self.urlManzanas          = ''
-        self.urlSecciones_RAU     = ''
-        self.urlSecciones_Rural   = ''
-        self.urlComunas           = ''
-        self.urlLUC               = ''
-        self.urlAreaDestacada     = ''
+        self.urlManzanas = ''
+        self.urlSecciones_RAU = ''
+        self.urlSecciones_Rural = ''
+        self.urlComunas = ''
+        self.urlLUC = ''
+        self.urlAreaDestacada = ''
         self.urlManzanasCenso2017 = ''
-        self.urlPE           = ''
-        self.urlCRF          = ''
-        self.urlAV           = ''
+        self.urlPE = ''
+        self.urlCRF = ''
+        self.urlAV = ''
         self.urlHomologacion = ''
 
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
@@ -1713,20 +1729,20 @@ class InfoMarco:
     def leeConfiguracion(self, codigo, config):
         for marco in config['marcos']:
             if marco['id'] == codigo:
-                self.urlManzanas =         marco['config']['urlManzanas']
-                self.urlSecciones_RAU =    marco['config']['urlSecciones_RAU']
-                self.urlSecciones_Rural =  marco['config']['urlSecciones_Rural']
-                self.urlComunas         =  marco['config']['urlComunas']
-                self.urlLUC             =  marco['config']['urlLUC']
-                self.urlAreaDestacada =    marco['config']['urlAreaDestacada']
+                self.urlManzanas          = marco['config']['urlManzanas']
+                self.urlSecciones_RAU     = marco['config']['urlSecciones_RAU']
+                self.urlSecciones_Rural   = marco['config']['urlSecciones_Rural']
+                self.urlComunas           = marco['config']['urlComunas']
+                self.urlLUC               = marco['config']['urlLUC']
+                self.urlAreaDestacada     = marco['config']['urlAreaDestacada']
                 self.urlManzanasCenso2017 = marco['config']['urlManzanasCenso2017']
-                self.urlPE =               marco['config']['urlPE']
-                self.urlAV =               marco['config']['urlAV']
-                self.urlCRF =              marco['config']['urlCRF']
-                self.urlHomologacion =     marco['config']['urlHomologacion']
-                self.nombreCampoIdHomologacion = marco['config']['nombreCampoIdHomologacion']
+                self.urlPE  = marco['config']['urlPE']
+                self.urlAV  = marco['config']['urlAV']
+                self.urlCRF = marco['config']['urlCRF']
+                self.urlHomologacion = marco['config']['urlHomologacion']
+                self.nombreCampoIdHomologacion   = marco['config']['nombreCampoIdHomologacion']
                 self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
-                self.nombreCampoTotalViviendas = marco['config']['nombreCampoTotalViviendas']
+                self.nombreCampoTotalViviendas   = marco['config']['nombreCampoTotalViviendas']
 
 arcpy.env.overwriteOutput = True
 
@@ -1795,27 +1811,19 @@ mensaje("Estrato: {}".format(parametroEstrato))
 if parametroSoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
-        entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, dictCamposId[parametroEstrato], listaCodigos, token)
+        entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
         mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
 
         if parametroEstrato == "Manzana":
-            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
-            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
             actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "RAU":
-            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
-            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
             actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "Rural":
-            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
-            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
-        #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
-
-        destacaListaPoligonos(mxd, FC)
+        destacaListaPoligonos(mxd, fc)
         zoom(mxd, extent, escala)
         nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
 
