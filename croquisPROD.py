@@ -1719,13 +1719,13 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion   = 'https://gis.ine.cl/croquis/configuracion.json'
-urlComunas2016   = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
-urlProvincias2016   = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
-urlRegiones2016  = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
-urlUrbanosManzana2016   = 'https://gis.ine.cl/croquis/ubicacion/urbanosManzana_2016.json'
-urlUrbanosRAU2016   = 'https://gis.ine.cl/croquis/ubicacion/urbanosRAU_2016.json'
-urlPortal          = 'https://gis.ine.cl/portal'
+urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion.json'
+urlComunas2016        = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
+urlProvincias2016     = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
+urlRegiones2016       = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
+urlUrbanosManzana2016 = 'https://gis.ine.cl/croquis/ubicacion/urbanosManzana_2016.json'
+urlUrbanosRAU2016     = 'https://gis.ine.cl/croquis/ubicacion/urbanosRAU_2016.json'
+urlPortal             = 'https://gis.ine.cl/portal'
 usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
@@ -1735,6 +1735,7 @@ dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
+
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
