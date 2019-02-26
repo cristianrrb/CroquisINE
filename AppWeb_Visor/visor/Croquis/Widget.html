@@ -1,0 +1,37 @@
+<div>
+    <div class="div-estrato">
+        <div class="div-etiqueta">Estrato:</div>
+        <div class="div-valor" data-dojo-attach-point="divSelectorEstrato"></div>
+    </div>
+
+    <div class="div-encuesta">
+        <div class="div-etiqueta">Encuesta:</div>
+        <div class="div-valor" data-dojo-attach-point="divSelectorEncuesta"></div>
+    </div>
+
+    <div class="div-marco">
+        <div class="div-etiqueta">Marco:</div>
+        <div class="div-valor" data-dojo-attach-point="divSelectorMarco"></div>
+    </div>
+
+    <div class="div-archivo">
+        <div class="div-etiqueta">Archivo:</div>
+        <div class="div-valor" data-dojo-attach-point="divArchivo">
+            <input type="file" name="file" id="inFile" value="on" class="examinar" accept=".csv" data-dojo-attach-point="fileInput"></input>
+            <label for="inFile">
+                <div class="jimu-btn jimu-btn2">Seleccionar Archivo CSV</div>
+            </label>
+        </div>
+    </div>
+
+    <div class="div-codigos" data-dojo-attach-point="dropZone">
+        <table data-dojo-attach-point="tablaCodigos"></table>
+    </div>
+
+    <div class="div-acciones">
+        <div class="div-descarga" data-dojo-attach-point="divDescarga"></div>
+        <div class="jimu-btn" data-dojo-attach-point="divGeneraPDF">Generar PDF</div>
+        <div class="jimu-btn" data-dojo-attach-point="divAnalizar">Analizar</div>
+        <div class="jimu-btn" data-dojo-attach-point="divPlanoUbicacion">Plano Ubicación</div>
+    </div>
+</div>
