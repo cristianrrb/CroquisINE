@@ -1682,17 +1682,17 @@ class Registro:
 
 class InfoMarco:
     def __init__(self, codigo, config):
-        self.urlManzanas          = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0'
-        self.urlSecciones_RAU     = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1'
-        self.urlSecciones_Rural   = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2'
-        self.urlComunas           = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/3'
-        self.urlLUC               = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/4'
-        self.urlAreaDestacada     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
-        self.urlManzanasCenso2017 = 'https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0'
-        self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
-        self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
-        self.urlAV           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
-        self.urlHomologacion = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/3'
+        self.urlManzanas          = ''
+        self.urlSecciones_RAU     = ''
+        self.urlSecciones_Rural   = ''
+        self.urlComunas           = ''
+        self.urlLUC               = ''
+        self.urlAreaDestacada     = ''
+        self.urlManzanasCenso2017 = ''
+        self.urlPE           = ''
+        self.urlCRF          = ''
+        self.urlAV           = ''
+        self.urlHomologacion = ''
 
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
         self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
