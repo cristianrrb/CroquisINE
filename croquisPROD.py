@@ -1689,7 +1689,6 @@ class InfoMarco:
         self.urlLUC               = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/4'
         self.urlAreaDestacada     = 'https://gis.ine.cl/public/rest/services/ESRI/areas_destacadas/MapServer/0'
         self.urlManzanasCenso2017 = 'https://gis.ine.cl/public/rest/services/ESRI/servicio_manzanas_censo2017/MapServer/0'
-
         self.urlPE           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/0'
         self.urlCRF          = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/1'
         self.urlAV           = 'https://gis.ine.cl/public/rest/services/ESRI/areas_de_rechazo/MapServer/2'
