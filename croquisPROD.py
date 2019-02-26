@@ -872,17 +872,17 @@ def procesaManzana(codigo, viviendasEncuestar):
             if parametroSoloAnalisis == 'si':
                 mensaje("** Solo se realiza analisis, no se generará el croquis.")
             else:
-                if registro.estado != "Rechazado":
-                    datosManzana, extent = obtieneInfoManzana(codigo, token)
-                    datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-                    mensaje("##################################################################")
-                    est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
+                #if registro.estado != "Rechazado":
+                datosManzana, extent = obtieneInfoManzana(codigo, token)
+                datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
+                mensaje("##################################################################")
+                est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
 
-                    if datosManzana != None:
-                        registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                        registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
-                        registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-
+                if datosManzana != None:
+                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                    registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
+                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                    if registro.estado != "Rechazado":
                         mxd, infoMxd, escala = buscaTemplateManzana(extent)
                         if mxd != None:
                             if preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -1738,6 +1738,8 @@ dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 
+dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
+
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
 parametroMarco = arcpy.GetParameterAsText(1)
@@ -1784,19 +1786,22 @@ mensaje("Estrato: {}".format(parametroEstrato))
 if parametroSoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
+        entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, dictCamposId[parametroEstrato], listaCodigos, token)
+        mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+
         if parametroEstrato == "Manzana":
-            entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, "MANZENT", listaCodigos, token)
+            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
             actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "RAU":
-            entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, "CU_SECCION", listaCodigos, token)
+            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
             actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "Rural":
-            entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+            #entidad, extent, FC = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, "CU_SECCION", listaCodigos, token)
+            #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
         #mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
