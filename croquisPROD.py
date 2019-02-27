@@ -21,14 +21,21 @@ def mensajeEstado(registro):
     print(s)
     arcpy.AddMessage(s)
 
-    if registro.estado == "Correcto":
-        mensaje("Se genero el croquis correctamente.")
-    if registro.estado == "No generado":
-        mensaje("No se logro generar el croquis.")
-    if registro.estado == "Rechazado":
-        mensaje("Se rechazo la manzana.")
-    if registro.estado == "No existe":
-        mensaje("Entidad no existe.")
+    if parametroSoloAnalisis == "si":
+        if registro.estadoViviendas == "Correcto":
+            mensaje("viviendas correctas.")
+        if registro.estadoViviendas == "Rechazado":
+            mensaje("Se rechazo la manzana.")
+    else:
+        if registro.estadoViviendas == "Correcto":
+            mensaje("Se genero el croquis correctamente.")
+        if registro.estadoViviendas == "No generado":
+            mensaje("No se logro generar el croquis.")
+        if registro.estadoViviendas == "Rechazado":
+            mensaje("Se rechazo la manzana.")
+        if registro.estado == "No existe":
+            mensaje("Entidad no existe.")
+
 
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
@@ -162,44 +169,44 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         return None, None
 
 def comparaManzanas(manzana2016, manzana2017, registro):
-    mensaje("area manzana2016 = {}".format(manzana2016))
-    mensaje("area manzana2017 = {}".format(manzana2017))
+    #mensaje("area manzana2016 = {}".format(manzana2016))
+    #mensaje("area manzana2017 = {}".format(manzana2017))
     if manzana2017 != None:
-        print("----------------- Calculo ------------------------")
+        #print("----------------- Calculo ------------------------")
         if manzana2016 > manzana2017:
             print("manzana2016 > manzana2017")
             diferencia = manzana2016 -  manzana2017
             porc = diferencia/manzana2016
-            mensaje(diferencia)
+            #mensaje(diferencia)
         else:
             print("manzana2016 < manzana2017")
             diferencia = manzana2017 - manzana2016
             porc = diferencia/manzana2017
-            mensaje(diferencia)
+            #mensaje(diferencia)
 
         porcentaje = int(round(porc*100,0))
-        mensaje(porcentaje)
+        #mensaje(porcentaje)
 
         if porcentaje <= 5:
             estadoSuperficie = "OK"
             motivoSuperficie = "Diferencia en superficie es menor a 5 porciento"
-            mensaje("OK: Diferencia en superficie es menor a 5 porciento")
+            #mensaje("OK: Diferencia en superficie es menor a 5 porciento")
         elif porcentaje >= 6 and porcentaje <= 40:
             estadoSuperficie = "Alerta"
             motivoSuperficie = "Diferencia en superficie entre 6 y 40 porciento"
-            mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
+            #mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
         elif porcentaje > 40:
             estadoSuperficie = "Rechazada"
             motivoSuperficie = "Diferencia en superficie supera 40 porciento"
-            mensaje("Rechazada: Diferencia en superficie supera 40 porciento")
+            #mensaje("Rechazada: Diferencia en superficie supera 40 porciento")
         else:
             estadoSuperficie = "Rango Porcentaje"
             motivoSuperficie = "Porcentaje fuera de rango"
-            mensaje("Porcentaje fuera de rango")
+            #mensaje("Porcentaje fuera de rango")
     else:
         estadoSuperficie = "No encontrada"
         motivoSuperficie = "Manzana no encontrada en Censo2017"
-        mensaje("Manzana no encontrada en Censo2017")
+        #mensaje("Manzana no encontrada en Censo2017")
 
     return estadoSuperficie, motivoSuperficie
 
@@ -867,13 +874,16 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estadoViviendas = "Rechazado"
-        registro.motivoViviendas = "Manzana con menos de 8 viviendas. ({})".format(totalViviendas)
+        registro.motivoViviendas = "Manzana con menos de 8 viviendas"
         mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
-        #return False
+        return "Rechazado"
 
-    if viviendasEncuestar == -1:    # no se evalua
+    if viviendasEncuestar == -1 and registro.estadoViviendas != "Rechazado":    # no se evalua
         mensaje("No se evalua cantidad de viviendas a encuestar.")
         #return True
+        registro.estadoViviendas = "Correcto"
+        registro.motivoViviendas = "Se cumple con el rango de viviendas de la manzana"
+        return "Correcto"
     else:
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
@@ -882,6 +892,8 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
                 mensaje("Total Viviendas. ({})".format(totalViviendas))
                 mensaje("Se cumple con el rango de viviendas de la manzana.")
+                registro.estadoViviendas = "Correcto"
+                registro.motivoViviendas = "Se cumple con el rango de viviendas de la manzana"
                 #return True
             else:
                 mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
@@ -890,8 +902,8 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
                 mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
                 registro.estadoViviendas = "Rechazado"
-                registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
-                #return False
+                registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana"
+                return "Rechazado"
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
 
@@ -901,41 +913,40 @@ def procesaManzana(codigo, viviendasEncuestar):
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
-            validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
+            mensaje(totalViviendas)
+            resultado = validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
-            datosManzana, extent = obtieneInfoManzana(codigo, token)
-            datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-            mensaje("##################################################################")
-            est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
+            if resultado != "Rechazado":
+                datosManzana, extent = obtieneInfoManzana(codigo, token)
+                datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
+                #mensaje("##################################################################")
+                est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
 
-            registro.estadoSuperficie = est
-            registro.motivoSuperficie = mot
+                registro.estadoSuperficie = est
+                registro.motivoSuperficie = mot
 
-            if datosManzana != None:
-                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                if datosManzana != None:
+                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                    registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
+                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
 
-                if not (registro.estado == "Rechazado" or parametroSoloAnalisis == 'si'):
+                    if not (registro.estado == "Rechazado" or parametroSoloAnalisis == 'si'):
 
-                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
-                    if mxd != None:
-                        if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                            mensaje("Registrando la operación.")
-                            registro.formato = infoMxd['formato']
-                            registro.orientacion = infoMxd['orientacion']
-                            registro.escala = escala
-                            registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
+                        mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                        if mxd != None:
+                            if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                                mensaje("Registrando la operación.")
+                                registro.formato = infoMxd['formato']
+                                registro.orientacion = infoMxd['orientacion']
+                                registro.escala = escala
+                                registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
 
-                            nombrePDF = generaNombrePDF(datosManzana, infoMxd)
-                            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+                                nombrePDF = generaNombrePDF(datosManzana, infoMxd)
+                                registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
 
-                            if registro.rutaPDF != "":
-                                registro.estado = "Generado"
-                                registro.motivo = "Croquis generado"
-
-            registro.estado = "No existe"
-            registro.motivo = "Manzana no existe"
+                                if registro.rutaPDF != "":
+                                    registro.estado = "Generado"
+                                    registro.motivo = "Croquis generado"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -943,6 +954,9 @@ def procesaManzana(codigo, viviendasEncuestar):
     except:
         #pass
         registro.estado = "No generado"
+        registro.motivo = "Manzana no existe"
+        registro.estadoViviendas = ""
+        registro.motivoViviendas = ""
         registros.append(registro)
     mensaje("No se completó el proceso de manzana.")
 
@@ -970,9 +984,6 @@ def procesaRAU(codigo):
 
                         if registro.rutaPDF != "":
                             registro.estado = "Correcto"
-
-            registro.estado = "No existe"
-            registro.motivo = "Seccion RAU no existe"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1004,9 +1015,6 @@ def procesaRural(codigo):
                     procesaAreasDestacadas(codigo, datosRural, token)
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
-
-        registro.estado = "No existe"
-        registro.motivo = "Seccion Rural no existe"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1719,7 +1727,7 @@ class Registro:
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
 
-        self.estado = "Inicial"
+        self.estado = "No generado"
         self.motivo = ""
 
         self.intersectaPE = ""
