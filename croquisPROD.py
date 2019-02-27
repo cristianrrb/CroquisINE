@@ -402,29 +402,19 @@ def destacaListaPoligonos(mxd, FC):
     try:
         mensaje("Destacando entidades")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-        mensaje("1")
         arcpy.AddField_management(FC, "tipo", "LONG")
-        mensaje("2")
         tm_path = os.path.join("in_memory", "graphic_lyr")
-        mensaje("3")
         arcpy.MakeFeatureLayer_management(FC, tm_path)
-        mensaje("4")
         tm_layer = arcpy.mapping.Layer(tm_path)
-        mensaje("5")
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
-        mensaje("6")
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-        mensaje("7")
         cursor = arcpy.da.InsertCursor(tm_layer, ["TIPO"])
-        mensaje("8")
         cursor.insertRow([1])
-        mensaje("9")
         del cursor
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        mensaje("10")
-        return True
         mensaje("Entidades Destacadas")
+        return True
     except:
         mensaje("No se pudo destacar entidades")
     return False
