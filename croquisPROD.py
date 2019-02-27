@@ -1,7 +1,14 @@
 # -*- coding: iso-8859-1 -*-
 import arcpy
-import os, urllib, urllib2, json, sys
-import datetime, csv, uuid, zipfile
+import os
+import urllib
+import urllib2
+import json
+import sys
+import datetime
+import csv
+import uuid
+import zipfile
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -201,8 +208,7 @@ def comparaManzanas(manzana2016, manzana2017, registro):
     return estadoSuperficie, motivoSuperficie
 
 def listaMXDs(estrato, ancho):
-
-    d = {"Manzana":0,"RAU":1,"Rural":2}
+    d = {"Manzana": 0, "RAU": 1, "Rural": 2}
     lista = []
     for e in config['estratos']:
         if e['nombre'] == estrato:
@@ -223,7 +229,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
     try:
         condiciones = []
         for codigo in codigos:
-            condicion = "{}+%3D+{}".format( dictCamposId[parametroEstrato] , codigo)
+            condicion = "{}+%3D+{}".format(dictCamposId[parametroEstrato], codigo)
             condiciones.append(condicion)
 
         query = "+OR+".join(condiciones)
@@ -232,15 +238,15 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
         fs = arcpy.FeatureSet()
         fs.load(url.format(urlServicio, token, query))
 
-        fc = os.path.join("in_memory","fc")
+        fc = os.path.join("in_memory", "fc")
         fs.save(fc)
 
         if parametroEstrato == "Manzana":
-            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
+            fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
         elif parametroEstrato == "RAU":
-            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
+            fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
         elif parametroEstrato == "Rural":
-            fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
+            fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'CUT', 'COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             # TODO: Validar que lista tenga elementos
@@ -250,7 +256,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
         mensaje(lista[0][5])
         mensaje("URBANO --------------------------------------------------------------")
 
-        extent = obtieneExtentUrbano(urlUrbano, lista[0][5])
+        extent = obtieneExtentUrbano(urlUrbano, lista[0][5], token)
 
         mensaje("** OK en obtieneInfoParaPlanoUbicacion")
 
@@ -259,11 +265,19 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
 
     return lista[0], extent, fc
 
-def obtieneExtentUrbano(urlUrbano, codigo):
-    url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+def obtieneExtentUrbano(urlUrbano, codigo, token):
+    #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+    params = {
+        'token': token,
+        'where': 'URBANO={}'.format(codigo),
+        'outFields': '*',
+        'returnGeometry': 'true',
+        'f':'pjson'
+    }
+    url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
 
     fs = arcpy.FeatureSet()
-    fs.load(url.format(urlUrbano, token, codigo))
+    fs.load(url)
 
     fc = os.path.join("in_memory","fc")
     fs.save(fc)
