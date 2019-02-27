@@ -252,7 +252,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
 
     except:
         mensaje("** Error en obtieneInfoParaPlanoUbicacion")
-    
+
     return lista[0], extent, fc
 
 def obtieneExtentUrbano(urlUrbano, codigo):
@@ -395,15 +395,26 @@ def actualizaVinetaSeccionRural_PlanoUbicacion(mxd,datosRural):
         mensaje("No se pudo actualizar las viñetas para Rural Plano Ubicacion.")
 
 def destacaListaPoligonos(mxd, FC):
-    mensaje("Pintando entidades")
-    df = arcpy.mapping.ListDataFrames(mxd)[0]
-    arcpy.AddField_management(FC, "tipo", "LONG")
-    tm_path = os.path.join("in_memory", "graphic_lyr")
-    arcpy.MakeFeatureLayer_management(FC, tm_path)
-    tm_layer = arcpy.mapping.Layer(tm_path)
-    sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
-    arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-    mensaje("Entidades Pintadas")
+    try:
+        mensaje("Destacando entidades")
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        arcpy.AddField_management(FC, "tipo", "LONG")
+        tm_path = os.path.join("in_memory", "graphic_lyr")
+        arcpy.MakeFeatureLayer_management(FC, tm_path)
+        tm_layer = arcpy.mapping.Layer(tm_path)
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+        cursor = arcpy.da.InsertCursor(tm_layer, ["TIPO"])
+        cursor.insertRow([1])
+        del cursor
+        del FC
+        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        return True
+        mensaje("Entidades Destacadas")
+    except:
+        mensaje("No se pudo destacar entidades")
+    return False
+
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
 def listaEtiquetas(estrato):
@@ -897,7 +908,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                 registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
                 registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
                 registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                
+
                 if not (registro.estado == "Rechazado" or parametroSoloAnalisis == 'si'):
 
                     mxd, infoMxd, escala = buscaTemplateManzana(extent)
@@ -915,7 +926,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                             if registro.rutaPDF != "":
                                 registro.estado = "Generado"
                                 registro.motivo = "Croquis generado"
-                                
+
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1692,7 +1703,7 @@ class Registro:
         self.intersectaCRF = ""
         self.intersectaAV = ""
         self.homologacion = ""
-        
+
         self.codigoBarra = ""
         # Analisis de comparación de superficie de manzanas
         self.estadoSuperficie = ""
