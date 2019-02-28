@@ -28,13 +28,12 @@ def mensajeEstado(registro):
             mensaje("Se rechazo la manzana.")
     else:
         if registro.estadoViviendas == "Correcto":
-            mensaje("Se genero el croquis correctamente.")
-        if registro.estadoViviendas == "No generado":
-            mensaje("No se logro generar el croquis.")
+            mensaje("viviendas correctas.")
+            mensaje("Se genera el croquis correctamente.")
+
         if registro.estadoViviendas == "Rechazado":
             mensaje("Se rechazo la manzana.")
-        if registro.estado == "No existe":
-            mensaje("Entidad no existe.")
+            mensaje("No se logro generar el croquis.")
 
 
 def obtieneToken(usuario, clave, urlPortal):
