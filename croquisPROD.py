@@ -1898,7 +1898,7 @@ if parametroSoloPlanoUbicacion == 'Si':
                 registro.motivo = "Croquis generado"
             registros.append(registro)
             mensajeEstado(registro)
-        #return
+        return
     except:
         registro.estado = "No generado"
         registro.motivo = "Plano Ubicacion no generado"
