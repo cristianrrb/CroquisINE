@@ -49,8 +49,6 @@ def mensajeEstado(registro):
             mensaje("Genera croquis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
             mensaje("Genera croquis: Se rechazo la manzana.")
-        if registro.estado == "No generado":
-            mensaje("Genera croquis: Se rechazo la manzana.")
 
 
 
