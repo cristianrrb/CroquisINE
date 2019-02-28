@@ -23,17 +23,15 @@ def mensajeEstado(registro):
 
     if parametroSoloAnalisis == "si":
         if registro.estadoViviendas == "Correcto":
-            mensaje("viviendas correctas.")
+            mensaje("Analisis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
-            mensaje("Se rechazo la manzana.")
+            mensaje("Analisis: Se rechazo la manzana.")
     else:
         if registro.estadoViviendas == "Correcto":
-            mensaje("viviendas correctas.")
-            mensaje("Se genera el croquis correctamente.")
+            mensaje("Correcto: Se genera el croquis correctamente.")
 
         if registro.estadoViviendas == "Rechazado":
-            mensaje("Se rechazo la manzana.")
-            mensaje("No se logro generar el croquis.")
+            mensaje("Rechazado: No se logro generar el croquis.")
 
 
 def obtieneToken(usuario, clave, urlPortal):
@@ -222,11 +220,7 @@ def listaMXDs(estrato, ancho):
     return lista
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
-
-# urlServicio = infoMarco.urlManzanas
-# campo = "MANZENT"
-# codigos = listaCodigos
-# token
+#
 def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
     lista = []
     try:
