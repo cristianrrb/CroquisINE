@@ -1866,36 +1866,44 @@ registros = []
 mensaje("Estrato: {}".format(parametroEstrato))
 
 if parametroSoloPlanoUbicacion == 'Si':
-    token = obtieneToken(usuario, clave, urlPortal)
-    if token != None:
-        if parametroEstrato == "Manzana":
-            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
-            diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
-            actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
-        if parametroEstrato == "RAU":
-            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
-            diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
-            actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
-        if parametroEstrato == "Rural":
-            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
-            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
-            actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+    try:
+        token = obtieneToken(usuario, clave, urlPortal)
+        if token != None:
+            if parametroEstrato == "Manzana":
+                entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
+                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+                actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
+            if parametroEstrato == "RAU":
+                entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
+                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+                actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
+            if parametroEstrato == "Rural":
+                entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
+                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
-        destacaListaPoligonos(mxd, fc)
-        zoom(mxd, extent, escala)
-        nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
+            destacaListaPoligonos(mxd, fc)
+            zoom(mxd, extent, escala)
+            nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
 
-        registro = Registro(listaCodigos)
-        registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
-        registro.formato = infoMxd['formato']
-        registro.orientacion = infoMxd['orientacion']
-        registro.escala = escala
-        if registro.rutaPDF != "":
-            registro.estado = "Correcto"
-            registro.motivo = "Croquis generado"
+            registro = Registro(listaCodigos)
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+            registro.formato = infoMxd['formato']
+            registro.orientacion = infoMxd['orientacion']
+            registro.escala = escala
+            if registro.rutaPDF != "":
+                registro.estado = "Correcto"
+                registro.motivo = "Croquis generado"
+            registros.append(registro)
+            mensajeEstado(registro)
+        #return
+    except:
+        registro.estado = "No generado"
+        registro.motivo = "Plano Ubicacion no generado"
         registros.append(registro)
+    mensaje("No se completó el proceso de plano ubicacion.")
 else:
     if parametroEstrato == "Manzana":
         diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
