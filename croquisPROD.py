@@ -37,20 +37,20 @@ def mensajeEstado(registro):
         arcpy.AddMessage(s)
 
         if registro.estado == "Correcto":
-            mensaje("Correcto: Se genera el croquis correctamente.")
+            mensaje("Plano: Se genera el croquis correctamente.")
         if registro.estado == "No generado":
-            mensaje("No generado: No se logro generar el croquis Plano Ubicación.")
+            mensaje("Plano: No se logro generar el croquis Plano Ubicación.")
     else:
         s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
         print(s)
         arcpy.AddMessage(s)
 
         if registro.estadoViviendas == "Correcto":
-            mensaje("Analisis: viviendas correctas.")
+            mensaje("Genera croquis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
-            mensaje("Analisis: Se rechazo la manzana.")
+            mensaje("Genera croquis: Se rechazo la manzana.")
         if registro.estado == "No generado":
-            mensaje("Analisis: Se rechazo la manzana.")
+            mensaje("Genera croquis: Se rechazo la manzana.")
 
 
 
