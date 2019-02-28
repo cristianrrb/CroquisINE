@@ -17,21 +17,41 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
         homologacion = 'NI'
 
-    s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
-    print(s)
-    arcpy.AddMessage(s)
+    #s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+    #print(s)
+    #arcpy.AddMessage(s)
 
     if parametroSoloAnalisis == "si":
+        s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+        print(s)
+        arcpy.AddMessage(s)
+
         if registro.estadoViviendas == "Correcto":
             mensaje("Analisis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
             mensaje("Analisis: Se rechazo la manzana.")
-    else:
-        if registro.estadoViviendas == "Correcto":
-            mensaje("Correcto: Se genera el croquis correctamente.")
 
+    if parametroSoloPlanoUbicacion == "si":
+        s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
+        print(s)
+        arcpy.AddMessage(s)
+
+        if registro.estado == "Correcto":
+            mensaje("Correcto: Se genera el croquis correctamente.")
+        if registro.estado == "No generado":
+            mensaje("No generado: No se logro generar el croquis Plano Ubicación.")
+    else:
+        s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+        print(s)
+        arcpy.AddMessage(s)
+
+        if registro.estadoViviendas == "Correcto":
+            mensaje("Analisis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
-            mensaje("Rechazado: No se logro generar el croquis.")
+            mensaje("Analisis: Se rechazo la manzana.")
+        if registro.estado == "No generado":
+            mensaje("Analisis: Se rechazo la manzana.")
+
 
 
 def obtieneToken(usuario, clave, urlPortal):
@@ -255,10 +275,10 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
 
         extent = obtieneExtentUrbano(urlUrbano, lista[0][5])
 
-        mensaje("** OK en obtieneInfoParaPlanoUbicacion")
+        mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
 
     except:
-        mensaje("** Error en obtieneInfoParaPlanoUbicacion")
+        mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
 
     return lista[0], extent, fc
 
@@ -936,7 +956,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                             registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
 
                             if registro.rutaPDF != "":
-                                registro.estado = "Generado"
+                                registro.estado = "Correcto"
                                 registro.motivo = "Croquis generado"
 
         registros.append(registro)
@@ -975,6 +995,7 @@ def procesaRAU(codigo):
 
                         if registro.rutaPDF != "":
                             registro.estado = "Correcto"
+                            registro.motivo = "Croquis generado"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -982,6 +1003,7 @@ def procesaRAU(codigo):
     except:
         #pass
         registro.estado = "No generado"
+        registro.motivo = "Seccion no existe"
         registros.append(registro)
     mensaje("No se completó el proceso de sección RAU.")
 
@@ -1006,6 +1028,7 @@ def procesaRural(codigo):
                     procesaAreasDestacadas(codigo, datosRural, token)
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
+                        registro.motivo = "Croquis generado"
 
         registros.append(registro)
         mensajeEstado(registro)
@@ -1013,6 +1036,7 @@ def procesaRural(codigo):
     except:
         #pass
         registro.estado = "No generado"
+        registro.motivo = "Seccion no existe"
         registros.append(registro)
     mensaje("No se completó el proceso de sección Rural.")
 
@@ -1045,12 +1069,14 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
 
                 if registro.rutaPDF != "":
                     registro.estado = "Correcto"
+                    registro.motivo= "Croquis generado"
         registros.append(registro)
         mensaje("Se generó el croquis correctamente para área destacada.")
         return
     except:
         #pass
         registro.estado = "No generado"
+        registro.motivo = "Area destacada no existe"
         registros.append(registro)
     mensaje("No se generó el croquis para área destacada.")
 
@@ -1844,16 +1870,19 @@ mensaje("Estrato: {}".format(parametroEstrato))
 if parametroSoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
-        entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-        mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
-
         if parametroEstrato == "Manzana":
+            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
             actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "RAU":
+            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
             actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
         if parametroEstrato == "Rural":
+            entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
+            mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
             actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
         destacaListaPoligonos(mxd, fc)
@@ -1867,6 +1896,7 @@ if parametroSoloPlanoUbicacion == 'Si':
         registro.escala = escala
         if registro.rutaPDF != "":
             registro.estado = "Correcto"
+            registro.motivo = "Croquis generado"
         registros.append(registro)
 else:
     if parametroEstrato == "Manzana":
