@@ -256,7 +256,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
         mensaje(lista[0][5])
         mensaje("URBANO --------------------------------------------------------------")
 
-        extent = obtieneExtentUrbano(urlUrbano, lista[0][5], token)
+        extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
         mensaje("** OK en obtieneInfoParaPlanoUbicacion")
 
@@ -265,15 +265,18 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
 
     return lista[0], extent, fc
 
-def obtieneExtentUrbano(urlUrbano, codigo, token):
+def obtieneExtentUrbano(urlUrbano, poligono, token):
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     params = {
-        'token': token,
-        'where': 'URBANO={}'.format(codigo),
-        'outFields': '*',
-        'returnGeometry': 'true',
-        'f':'pjson'
+        'token':token, 
+        'f':'json', 
+        'where':'1=1', 
+        'outFields':'*', 
+        'returnIdsOnly':'true', 
+        'geometry':poligono.JSON, 
+        'geometryType':'esriGeometryPolygon'
     }
+
     url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
 
     fs = arcpy.FeatureSet()
