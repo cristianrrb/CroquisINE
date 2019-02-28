@@ -293,12 +293,12 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
 def obtieneExtentUrbano(urlUrbano, poligono, token):
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     params = {
-        'token':token, 
-        'f':'json', 
-        'where':'1=1', 
-        'outFields':'*', 
-        'returnIdsOnly':'true', 
-        'geometry':poligono.JSON, 
+        'token':token,
+        'f':'json',
+        'where':'1=1',
+        'outFields':'*',
+        'returnIdsOnly':'true',
+        'geometry':poligono.JSON,
         'geometryType':'esriGeometryPolygon'
     }
 
