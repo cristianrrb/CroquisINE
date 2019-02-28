@@ -184,11 +184,11 @@ def obtieneInfoManzanaCenso2017(codigo, token):
             mensaje('Datos de manzana Censo 2017 obtenidos correctamente.')
             return lista[0]
         else:
-            mensaje("** Error: El registro de manzana Censo 2017 no existe")
-            return None, None
+            mensaje("El registro de manzana Censo 2017 no existe")
+            return None
     except:
         mensaje("** Error en obtieneInfoManzana")
-        return None, None
+        return None
 
 def comparaManzanas(manzana2016, manzana2017, registro):
     #mensaje("area manzana2016 = {}".format(manzana2016))
@@ -196,12 +196,10 @@ def comparaManzanas(manzana2016, manzana2017, registro):
     if manzana2017 != None:
         #print("----------------- Calculo ------------------------")
         if manzana2016 > manzana2017:
-            print("manzana2016 > manzana2017")
             diferencia = manzana2016 -  manzana2017
             porc = diferencia/manzana2016
             #mensaje(diferencia)
         else:
-            print("manzana2016 < manzana2017")
             diferencia = manzana2017 - manzana2016
             porc = diferencia/manzana2017
             #mensaje(diferencia)
@@ -276,10 +274,6 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, urlUrbano, codigos, token):
         with arcpy.da.SearchCursor(fs, fields) as rows:
             # TODO: Validar que lista tenga elementos
             lista = [r for r in rows]
-        mensaje("URBANO --------------------------------------------------------------")
-        mensaje(urlUrbano)
-        mensaje(lista[0][5])
-        mensaje("URBANO --------------------------------------------------------------")
 
         extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
@@ -978,17 +972,14 @@ def procesaManzana(codigo, viviendasEncuestar):
                                 registro.estado = "Correcto"
                                 registro.motivo = "Croquis generado"
 
-        registros.append(registro)
-        mensajeEstado(registro)
-        return
     except:
-        #pass
         registro.estado = "No generado"
         registro.motivo = "Manzana no existe"
         registro.estadoViviendas = ""
         registro.motivoViviendas = ""
-        registros.append(registro)
-    mensaje("No se completó el proceso de manzana.")
+    mensajeEstado(registro)
+    registros.append(registro)
+    return
 
 def procesaRAU(codigo):
     try:
@@ -1844,25 +1835,29 @@ dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
-parametroEncuesta = arcpy.GetParameterAsText(0)
-parametroMarco = arcpy.GetParameterAsText(1)
-parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
-parametroCodigos = arcpy.GetParameterAsText(3)
-parametroViviendas = arcpy.GetParameterAsText(4)
-parametroSoloAnalisis = arcpy.GetParameterAsText(5)
-parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
+#parametroEncuesta = arcpy.GetParameterAsText(0)
+#parametroMarco = arcpy.GetParameterAsText(1)
+#parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
+#parametroCodigos = arcpy.GetParameterAsText(3)
+#parametroViviendas = arcpy.GetParameterAsText(4)
+#parametroSoloAnalisis = arcpy.GetParameterAsText(5)
+#parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 # ---------------------- PARAMETROS EN DURO ---------------------------
-"""
+
 # --------------------------------------------------------------------
-parametroCodigos = "1101021005059,1101021004013"
+# 3 manzana tiene menos de 8 viviendas
+parametroCodigos = "13126011003005,13126091002035,13126091003024,13126011003005"
+#parametroCodigos = "13126011003005,13126091002035,13126091003024,13126091002"
+
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
 parametroSoloAnalisis = ""
-parametroSoloPlanoUbicacion = "Si"
+parametroSoloPlanoUbicacion = ""
 # --------------------------------------------------------------------
+"""
 parametroCodigos = "3202200055"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
@@ -1917,13 +1912,11 @@ if parametroSoloPlanoUbicacion == 'Si':
             if registro.rutaPDF != "":
                 registro.estado = "Correcto"
                 registro.motivo = "Croquis generado"
-            registros.append(registro)
             mensajeEstado(registro)
-        return
     except:
         registro.estado = "No generado"
         registro.motivo = "Plano Ubicacion no generado"
-        registros.append(registro)
+    registros.append(registro)
     mensaje("No se completó el proceso de plano ubicacion.")
 else:
     if parametroEstrato == "Manzana":
