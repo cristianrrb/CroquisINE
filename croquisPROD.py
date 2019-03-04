@@ -57,8 +57,6 @@ def mensajeEstado(registro):
         if registro.estadoViviendas == "Rechazado":
             mensaje("Genera croquis: Se rechazo la manzana.")
 
-
-
 def obtieneToken(usuario, clave, urlPortal):
     params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
     urlToken = urlPortal + '/sharing/rest/generateToken?'
@@ -316,7 +314,6 @@ def obtieneExtentUrbano(urlUrbano, poligono, token):
     return extent
 
 def listaMXDsPlanoUbicacion(estrato, ancho):
-
     d = {"Manzana":0,"RAU":1,"Rural":2}
     lista = []
     for e in config['estratos']:
