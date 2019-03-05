@@ -1877,7 +1877,6 @@ if parametroSoloPlanoUbicacion == 'Si':
             if parametroEstrato == "Manzana":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
-                mensaje(extent)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
