@@ -1734,7 +1734,7 @@ def enviarMail(registros):
         mensaje("Reporte Enviado")
         mailserver.quit()
     except:
-        mensaje("No se pudo enviar correo electronico de Alertas y Rechazo")
+        mensaje("No se pudo enviar correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
 
 class Registro:
     def __init__(self, codigo):
