@@ -24,19 +24,22 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
         homologacion = 'NI'
 
-    #s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
-    #print(s)
-    #arcpy.AddMessage(s)
-
     if parametroSoloAnalisis == "si":
-        s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
-        print(s)
-        arcpy.AddMessage(s)
-
         if registro.estadoViviendas == "Correcto":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+            print(s)
+            arcpy.AddMessage(s)
             mensaje("Analisis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+            print(s)
+            arcpy.AddMessage(s)
             mensaje("Analisis: Se rechazo la manzana.")
+        if registro.estado == "No generado":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
+            print(s)
+            arcpy.AddMessage(s)
+            mensaje("es solo Analisis, No se genera croquis")
         return "Analisis"
 
     if parametroSoloPlanoUbicacion == "Si":
@@ -272,12 +275,12 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
-
+        #mensaje(len(lista[0]))
         #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
         if  lista != None and len(lista) >= 1:
             mensaje('Datos de lista Plano Ubicación obtenidos correctamente.')
-            return lista, extent, fc
+            return lista[0], extent, fc
         else:
             mensaje('No existen datos en la lista')
             return None, None, None
@@ -974,6 +977,7 @@ def procesaManzana(codigo, viviendasEncuestar):
         registro.motivo = "Manzana no existe"
         registro.estadoViviendas = ""
         registro.motivoViviendas = ""
+        registro.homologacion = ""
     mensajeEstado(registro)
     registros.append(registro)
     return
@@ -1821,13 +1825,13 @@ dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
-parametroEncuesta = arcpy.GetParameterAsText(0)
-parametroMarco = arcpy.GetParameterAsText(1)
-parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
-parametroCodigos = arcpy.GetParameterAsText(3)
-parametroViviendas = arcpy.GetParameterAsText(4)
-parametroSoloAnalisis = arcpy.GetParameterAsText(5)
-parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
+parametroEncuesta = arcpy.GetParameterAsText(0)             # ENE
+parametroMarco = arcpy.GetParameterAsText(1)                # 2016
+parametroEstrato = arcpy.GetParameterAsText(2)              # Manzana o RAU o Rural
+parametroCodigos = arcpy.GetParameterAsText(3)              # 13126011003005,13126091002035,13126091003024
+parametroViviendas = arcpy.GetParameterAsText(4)            # 10
+parametroSoloAnalisis = arcpy.GetParameterAsText(5)         # si
+parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)   # Si
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
