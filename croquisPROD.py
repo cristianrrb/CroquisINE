@@ -1825,13 +1825,13 @@ dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
-parametroEncuesta = arcpy.GetParameterAsText(0)             # ENE
-parametroMarco = arcpy.GetParameterAsText(1)                # 2016
-parametroEstrato = arcpy.GetParameterAsText(2)              # Manzana o RAU o Rural
-parametroCodigos = arcpy.GetParameterAsText(3)              # 13126011003005,13126091002035,13126091003024
-parametroViviendas = arcpy.GetParameterAsText(4)            # 10
-parametroSoloAnalisis = arcpy.GetParameterAsText(5)         # si
-parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)   # Si
+parametroEncuesta = arcpy.GetParameterAsText(0)
+parametroMarco = arcpy.GetParameterAsText(1)
+parametroEstrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
+parametroCodigos = arcpy.GetParameterAsText(3)
+parametroViviendas = arcpy.GetParameterAsText(4)
+parametroSoloAnalisis = arcpy.GetParameterAsText(5)
+parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
