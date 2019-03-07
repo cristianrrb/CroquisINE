@@ -24,7 +24,7 @@ def mensajeEstado(registro):
     if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
         homologacion = 'NI'
 
-    if parametroSoloAnalisis == "si":a
+    if parametroSoloAnalisis == "si":
         if registro.estadoViviendas == "Correcto":
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
             print(s)
