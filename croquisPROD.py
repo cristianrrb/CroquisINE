@@ -42,7 +42,7 @@ def mensajeEstado(registro):
             mensaje("es solo Analisis, No se genera croquis")
         return "Analisis"
 
-    if parametroSoloPlanoUbicacion == "Si":
+    elif parametroSoloPlanoUbicacion == "Si":
         s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
         print(s)
         arcpy.AddMessage(s)
@@ -51,16 +51,26 @@ def mensajeEstado(registro):
             mensaje("Plano Ubicación: Se genera el croquis correctamente.")
         if registro.estado == "No generado":
             mensaje("Plano Ubicación: No se logró generar el croquis Plano Ubicación.")
-        return "Plano"
+        return "Plano Ubicacion"
     else:
-        s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
-        print(s)
-        arcpy.AddMessage(s)
+        if parametroEstrato == "Manzana":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+            print(s)
+            arcpy.AddMessage(s)
 
-        if registro.estadoViviendas == "Correcto":
-            mensaje("Genera croquis: viviendas correctas.")
-        if registro.estadoViviendas == "Rechazado":
-            mensaje("Genera croquis: Se rechazo la manzana.")
+            if registro.estadoViviendas == "Correcto":
+                mensaje("Genera croquis: viviendas correctas.")
+            if registro.estadoViviendas == "Rechazado":
+                mensaje("Genera croquis: Se rechazo la manzana.")
+        if parametroEstrato == "RAU" or parametroEstrato == "Rural":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
+            print(s)
+            arcpy.AddMessage(s)
+
+            if registro.estado == "Correcto":
+                mensaje("Genera croquis: Se genera el croquis para Secciones")
+            if registro.estado == "No generado":
+                mensaje("Genera croquis: No se logró generar el croquis para seccion.")
         return "Croquis"
 
 def obtieneToken(usuario, clave, urlPortal):
@@ -194,9 +204,13 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None
 
-def comparaManzanas(manzana2016, manzana2017, registro):
+def comparaManzanas(datosManzana, datosManzana2017, registro):
     #mensaje("area manzana2016 = {}".format(manzana2016))
     #mensaje("area manzana2017 = {}".format(manzana2017))
+    manzana2016 = datosManzana[1]
+    manzana2017 = datosManzana2017[0]
+    mensaje(manzana2016)
+    mensaje(manzana2017)
     if manzana2017 != None:
         #print("----------------- Calculo ------------------------")
         if manzana2016 > manzana2017:
@@ -266,6 +280,8 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         desc = arcpy.Describe(fc)
         extent = desc.extent
 
+        mensaje(extent)
+
         if parametroEstrato == "Manzana":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
         elif parametroEstrato == "RAU":
@@ -278,15 +294,10 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         #mensaje(len(lista[0]))
         #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
-        if  lista != None and len(lista) >= 1:
-            mensaje('Datos de lista Plano Ubicación obtenidos correctamente.')
-            return lista[0], extent, fc
-        else:
-            mensaje('No existen datos en la lista')
-            return None, None, None
+        mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
     except:
-        mensaje("** Error en obtieneInfoParaPlanoUbicacion")
-        return None, None, None
+        mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
+    return lista[0], extent, fc
 
 def obtieneExtentUrbano(urlUrbano, poligono, token):
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
@@ -946,32 +957,34 @@ def procesaManzana(codigo, viviendasEncuestar):
             datosManzana, extent = obtieneInfoManzana(codigo, token)
             datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
 
-            est, mot = comparaManzanas(datosManzana[1], datosManzana2017[0], registro)
-            registro.estadoSuperficie = est
-            registro.motivoSuperficie = mot
+            if datosManzana2017 != None:
 
-            if datosManzana != None:
-                registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
-                registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
-                ############################################################## [FIN SECCION ANALISIS DE MANZANA] #####################################################################
+                est, mot = comparaManzanas(datosManzana, datosManzana2017, registro)
+                registro.estadoSuperficie = est
+                registro.motivoSuperficie = mot
 
-                if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
-                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
-                    if mxd != None:
-                        if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                            mensaje("Registrando la operación.")
-                            registro.formato = infoMxd['formato']
-                            registro.orientacion = infoMxd['orientacion']
-                            registro.escala = escala
-                            registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
+                if datosManzana != None:
+                    registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
+                    registro.intersectaAV = intersectaConArea(datosManzana[0], infoMarco.urlAV, token)
+                    registro.intersectaCRF = intersectaConArea(datosManzana[0], infoMarco.urlCRF, token)
+                    ############################################################## [FIN SECCION ANALISIS DE MANZANA] #####################################################################
 
-                            nombrePDF = generaNombrePDF(datosManzana, infoMxd)
-                            registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+                    if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
+                        mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                        if mxd != None:
+                            if preparaMapaManzana(mxd, extent, escala, datosManzana):
+                                mensaje("Registrando la operación.")
+                                registro.formato = infoMxd['formato']
+                                registro.orientacion = infoMxd['orientacion']
+                                registro.escala = escala
+                                registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosManzana)
 
-                            if registro.rutaPDF != "":
-                                registro.estado = "Correcto"
-                                registro.motivo = "Croquis generado"
+                                nombrePDF = generaNombrePDF(datosManzana, infoMxd)
+                                registro.rutaPDF = generaPDF(mxd, nombrePDF, datosManzana)
+
+                                if registro.rutaPDF != "":
+                                    registro.estado = "Correcto"
+                                    registro.motivo = "Croquis generado"
     except:
         registro.estado = "No generado"
         registro.motivo = "Manzana no existe"
@@ -1007,6 +1020,7 @@ def procesaRAU(codigo):
                         if registro.rutaPDF != "":
                             registro.estado = "Correcto"
                             registro.motivo = "Croquis generado"
+
         registros.append(registro)
         mensajeEstado(registro)
         return
@@ -1034,10 +1048,13 @@ def procesaRural(codigo):
 
                     nombrePDF = generaNombrePDF(datosRural, infoMxd)
                     registro.rutaPDF = generaPDF(mxd, nombrePDF, datosRural)
+
                     procesaAreasDestacadas(codigo, datosRural, token)
+
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
                         registro.motivo = "Croquis generado"
+
         registros.append(registro)
         mensajeEstado(registro)
         return
@@ -1883,7 +1900,7 @@ if parametroSoloPlanoUbicacion == 'Si':
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
-                actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
+                actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
