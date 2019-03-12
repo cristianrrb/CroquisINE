@@ -14,6 +14,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import util
+import templates
 
 def mensajeEstado(registro):
     homologacion = "I"
@@ -81,23 +82,6 @@ def mensajeEstado(registro):
             if registro.estado == "Seccion No Existe":
                 util.mensaje("Genera croquis: No se logró generar el croquis para seccion.")
         return "Croquis"
-
-def obtieneToken(usuario, clave, urlPortal):
-    params = {'username':usuario, 'password':clave, 'client':'referer', 'referer':urlPortal, 'expiration':600, 'f':'json'}
-    urlToken = urlPortal + '/sharing/rest/generateToken?'
-    response = urllib.urlopen(urlToken, urllib.urlencode(params)).read()
-    try:
-        jsonResponse = json.loads(response)
-        if 'token' in jsonResponse:
-            util.mensaje('Token obtenido correctamente.')
-            return jsonResponse['token']
-        elif 'error' in jsonResponse:
-            util.mensaje(jsonResponse['error']['message'])
-            for detail in jsonResponse['error']['details']:
-                util.mensaje('Error en obtieneToken: ' + detail)
-    except:
-        util.mensaje('** Error en obtieneToken.')
-    return None
 
 def obtieneInfoManzana(codigo, token):
     try:
@@ -249,17 +233,6 @@ def comparaManzanas(datosManzana, datosManzana2017, registro):
         motivoSuperficie = "Manzana no encontrada en Censo2017"
     return estadoSuperficie, motivoSuperficie
 
-def listaMXDs(estrato, ancho):
-    d = {"Manzana": 0, "RAU": 1, "Rural": 2}
-    lista = []
-    for e in config['estratos']:
-        if e['nombre'] == estrato:
-            if ancho:
-                lista = [m for m in config['estratos'][d[estrato]]['mxds'] if m['ancho'] > m['alto']]
-            else:
-                lista = [m for m in config['estratos'][d[estrato]]['mxds'] if m['ancho'] <= m['alto']]
-    return lista
-
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
     lista = []
@@ -324,52 +297,6 @@ def obtieneExtentUrbano(urlUrbano, poligono, token):
     extent = desc.extent
 
     return extent
-
-def listaMXDsPlanoUbicacion(estrato, ancho):
-    d = {"Manzana":0,"RAU":1,"Rural":2}
-    lista = []
-    for e in config['estratos']:
-        if e['nombre'] == estrato:
-            if ancho:
-                lista = [m for m in config['estratos'][d[estrato]]['mxdsPlanoUbicacion'] if m['ancho'] > m['alto']]
-            else:
-                lista = [m for m in config['estratos'][d[estrato]]['mxdsPlanoUbicacion'] if m['ancho'] <= m['alto']]
-    return lista
-
-def buscaTemplatePlanoUbicacion(extent):
-    try:
-        ancho = extent.XMax - extent.XMin
-        alto = extent.YMax - extent.YMin
-        lista = listaMXDsPlanoUbicacion(parametroEstrato, (ancho > alto))
-        for infoMxd in lista:
-            escala = mejorEscalaMXDPlanoUbicacion(infoMxd, alto, ancho)
-            if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                mxd = arcpy.mapping.MapDocument(rutaMXD)
-                util.mensaje('Se selecciono layout para Plano Ubicacion.')
-                return mxd, infoMxd, escala
-
-        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
-        escala = mejorEscalaMXD(infoMxd, alto, ancho)
-        if escala != None:
-            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-            mxd = arcpy.mapping.MapDocument(rutaMXD)
-            util.mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
-            util.mensaje("infoMxd = {}".format(infoMxd))
-            util.mensaje("escala = {}".format(escala))
-            return mxd, infoMxd, escala
-    except:
-        pass
-    util.mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
-    return None, None, None
-
-def mejorEscalaMXDPlanoUbicacion(mxd, alto, ancho):
-    # Plano Ubicación A0 1: 7.500
-    escalas = [e for e in range(5, 76)]
-    for e in escalas:
-        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
-            return e * 100
-    return None
 
 def actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad):
 
@@ -502,158 +429,6 @@ def calculaDistanciaBufferRural(area):
     if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
         return '150 Meters'
     return '500 Meters'     # valor por defecto
-
-def calculaExtent(fs, metrosBuffer):
-    try:
-        buffer = os.path.join('in_memory', 'buffer_{}'.format(str(uuid.uuid1()).replace("-","")))
-        fcBuffer = arcpy.Buffer_analysis(fs, buffer, metrosBuffer)
-        with arcpy.da.SearchCursor(fcBuffer, ['SHAPE@']) as rows:
-            lista = [r[0] for r in rows]
-        arcpy.Delete_management(buffer)
-        if lista != None and len(lista) > 0:
-            util.mensaje("Extensión del poligono obtenida correctamente.")
-            return lista[0].extent
-        else:
-            util.mensaje("No se pudo calcular extension del poligono.")
-            return None
-    except:
-        util.mensaje("** Error en calculaExtent.")
-        return None
-
-def mejorEscalaMXDManzana(mxd, alto, ancho):
-    #5 a 35x100 (500 a 3500)
-    escalas = [e for e in range(5, 36)]
-    for e in escalas:
-        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
-            return e * 100
-    return None
-
-def mejorEscalaMXDRAU(mxd, alto, ancho):
-    #5 a 76x100 (500 a 7500)
-    escalas = [e for e in range(5, 76)]
-    for e in escalas:
-        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
-            return e * 100
-    return None
-
-def mejorEscalaMXDRural(mxd, alto, ancho):
-    #5 a 200x100 (500 a 2000)
-    escalas = [e for e in range(5, 210)]
-    for e in escalas:
-        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
-            return e * 100
-    return None
-
-def mejorEscalaMXD(mxd, alto, ancho):
-    #5 a 1000x100 (500 a 100000)
-    util.mensaje("escala rango 500 a 100.000")
-    util.mensaje(" mejorEscalaMXD mejorEscalaMXD")
-    escalas = [e for e in range(5, 10000)]
-    for e in escalas:
-        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
-            return e * 100
-    return None
-
-def buscaTemplateManzana(extent):
-    try:
-        ancho = extent.XMax - extent.XMin
-        alto = extent.YMax - extent.YMin
-        lista = listaMXDs("Manzana", (ancho > alto))
-        for infoMxd in lista:
-            escala = mejorEscalaMXDManzana(infoMxd, alto, ancho)
-            if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                mxd = arcpy.mapping.MapDocument(rutaMXD)
-                util.mensaje('Se selecciono layout para manzana.')
-                return mxd, infoMxd, escala
-    except:
-        pass
-    util.mensaje('** Error: No se selecciono layout para manzana.')
-    return None, None, None
-
-def buscaTemplateRAU(extent):
-    try:
-        util.mensaje("funcion buscaTemplateRAU")
-        ancho = extent.XMax - extent.XMin
-        alto = extent.YMax - extent.YMin
-        lista = listaMXDs("RAU", (ancho > alto))
-        for infoMxd in lista:
-            escala = mejorEscalaMXDRAU(infoMxd, alto, ancho)
-            if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                mxd = arcpy.mapping.MapDocument(rutaMXD)
-                util.mensaje('Se seleccionó layout para RAU.')
-                util.mensaje("infoMxd = {}".format(infoMxd))
-                util.mensaje("escala = {}".format(escala))
-                return mxd, infoMxd, escala
-
-        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
-        escala = mejorEscalaMXD(infoMxd, alto, ancho)
-        if escala != None:
-            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-            mxd = arcpy.mapping.MapDocument(rutaMXD)
-            util.mensaje('Se seleccionó layout para RAU.(Excede escala)')
-            util.mensaje("infoMxd = {}".format(infoMxd))
-            util.mensaje("escala = {}".format(escala))
-            return mxd, infoMxd, escala
-    except:
-        pass
-    util.mensaje('** Error: No se selecciono layout para RAU. (Excede escala)')
-    return None, None, None
-
-def buscaTemplateRural(extent):
-    try:
-        ancho = extent.XMax - extent.XMin
-        alto = extent.YMax - extent.YMin
-        lista = listaMXDs("Rural", (ancho > alto))
-        for infoMxd in lista:
-            escala = mejorEscalaMXDRural(infoMxd, alto, ancho)
-            if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                mxd = arcpy.mapping.MapDocument(rutaMXD)
-                util.mensaje('Se selecciono layout para Rural.')
-                return mxd, infoMxd, escala
-
-        # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
-        escala = mejorEscalaMXD(infoMxd, alto, ancho)
-        if escala != None:
-            rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-            mxd = arcpy.mapping.MapDocument(rutaMXD)
-            util.mensaje('Se selecciono layout para Rural. (Excede escala)')
-            return mxd, infoMxd, escala
-    except:
-        pass
-    util.mensaje('** Error: No se selecciono layout para Rural.')
-    return None, None, None
-
-def zoom(mxd, extent, escala):
-    try:
-        df = arcpy.mapping.ListDataFrames(mxd)[0]
-        newExtent = df.extent
-        newExtent.XMin, newExtent.YMin = extent.XMin, extent.YMin
-        newExtent.XMax, newExtent.YMax = extent.XMax, extent.YMax
-        df.extent = newExtent
-        df.scale = escala
-        util.mensaje('Se ajusto el extent del mapa.')
-        return True
-    except:
-        util.mensaje('** No se ajusto el extent del mapa.')
-        return False
-
-def zoomEsquicio(mxd, extent):
-    try:
-        df = arcpy.mapping.ListDataFrames(mxd)[1]
-        util.mensaje(extent)
-        newExtent = df.extent
-        newExtent.XMin, newExtent.YMin = extent.XMin, extent.YMin
-        newExtent.XMax, newExtent.YMax = extent.XMax, extent.YMax
-        df.extent = newExtent
-        #df.scale = escala
-        util.mensaje('Se ajusto el extent Esquicio del mapa.')
-        #return True
-    except:
-        util.mensaje('** No se ajusto el extent Esquicio del mapa.')
-        return False
 
 def areasExcluidas(poligono, url):
     try:
@@ -867,7 +642,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
 
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
-    if zoom(mxd, extent, escala):
+    if util.zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0], int(datosManzana[10]))
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Manzana")
@@ -881,7 +656,7 @@ def preparaMapaManzana(mxd, extent, escala, datosManzana):
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
-    if zoom(mxd, extent, escala):
+    if util.zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("RAU")
         poligono = limpiaMapaRAU(mxd, datosRAU, nombreCapa)
         if poligono != None:
@@ -896,7 +671,7 @@ def preparaMapaRAU(mxd, extent, escala, datosRAU):
 
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
-    if zoom(mxd, extent, escala):
+    if util.zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if poligono != None:
@@ -948,7 +723,7 @@ def procesaManzana(codigo, viviendasEncuestar):
     try:
         ############################################################## [INICIO SECCION ANALISIS DE MANZANA] #####################################################################
         registro = Registro(codigo)
-        token = obtieneToken(usuario, clave, urlPortal)
+        token = util.obtieneToken(usuario, clave, urlPortal)
         if token != None:
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
             resultado = validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
@@ -966,7 +741,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                 ############################################################## [FIN SECCION ANALISIS DE MANZANA] #####################################################################
 
                 if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
-                    mxd, infoMxd, escala = buscaTemplateManzana(extent)
+                    mxd, infoMxd, escala = controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
                             util.mensaje("Registrando la operación.")
@@ -1022,11 +797,11 @@ def procesaManzana(codigo, viviendasEncuestar):
 def procesaRAU(codigo):
     try:
         registro = Registro(codigo)
-        token = obtieneToken(usuario, clave, urlPortal)
+        token = util.obtieneToken(usuario, clave, urlPortal)
         if token != None:
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
-                mxd, infoMxd, escala = buscaTemplateRAU(extent)
+                mxd, infoMxd, escala = controlTemplates.buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
                         util.mensaje("Registrando la operación.")
@@ -1060,10 +835,10 @@ def procesaRAU(codigo):
 def procesaRural(codigo):
     try:
         registro = Registro(codigo)
-        token = obtieneToken(usuario, clave, urlPortal)
+        token = util.obtieneToken(usuario, clave, urlPortal)
         datosRural, extent = obtieneInfoSeccionRural(codigo, token)
         if datosRural != None:
-            mxd, infoMxd, escala = buscaTemplateRural(extent)
+            mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRural(mxd, extent, escala, datosRural):
                     util.mensaje("Registrando la operación.")
@@ -1137,7 +912,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
-    if zoom(mxd, extent, escala):
+    if util.zoom(mxd, extent, escala):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
         lyr.visible = False
@@ -1149,7 +924,7 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
 
 def buscaTemplateAreaDestacada(extent):
     # Por el momento se usan los mismos que para Rural
-    mxd, infoMxd, escala = buscaTemplateRural(extent)
+    mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
     return mxd, infoMxd, escala
 
 def generaListaCodigos(texto):
@@ -1840,33 +1615,35 @@ listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
 registros = []
 util.mensaje("Estrato: {}".format(parametroEstrato))
 
+controlTemplates = templates.Templates(config)
+
 # ##################################################################### [INICIO DE EJECUCIÓN DEL PROCESO] #############################################################################
 
 # SECCION GENERAR PLANO UBICACIÓN
 if parametroSoloPlanoUbicacion == 'Si':
     try:
-        token = obtieneToken(usuario, clave, urlPortal)
+        token = util.obtieneToken(usuario, clave, urlPortal)
         if token != None:
             if parametroEstrato == "Manzana":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
-                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
-                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "Rural":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
-                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
             destacaListaPoligonos(mxd, fc)
-            zoom(mxd, extent, escala)
+            util.zoom(mxd, extent, escala)
             nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
 
             registro = Registro(listaCodigos)
