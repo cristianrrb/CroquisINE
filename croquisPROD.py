@@ -40,7 +40,7 @@ def mensajeEstado(registro):
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
             print(s)
             arcpy.AddMessage(s)
-            mensaje("Analisis: Manzana No Existes")
+            mensaje("Analisis: Manzana No Existe")
         return "Analisis"
 
     # Mensajes para plano ubicacion
