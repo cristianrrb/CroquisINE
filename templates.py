@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import arcpy
 import os
+import util
 
 class Templates:
 
@@ -79,7 +80,7 @@ class Templates:
             for infoMxd in lista:
                 escala = self.mejorEscalaMXDManzana(infoMxd, alto, ancho)
                 if escala != None:
-                    rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     # util.mensaje('Se selecciono layout para manzana.')
                     return mxd, infoMxd, escala
@@ -97,7 +98,7 @@ class Templates:
             for infoMxd in lista:
                 escala = self.mejorEscalaMXDRAU(infoMxd, alto, ancho)
                 if escala != None:
-                    rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     #util.mensaje('Se seleccionó layout para RAU.')
                     #util.mensaje("infoMxd = {}".format(infoMxd))
@@ -107,7 +108,7 @@ class Templates:
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 #util.mensaje('Se seleccionó layout para RAU.(Excede escala)')
                 #util.mensaje("infoMxd = {}".format(infoMxd))
@@ -126,7 +127,7 @@ class Templates:
             for infoMxd in lista:
                 escala = self.mejorEscalaMXDRural(infoMxd, alto, ancho)
                 if escala != None:
-                    rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     #util.mensaje('Se selecciono layout para Rural.')
                     return mxd, infoMxd, escala
@@ -134,7 +135,7 @@ class Templates:
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 #util.mensaje('Se selecciono layout para Rural. (Excede escala)')
                 return mxd, infoMxd, escala
@@ -151,7 +152,7 @@ class Templates:
             for infoMxd in lista:
                 escala = self.mejorEscalaMXDPlanoUbicacion(infoMxd, alto, ancho)
                 if escala != None:
-                    rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     #util.mensaje('Se selecciono layout para Plano Ubicacion.')
                     return mxd, infoMxd, escala
@@ -159,7 +160,7 @@ class Templates:
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
-                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
                 #util.mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
                 #util.mensaje("infoMxd = {}".format(infoMxd))
