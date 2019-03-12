@@ -6,7 +6,6 @@ define([
     "dojo/Deferred",
     "dojo/request",
     "dojo/dom-construct",
-    "dojo/dom-class",
     "dojo/store/Memory",
     "dijit/form/FilteringSelect",
     "jimu/BaseWidget",
@@ -46,7 +45,7 @@ function(
 
         postCreate: function() {
             this.inherited(arguments);
-            this.shelter = new LoadingShelter({}).placeAt(this.domNode);
+            this.shelter = new LoadingShelter({}).placeAt(this.divAcciones);
             this.shelter.startup();
             this.shelter.show();
         },
@@ -65,21 +64,14 @@ function(
 
                 this.identificaLayer();
                 on(this.divGeneraPDF, "click", lang.hitch(this, function() {
-                    //domConstruct.empty(this.tablaCodigos);
-                    domConstruct.empty(this.divDescarga);
-                    //domConstruct.empty(this.td-estado);
                     this.procesaListaCodigos("", "");
                 }));
 
                 on(this.divAnalizar, "click", lang.hitch(this, function() {
-                    //domConstruct.empty(this.tablaCodigos);
-                    domConstruct.empty(this.divDescarga);
                     this.procesaListaCodigos("si", "");
                 }));
 
                 on(this.divPlanoUbicacion, "click", lang.hitch(this, function() {
-                    //domConstruct.empty(this.tablaCodigos);
-                    domConstruct.empty(this.divDescarga);
                     this.procesaListaCodigos("", "Si");
                 }));
 
@@ -232,8 +224,15 @@ function(
             this.seleccionaTodo();
         },
 
+        limpiarColumnaEstado: function(){
+            arrayUtils.forEach(this.tablaCodigos.rows, function(row) {
+                row.cells[2].innerText = "";
+            }, this);
+        },
+
         procesaListaCodigos: function(analizar, esPlanoUbicacion) {
             domConstruct.empty(this.divDescarga);
+            this.limpiarColumnaEstado();
             // TODO: Validar duplicados
             var listaCodigos = arrayUtils.map(this.tablaCodigos.rows, function(row) {
                 return row.codigo
@@ -250,7 +249,6 @@ function(
             this.shelter.show();
             this.generaCroquis(listaCodigos.join(","), listaViviendas.join(","), analizar, esPlanoUbicacion).then(
                 lang.hitch(this, function(url) {
-                    // domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url, 'download':"Croquis.zip", 'target':'_top'}, this.divDescarga);
                     domConstruct.create("a", {'innerHTML':"Descargar Resultado", 'href':url}, this.divDescarga);
                     this.shelter.hide();
                 }),
@@ -319,7 +317,6 @@ function(
                 }
             }, this);
         },
-
 
         actualizaEstadoTablaCodigos: function(codigo, intersectaPE, intersectaCFT, intersectaAV, homologacion, estado) {
             arrayUtils.forEach(this.tablaCodigos.rows, function(row) {

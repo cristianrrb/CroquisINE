@@ -7,4 +7,3 @@ def mensaje(m):
     s = "[{}]: {}".format(n.strftime("%H:%M:%S"), m)
     print(s)
     arcpy.AddMessage(s)
-
