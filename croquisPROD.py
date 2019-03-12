@@ -743,6 +743,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                 if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
                     mxd, infoMxd, escala = controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
+                        util.mensaje(datosManzana)
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
                             util.mensaje("Registrando la operación.")
                             registro.formato = infoMxd['formato']
@@ -790,6 +791,7 @@ def procesaManzana(codigo, viviendasEncuestar):
         registro.intersectaCRF = ""
         registro.intersectaAV = ""
         registro.Homologacion = ""
+        util.mensaje("No se completó el proceso de Manzana.")
     mensajeEstado(registro)
     registros.append(registro)
     return
@@ -827,9 +829,10 @@ def procesaRAU(codigo):
     except:
         registro.estado = "Seccion No Existe"
         registro.motivo = "Croquis No generado"
+        util.mensaje("No se completó el proceso de sección RAU.")
     registros.append(registro)
     mensajeEstado(registro)
-    util.mensaje("No se completó el proceso de sección RAU.")
+
     return
 
 def procesaRural(codigo):
@@ -864,9 +867,9 @@ def procesaRural(codigo):
     except:
         registro.estado = "No generado"
         registro.motivo = "Seccion no existe"
+        util.mensaje("No se completó el proceso de sección Rural.")
     registros.append(registro)
     mensajeEstado(registro)
-    util.mensaje("No se completó el proceso de sección Rural.")
     return
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):

@@ -32,8 +32,6 @@ class Templates:
 
     def mejorEscalaMXD(self, mxd, alto, ancho):
         #5 a 1000x100 (500 a 100000)
-        util.mensaje("escala rango 500 a 100.000")
-        util.mensaje(" mejorEscalaMXD mejorEscalaMXD")
         escalas = [e for e in range(5, 10000)]
         for e in escalas:
             if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
@@ -81,6 +79,7 @@ class Templates:
                 escala = self.mejorEscalaMXDManzana(infoMxd, alto, ancho)
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    util.mensaje("1")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     # util.mensaje('Se selecciono layout para manzana.')
                     return mxd, infoMxd, escala
@@ -170,4 +169,3 @@ class Templates:
             pass
         #util.mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
         return None, None, None
-

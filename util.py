@@ -74,5 +74,3 @@ def calculaExtent(fs, metrosBuffer):
     except:
         mensaje("** Error en calculaExtent.")
         return None
-
-
