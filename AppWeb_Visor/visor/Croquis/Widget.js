@@ -6,6 +6,7 @@ define([
     "dojo/Deferred",
     "dojo/request",
     "dojo/dom-construct",
+    "dojo/dom-class",
     "dojo/store/Memory",
     "dijit/form/FilteringSelect",
     "jimu/BaseWidget",
@@ -64,14 +65,21 @@ function(
 
                 this.identificaLayer();
                 on(this.divGeneraPDF, "click", lang.hitch(this, function() {
+                    //domConstruct.empty(this.tablaCodigos);
+                    domConstruct.empty(this.divDescarga);
+                    //domConstruct.empty(this.td-estado);
                     this.procesaListaCodigos("", "");
                 }));
 
                 on(this.divAnalizar, "click", lang.hitch(this, function() {
+                    //domConstruct.empty(this.tablaCodigos);
+                    domConstruct.empty(this.divDescarga);
                     this.procesaListaCodigos("si", "");
                 }));
 
                 on(this.divPlanoUbicacion, "click", lang.hitch(this, function() {
+                    //domConstruct.empty(this.tablaCodigos);
+                    domConstruct.empty(this.divDescarga);
                     this.procesaListaCodigos("", "Si");
                 }));
 
@@ -312,6 +320,7 @@ function(
             }, this);
         },
 
+
         actualizaEstadoTablaCodigos: function(codigo, intersectaPE, intersectaCFT, intersectaAV, homologacion, estado) {
             arrayUtils.forEach(this.tablaCodigos.rows, function(row) {
                 if (row.cells[0].innerText == codigo) {
@@ -368,7 +377,7 @@ function(
 
                     var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
                         new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-                        new Color([98,194,204]), 2), new Color([98,194,204,0.5])
+                        new Color([2,150,204]), 5), new Color([98,194,204,0.5])
                     );
 
                     arrayUtils.forEach(result.features, function(feature) {
