@@ -1798,13 +1798,13 @@ parametroSoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 # ---------------------- PARAMETROS EN DURO ---------------------------
 """
-parametroCodigos = "13126011003005,13126091002035,13126091003024"
+parametroCodigos = "13126011003005"
 parametroEncuesta = "ENE"
 parametroMarco = "2016"
 parametroEstrato = "Manzana"
 parametroViviendas = ""
 parametroSoloAnalisis = ""
-parametroSoloPlanoUbicacion = "Si"
+parametroSoloPlanoUbicacion = ""
 """
 # --------------------------------------------------------------------
 """
