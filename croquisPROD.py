@@ -981,16 +981,21 @@ def procesaManzana(codigo, viviendasEncuestar):
                             if registro.rutaPDF != "":
                                 registro.estado = "Genera PDF"
                                 registro.motivo = "Croquis generado"
+                            else:
+                                registro.estado = "Genera PDF"
+                                registro.motivo = "Croquis No generado"
 
-                elif registro.estadoViviendas == "Rechazado" and parametroSoloAnalisis == "si":
+                # ************************** inicio if para solo para analisis cuando se Rechaza la manzana *********************************
+                elif parametroSoloAnalisis == "si":
                     registro.estado = "Analiza"
                     registro.motivo = "Croquis No generado"
-                elif registro.estadoViviendas == "Correcto" and parametroSoloAnalisis == "si":
-                    registro.estado = "Analiza"
-                    registro.motivo = "Croquis No generado"
+                # ************************** fin if para solo para analisis cuando se Rechaza la manzana ************************************
+                # ************************** inicio if para Genera PDF pero Rechaza la manzana **********************************************
                 else:
                     registro.estado = "Genera PDF"
                     registro.motivo = "Croquis No generado"
+                # ************************** inicio if para Genera PDF pero Rechaza la manzana **********************************************
+
             else:
                 util.mensaje("Manzana No Existe")
                 registro.estado = "Manzana No Existe"
