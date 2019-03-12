@@ -2,6 +2,9 @@
 import arcpy
 import datetime
 import urllib
+import json
+import os
+import uuid
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -71,5 +74,3 @@ def calculaExtent(fs, metrosBuffer):
     except:
         mensaje("** Error en calculaExtent.")
         return None
-
-
