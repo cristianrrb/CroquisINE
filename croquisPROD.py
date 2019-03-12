@@ -96,7 +96,7 @@ def obtieneInfoManzana(codigo, token):
 
         if  lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferManzana(lista[0][1])
-            extent = calculaExtent(fs, metrosBuffer)
+            extent = util.calculaExtent(fs, metrosBuffer)
             util.mensaje('Datos de manzana obtenidos correctamente.')
             return lista[0], extent
         else:
@@ -120,7 +120,7 @@ def obtieneInfoSeccionRAU(codigo, token):
 
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
-            extent = calculaExtent(fs, metrosBuffer)
+            extent = util.calculaExtent(fs, metrosBuffer)
             util.mensaje('Datos de RAU obtenidos correctamente.')
             return lista[0], extent
         else:
@@ -143,7 +143,7 @@ def obtieneInfoSeccionRural(codigo, token):
 
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRural(lista[0][1])
-            extent = calculaExtent(fs, metrosBuffer)
+            extent = util.calculaExtent(fs, metrosBuffer)
             util.mensaje('Datos de Rural obtenidos correctamente.')
             return lista[0], extent
         else:
