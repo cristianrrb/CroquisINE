@@ -5,7 +5,7 @@ from util import mensaje
 
 class Templates:
 
-    def __init__(self, config, parametros):
+    def __init__(self, config):
         self.config = config
 
     def listaMXDs(self, estrato, ancho):
