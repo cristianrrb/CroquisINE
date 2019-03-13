@@ -1,7 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 import arcpy
-from util import mensaje, zoom, Registro
+from util import mensaje, zoom, generaPDF, Registro
 import os
+import datetime
 
 class PlanoUbicacion:
 
@@ -19,17 +20,17 @@ class PlanoUbicacion:
     def procesa(self):
         if self.parametros.Estrato == "Manzana":
             entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(extent)
+            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
             self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
             self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
         if self.parametros.Estrato == "RAU":
             entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(extent)
+            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
             self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
             self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
         if self.parametros.Estrato == "Rural":
             entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(extent)
+            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
             self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
         self.destacaListaPoligonos(mxd, fc)
@@ -37,7 +38,7 @@ class PlanoUbicacion:
         nombrePDF = self.generaNombrePDFPlanoUbicacion(infoMxd)
 
         registro = Registro(listaCodigos)
-        registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+        registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros)
         registro.formato = infoMxd['formato']
         registro.orientacion = infoMxd['orientacion']
         registro.escala = escala
@@ -50,7 +51,7 @@ class PlanoUbicacion:
         try:
             condiciones = []
             for codigo in self.listaCodigos:
-                condicion = "{}+%3D+{}".format(self.dictCamposId[parametroEstrato], codigo)
+                condicion = "{}+%3D+{}".format(self.dictCamposId[self.parametros.Estratos], codigo)
                 condiciones.append(condicion)
 
             query = " + OR +".join(condiciones)
