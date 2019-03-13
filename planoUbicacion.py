@@ -67,11 +67,11 @@ class PlanoUbicacion:
 
             mensaje(extent)
 
-            if parametroEstrato == "Manzana":
+            if self.parametros.Estrato == "Manzana":
                 fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
-            elif parametroEstrato == "RAU":
+            elif self.parametros.Estrato == "RAU":
                 fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION','CU_SECCION']
-            elif parametroEstrato == "Rural":
+            elif self.parametros.Estrato == "Rural":
                 fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'CUT', 'COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
             with arcpy.da.SearchCursor(fs, fields) as rows:
