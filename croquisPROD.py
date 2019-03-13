@@ -14,8 +14,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from util import mensaje, zoom, calculaExtent, obtieneToken, comprime, Registro
-import Templates
-import PlanoUbicacion
+import templates
+import planoUbicacion
 
 def mensajeEstado(registro):
     homologacion = "I"
@@ -1419,7 +1419,7 @@ parametros = Parametros()
 dic = Diccionario(config)
 infoMarco = InfoMarco(parametroMarco, config)
 
-controlTemplates = Templates.Templates(config)
+controlTemplates = templates.Templates(config)
 
 listaCodigos = generaListaCodigos(parametroCodigos)
 listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
@@ -1434,7 +1434,7 @@ if parametroSoloPlanoUbicacion == 'Si':
     try:
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            plano = PlanoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
+            plano = planoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
 
             plano.procesa()
 
