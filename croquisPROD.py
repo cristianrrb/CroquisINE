@@ -1365,49 +1365,14 @@ mensaje("Estrato: {}".format(parametroEstrato))
 
 # SECCION GENERAR PLANO UBICACIÓN
 if parametroSoloPlanoUbicacion == 'Si':
-    try:
-        token = obtieneToken(usuario, clave, urlPortal)
-        if token != None:
-            plano = planoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
+    token = obtieneToken(usuario, clave, urlPortal)
+    if token != None:
+        plano = planoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
 
-            plano.procesa()
+        registro = plano.procesa()
+        registros.append(registro)
 
-
-            """ if parametroEstrato == "Manzana":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
-                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
-                dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
-                actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
-            if parametroEstrato == "RAU":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
-                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
-                dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
-                actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
-            if parametroEstrato == "Rural":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
-                mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
-                actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
-
-            destacaListaPoligonos(mxd, fc)
-            zoom(mxd, extent, escala)
-            nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
-
-            registro = Registro(listaCodigos)
-            registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
-            registro.formato = infoMxd['formato']
-            registro.orientacion = infoMxd['orientacion']
-            registro.escala = escala
-            if registro.rutaPDF != "":
-                registro.estado = "Plano Ubicacion"
-                registro.motivo = "Croquis generado" """
-    except:
-        registro.estado = "Plano Ubicacion"
-        registro.motivo = "Croquis NO generado"
-    registros.append(registro)
-    mensajeEstado(registro)
+        mensajeEstado(registro)
 # SECCION GENERAR CROQUIS
 else:
     if parametroEstrato == "Manzana":
