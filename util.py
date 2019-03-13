@@ -204,5 +204,70 @@ class Registro:
         self.escala = ""
         self.rutaPDF = ""
 
+class Diccionario:
+    def __init__(self, config):
+        self.dictRegiones   = {r['codigo']:r['nombre'] for r in config['regiones']}
+        self.dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
+        self.dictComunas    = {r['codigo']:r['nombre'] for r in config['comunas']}
+        self.dictUrbano = {}
 
+    def nombreRegion(self, codigo):
+        if self.dictRegiones.has_key(codigo):
+            return self.dictRegiones[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreProvincia(self, codigo):
+        if self.dictProvincias.has_key(codigo):
+            return self.dictProvincias[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreComuna(self, codigo):
+        if self.dictComunas.has_key(codigo):
+            return self.dictComunas[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreUrbano(self, codigo):
+        if self.dictUrbano.has_key(codigo):
+            return self.dictUrbano[codigo].encode('utf8')
+        else:
+            return codigo
+
+class InfoMarco:
+    def __init__(self, codigo, config):
+        self.urlManzanas = ''
+        self.urlSecciones_RAU = ''
+        self.urlSecciones_Rural = ''
+        self.urlComunas = ''
+        self.urlLUC = ''
+        self.urlAreaDestacada = ''
+        self.urlManzanasCenso2017 = ''
+        self.urlPE = ''
+        self.urlCRF = ''
+        self.urlAV = ''
+        self.urlHomologacion = ''
+        self.nombreCampoIdHomologacion = "MANZENT_MM2014"
+        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
+        self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
+        self.leeConfiguracion(codigo, config)
+
+    def leeConfiguracion(self, codigo, config):
+        for marco in config['marcos']:
+            if marco['id'] == codigo:
+                self.urlManzanas          = marco['config']['urlManzanas']
+                self.urlSecciones_RAU     = marco['config']['urlSecciones_RAU']
+                self.urlSecciones_Rural   = marco['config']['urlSecciones_Rural']
+                self.urlComunas           = marco['config']['urlComunas']
+                self.urlLUC               = marco['config']['urlLUC']
+                self.urlAreaDestacada     = marco['config']['urlAreaDestacada']
+                self.urlManzanasCenso2017 = marco['config']['urlManzanasCenso2017']
+                self.urlPE  = marco['config']['urlPE']
+                self.urlAV  = marco['config']['urlAV']
+                self.urlCRF = marco['config']['urlCRF']
+                self.urlHomologacion = marco['config']['urlHomologacion']
+                self.nombreCampoIdHomologacion   = marco['config']['nombreCampoIdHomologacion']
+                self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
+                self.nombreCampoTotalViviendas   = marco['config']['nombreCampoTotalViviendas']
 
