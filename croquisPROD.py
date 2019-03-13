@@ -234,7 +234,7 @@ def comparaManzanas(datosManzana, datosManzana2017, registro):
     return estadoSuperficie, motivoSuperficie
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
-def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
+""" def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
     lista = []
     try:
         condiciones = []
@@ -271,7 +271,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         util.mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
     except:
         util.mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-    return lista[0], extent, fc
+    return lista[0], extent, fc """
 
 def obtieneExtentUrbano(urlUrbano, poligono, token):
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
@@ -1297,36 +1297,25 @@ def escribeCSV(registros, f):
     except:
         return None
 
-def comprime(registros, rutaCSV,f):
-    try:
-        if parametroEstrato == "Manzana":
-            if parametroSoloPlanoUbicacion == "Si":
-                tipo = "PlanoUbicacion"
-            else:
-                tipo = "MZ"
-        elif parametroEstrato == "RAU":
-            if parametroSoloPlanoUbicacion == "Si":
-                tipo = "PlanoUbicacion"
-            else:
-                tipo = "RAU"
-        elif parametroEstrato == "Rural":
-            if parametroSoloPlanoUbicacion == "Si":
-                tipo = "PlanoUbicacion"
-            else:
-                tipo = "Rural"
+def nombreZip():
+    if parametroEstrato == "Manzana":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "PlanoUbicacion"
+        else:
+            tipo = "MZ"
+    elif parametroEstrato == "RAU":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "PlanoUbicacion"
+        else:
+            tipo = "RAU"
+    elif parametroEstrato == "Rural":
+        if parametroSoloPlanoUbicacion == "Si":
+            tipo = "PlanoUbicacion"
+        else:
+            tipo = "Rural"
 
-        nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
-        rutaZip = os.path.join(arcpy.env.scratchFolder, nombre)
-        util.mensaje("Ruta ZIP {}".format(rutaZip))
-        listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
-        with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
-            myzip.write(rutaCSV, os.path.basename(rutaCSV))
-            for archivo in listaPDFs:
-                util.mensaje("Comprimiendo {}".format(os.path.basename(archivo)))
-                myzip.write(archivo, os.path.basename(archivo))
-        return rutaZip
-    except:
-        return None
+    nombreZip = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
+    return nombreZip
 
 def descomponeManzent(codigo):
     c = "{}".format(codigo)
@@ -1551,6 +1540,17 @@ class InfoMarco:
                 self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
                 self.nombreCampoTotalViviendas   = marco['config']['nombreCampoTotalViviendas']
 
+class Parametros:
+    def __init__(self, codigo, config):
+        self.Encuesta = arcpy.GetParameterAsText(0)
+        self.Marco = arcpy.GetParameterAsText(1)
+        self.Estrato = arcpy.GetParameterAsText(2)   # Manzana RAU Rural
+        self.Codigos = arcpy.GetParameterAsText(3)
+        self.Viviendas = arcpy.GetParameterAsText(4)
+        self.SoloAnalisis = arcpy.GetParameterAsText(5)
+        self.SoloPlanoUbicacion = arcpy.GetParameterAsText(6)
+
+
 arcpy.env.overwriteOutput = True
 
 urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion.json'
@@ -1560,6 +1560,7 @@ urlRegiones2016       = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json
 urlUrbanosManzana2016 = 'https://gis.ine.cl/croquis/ubicacion/urbanosManzana_2016.json'
 urlUrbanosRAU2016     = 'https://gis.ine.cl/croquis/ubicacion/urbanosRAU_2016.json'
 urlPortal             = 'https://gis.ine.cl/portal'
+
 usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
@@ -1570,6 +1571,8 @@ dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
 dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
 dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
+
+parametros = Parametros()
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
@@ -1688,7 +1691,8 @@ else:
 
 f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 rutaCSV = escribeCSV(registros,f)
-rutaZip = comprime(registros, rutaCSV,f)
+
+rutaZip = util.comprime(nombreZip(), registros, rutaCSV)
 arcpy.SetParameterAsText(7, rutaZip)
 
 util.mensaje("El GeoProceso ha terminado correctamente")
