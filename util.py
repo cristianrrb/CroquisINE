@@ -89,3 +89,28 @@ def comprime(nombreZip, registros, rutaCSV):
         return rutaZip
     except:
         return None
+
+class Registro:
+    def __init__(self, codigo):
+        self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
+        self.codigo = codigo
+        self.estado = ""
+        self.motivo = ""
+        self.intersectaPE = ""
+        self.intersectaCRF = ""
+        self.intersectaAV = ""
+        self.homologacion = ""
+        self.codigoBarra = ""
+        # Analisis de comparación de superficie de manzanas
+        self.estadoSuperficie = ""
+        self.motivoSuperficie = ""
+        # Analisis de Rechazo por cantidad de viviendas
+        self.estadoViviendas = ""
+        self.motivoViviendas = ""
+        self.formato = ""
+        self.orientacion = ""
+        self.escala = ""
+        self.rutaPDF = ""
+
+
+
