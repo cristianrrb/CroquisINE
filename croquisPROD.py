@@ -13,8 +13,9 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import util
-import templates
+from util import mensaje, zoom, calculaExtent, obtieneToken, comprime, Registro
+import Templates
+import PlanoUbicacion
 
 def mensajeEstado(registro):
     homologacion = "I"
@@ -27,17 +28,17 @@ def mensajeEstado(registro):
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) # Correcto
             print(s)
             arcpy.AddMessage(s)
-            util.mensaje("Analisis: viviendas correctas.")
+            mensaje("Analisis: viviendas correctas.")
         if registro.estadoViviendas == "Rechazado":
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rechazado
             print(s)
             arcpy.AddMessage(s)
-            util.mensaje("Analisis: Se rechazó la manzana.")
+            mensaje("Analisis: Se rechazó la manzana.")
         if registro.estadoViviendas == "":
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
             print(s)
             arcpy.AddMessage(s)
-            util.mensaje("Analisis: Manzana No Existe")
+            mensaje("Analisis: Manzana No Existe")
         return "Analisis"
 
     # Mensajes para plano ubicacion
@@ -47,9 +48,9 @@ def mensajeEstado(registro):
         arcpy.AddMessage(s)
 
         if registro.motivo == "Croquis generado":
-            util.mensaje("Plano Ubicación: Se genera el croquis correctamente.")
+            mensaje("Plano Ubicación: Se genera el croquis correctamente.")
         if registro.motivo == "Croquis No generado":
-            util.mensaje("Plano Ubicación: No se logró generar el croquis Plano Ubicación.")
+            mensaje("Plano Ubicación: No se logró generar el croquis Plano Ubicación.")
         return "Plano Ubicacion"
     else:
         # Mensajes para Generar PDF
@@ -58,17 +59,17 @@ def mensajeEstado(registro):
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
                 print(s)
                 arcpy.AddMessage(s)
-                util.mensaje("Genera croquis: viviendas correctas.")
+                mensaje("Genera croquis: viviendas correctas.")
             if registro.estadoViviendas == "Rechazado":
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
                 print(s)
                 arcpy.AddMessage(s)
-                util.mensaje("Genera croquis: Se rechazo la manzana.")
+                mensaje("Genera croquis: Se rechazo la manzana.")
             if registro.estadoViviendas == "":
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
                 print(s)
                 arcpy.AddMessage(s)
-                util.mensaje("Genera croquis: Manzana No Existe")
+                mensaje("Genera croquis: Manzana No Existe")
 
         if parametroEstrato == "RAU" or parametroEstrato == "Rural":
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
@@ -76,11 +77,11 @@ def mensajeEstado(registro):
             arcpy.AddMessage(s)
 
             if registro.estado == "Correcto":
-                util.mensaje("Genera croquis: Se genera el croquis para Secciones")
+                mensaje("Genera croquis: Se genera el croquis para Secciones")
             if registro.estado == "Incorrecto":
-                util.mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+                mensaje("Genera croquis: No se logró generar el croquis para seccion.")
             if registro.estado == "Seccion No Existe":
-                util.mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+                mensaje("Genera croquis: No se logró generar el croquis para seccion.")
         return "Croquis"
 
 def obtieneInfoManzana(codigo, token):
@@ -96,15 +97,15 @@ def obtieneInfoManzana(codigo, token):
 
         if  lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferManzana(lista[0][1])
-            extent = util.calculaExtent(fs, metrosBuffer)
-            util.mensaje('Datos de manzana obtenidos correctamente.')
+            extent = calculaExtent(fs, metrosBuffer)
+            mensaje('Datos de manzana obtenidos correctamente.')
             return lista[0], extent
         else:
-            util.mensaje("** El registro de manzana no existe")
+            mensaje("** El registro de manzana no existe")
 
             return None, None
     except:
-        util.mensaje("** Error en obtieneInfoManzana")
+        mensaje("** Error en obtieneInfoManzana")
         return None, None
 
 def obtieneInfoSeccionRAU(codigo, token):
@@ -120,14 +121,14 @@ def obtieneInfoSeccionRAU(codigo, token):
 
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRAU(lista[0][1])
-            extent = util.calculaExtent(fs, metrosBuffer)
-            util.mensaje('Datos de RAU obtenidos correctamente.')
+            extent = calculaExtent(fs, metrosBuffer)
+            mensaje('Datos de RAU obtenidos correctamente.')
             return lista[0], extent
         else:
-            util.mensaje("Error: El registro RAU no existe")
+            mensaje("Error: El registro RAU no existe")
             return None, None
     except:
-        util.mensaje("** Error en obtieneInfoSeccionRAU")
+        mensaje("** Error en obtieneInfoSeccionRAU")
         return None, None
 
 def obtieneInfoSeccionRural(codigo, token):
@@ -143,14 +144,14 @@ def obtieneInfoSeccionRural(codigo, token):
 
         if lista != None and len(lista) == 1:
             metrosBuffer = calculaDistanciaBufferRural(lista[0][1])
-            extent = util.calculaExtent(fs, metrosBuffer)
-            util.mensaje('Datos de Rural obtenidos correctamente.')
+            extent = calculaExtent(fs, metrosBuffer)
+            mensaje('Datos de Rural obtenidos correctamente.')
             return lista[0], extent
         else:
-            util.mensaje("El registro no existe")
+            mensaje("El registro no existe")
             return None, None
     except:
-        util.mensaje("Error URL servicio_Rural")
+        mensaje("Error URL servicio_Rural")
         return None, None
 
 def obtieneListaAreasDestacadas(codigoSeccion, token):
@@ -173,7 +174,7 @@ def obtieneListaAreasDestacadas(codigoSeccion, token):
             arcpy.Delete_management(buffer)
         return lista
     except:
-        util.mensaje("Error obtieneListaAreasDestacadas")
+        mensaje("Error obtieneListaAreasDestacadas")
         return
 
 def obtieneInfoManzanaCenso2017(codigo, token):
@@ -188,43 +189,43 @@ def obtieneInfoManzanaCenso2017(codigo, token):
             lista = [r for r in rows]
 
         if  lista != None and len(lista) == 1:
-            util.mensaje('Datos de manzana Censo 2017 obtenidos correctamente.')
+            mensaje('Datos de manzana Censo 2017 obtenidos correctamente.')
             return lista[0]
         else:
-            util.mensaje("El registro de manzana Censo 2017 no existe")
+            mensaje("El registro de manzana Censo 2017 no existe")
             return None
     except:
-        util.mensaje("** Error en obtieneInfoManzana")
+        mensaje("** Error en obtieneInfoManzana")
         return None
 
 def comparaManzanas(datosManzana, datosManzana2017, registro):
     try:
         manzana2016 = datosManzana[1]
         manzana2017 = datosManzana2017[0]
-        util.mensaje(manzana2016)
-        util.mensaje(manzana2017)
+        mensaje(manzana2016)
+        mensaje(manzana2017)
         if manzana2017 != None:
             #print("----------------- Calculo ------------------------")
             if manzana2016 > manzana2017:
                 diferencia = manzana2016 -  manzana2017
                 porc = diferencia/manzana2016
-                #util.mensaje(diferencia)
+                #mensaje(diferencia)
             else:
                 diferencia = manzana2017 - manzana2016
                 porc = diferencia/manzana2017
-                #util.mensaje(diferencia)
+                #mensaje(diferencia)
 
             porcentaje = int(round(porc*100,0))
-            #util.mensaje(porcentaje)
+            #mensaje(porcentaje)
 
             if porcentaje <= 5:
                 estadoSuperficie = "OK"
                 motivoSuperficie = "Diferencia en superficie es menor a 5 porciento"
-                #util.mensaje("OK: Diferencia en superficie es menor a 5 porciento")
+                #mensaje("OK: Diferencia en superficie es menor a 5 porciento")
             elif porcentaje >= 6 and porcentaje <= 40:
                 estadoSuperficie = "Alerta"
                 motivoSuperficie = "Diferencia en superficie entre 6 y 40 porciento"
-                #util.mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
+                #mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
             elif porcentaje > 40:
                 estadoSuperficie = "Rechazada"
                 motivoSuperficie = "Diferencia en superficie supera 40 porciento"
@@ -254,7 +255,7 @@ def comparaManzanas(datosManzana, datosManzana2017, registro):
         desc = arcpy.Describe(fc)
         extent = desc.extent
 
-        util.mensaje(extent)
+        mensaje(extent)
 
         if parametroEstrato == "Manzana":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
@@ -265,15 +266,15 @@ def comparaManzanas(datosManzana, datosManzana2017, registro):
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
-        #util.mensaje(len(lista[0]))
+        #mensaje(len(lista[0]))
         #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
-        util.mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+        mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
     except:
-        util.mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
+        mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
     return lista[0], extent, fc """
 
-def obtieneExtentUrbano(urlUrbano, poligono, token):
+""" def obtieneExtentUrbano(urlUrbano, poligono, token):
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     params = {
         'token':token,
@@ -321,9 +322,9 @@ def actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad):
                 elm.text = nombre_comuna
             if elm.name == "Nombre_Urbano":
                 elm.text = nombre_urbano
-        util.mensaje("Se actualizaron las viñetas para manzana Plano Ubicacion.")
+        mensaje("Se actualizaron las viñetas para manzana Plano Ubicacion.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para manzana Plano Ubicacion.")
+        mensaje("No se pudo actualizar las viñetas para manzana Plano Ubicacion.")
 
 def actualizaVinetaSeccionRAU_PlanoUbicacion(mxd,datosRAU):
 
@@ -348,9 +349,9 @@ def actualizaVinetaSeccionRAU_PlanoUbicacion(mxd,datosRAU):
                 elm.text = nombre_comuna
             if elm.name == "Nombre_Urbano":
                 elm.text = nombre_urbano
-        util.mensaje("Se actualizaron las viñetas para RAU Plano Ubicacion.")
+        mensaje("Se actualizaron las viñetas para RAU Plano Ubicacion.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para RAU Plano Ubicacion.")
+        mensaje("No se pudo actualizar las viñetas para RAU Plano Ubicacion.")
 
 def actualizaVinetaSeccionRural_PlanoUbicacion(mxd,datosRural):
 
@@ -372,13 +373,13 @@ def actualizaVinetaSeccionRural_PlanoUbicacion(mxd,datosRural):
                 elm.text = nombre_provincia
             if elm.name == "Nombre_Comuna":
                 elm.text = nombre_comuna
-        util.mensaje("Se actualizaron las viñetas para Rural Plano Ubicacion.")
+        mensaje("Se actualizaron las viñetas para Rural Plano Ubicacion.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para Rural Plano Ubicacion.")
+        mensaje("No se pudo actualizar las viñetas para Rural Plano Ubicacion.")
 
 def destacaListaPoligonos(mxd, fc):
     try:
-        util.mensaje("Destacando entidades")
+        mensaje("Destacando entidades")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         arcpy.AddField_management(fc, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
@@ -391,10 +392,10 @@ def destacaListaPoligonos(mxd, fc):
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        util.mensaje("Entidades Destacadas")
+        mensaje("Entidades Destacadas")
     except:
-        util.mensaje("No se pudo destacar entidades")
-
+        mensaje("No se pudo destacar entidades")
+ """
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
 def listaEtiquetas(estrato):
@@ -445,21 +446,21 @@ def areasExcluidas(poligono, url):
         poly = poli.buffer(-10)
         for pol in ids["features"]:
             polygon = arcpy.AsShape(pol["geometry"], True)
-            util.mensaje(poly.contains(polygon, "PROPER"))
+            mensaje(poly.contains(polygon, "PROPER"))
             if poly.contains(polygon, "PROPER"):
                 pols.append(polygon)
         if len(pols) > 0:
-            util.mensaje(len(pols))
+            mensaje(len(pols))
             return pols
         else:
             return None
     except:
-        util.mensaje('** Error en áreas de exclución.')
+        mensaje('** Error en áreas de exclución.')
     return ""
 
 def limpiaMapaManzana(mxd, manzana,cod_manz):
     try:
-        util.mensaje("Limpieza de mapa iniciada.")
+        mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
@@ -486,35 +487,35 @@ def limpiaMapaManzana(mxd, manzana,cod_manz):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         limpiaEsquicio(mxd, leeNombreCapa("Manzana"), "manzent", cod_manz)
-        util.mensaje("Limpieza de mapa correcta.")
+        mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en limpieza de mapa.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa.")
     return None
 
 def limpiaEsquicio(mxd, capa, campo, valor):
     try:
-        util.mensaje("Limpieza de esquicio iniciada.")
+        mensaje("Limpieza de esquicio iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[1]
         lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, campo), valor)
         lyr.definitionQuery = sql_exp
-        util.mensaje(sql_exp)
+        mensaje(sql_exp)
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en limpieza de esquicio.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de esquicio.")
     return None
 
 def limpiaMapaRAU(mxd, datosRAU, capa):
 
     try:
-        util.mensaje("Limpieza de mapa iniciada.")
+        mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
         cod_RAU = int(datosRAU[10])
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "cu_seccion"), cod_RAU)
-        util.mensaje(sql_exp)
+        mensaje(sql_exp)
         lyr.definitionQuery = sql_exp
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
@@ -542,16 +543,16 @@ def limpiaMapaRAU(mxd, datosRAU, capa):
         del FC
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         limpiaEsquicio(mxd, leeNombreCapa("RAU"), "cu_seccion", cod_RAU)
-        util.mensaje("Limpieza de mapa correcta.")
+        mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en limpieza de mapa.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa.")
     return None
 
 def limpiaMapaRural(mxd, datosRural, nombreCapa):
     try:
-        util.mensaje("Limpieza de mapa 'Sección Rural' iniciada.")
+        mensaje("Limpieza de mapa 'Sección Rural' iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
@@ -581,11 +582,11 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
         sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(datosRural[4]))
         lyr2.definitionQuery = sql_exp
-        util.mensaje("Limpieza de mapa correcta.")
+        mensaje("Limpieza de mapa correcta.")
         return polchico
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en limpieza de mapa 'Sección Rural'.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa 'Sección Rural'.")
     return None
 
 def cortaEtiqueta(mxd, elLyr, poly):
@@ -594,7 +595,7 @@ def cortaEtiqueta(mxd, elLyr, poly):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr_sal = os.path.join("in_memory", elLyr)
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-        util.mensaje("Layer encontrado {}".format(lyr.name))
+        mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
         arcpy.Clip_analysis(lyr, poly, lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
@@ -603,13 +604,13 @@ def cortaEtiqueta(mxd, elLyr, poly):
                 arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
             arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
             lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
-            util.mensaje("Etiquetas correcta de {}".format(elLyr))
+            mensaje("Etiquetas correcta de {}".format(elLyr))
         else:
-            util.mensaje("No hay registros de {}".format(elLyr))
+            mensaje("No hay registros de {}".format(elLyr))
         return True
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en preparación de etiquetas.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en preparación de etiquetas.")
     return False
 
 def dibujaSeudoManzanas(mxd, elLyr, poly):
@@ -619,7 +620,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         lyr_sal = os.path.join("in_memory", "ejes")
         #lyr_man = os.path.join("in_memory", "seudoman")
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-        util.mensaje("Layer encontrado {}".format(lyr.name))
+        mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
         arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
         cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
@@ -633,66 +634,66 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         else:
-            util.mensaje("No hay registros de {}".format(elLyr))
+            mensaje("No hay registros de {}".format(elLyr))
         return True
     except Exception:
-        util.mensaje(sys.exc_info()[1].args[0])
-        util.mensaje("Error en preparación de etiquetas.")
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en preparación de etiquetas.")
     return False
 
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
-    if util.zoom(mxd, extent, escala):
+    if zoom(mxd, extent, escala):
         poligono = limpiaMapaManzana(mxd, datosManzana[0], int(datosManzana[10]))
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Manzana")
-            util.mensaje("Inicio preparación de etiquetas Manzana.")
+            mensaje("Inicio preparación de etiquetas Manzana.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
-            util.mensaje("Fin preparación de etiquetas.")
+            mensaje("Fin preparación de etiquetas.")
             return True
-    util.mensaje("No se completó la preparación del mapa para manzana.")
+    mensaje("No se completó la preparación del mapa para manzana.")
     return False
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
-    if util.zoom(mxd, extent, escala):
+    if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("RAU")
         poligono = limpiaMapaRAU(mxd, datosRAU, nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("RAU")
-            util.mensaje("Inicio preparación de etiquetas RAU.")
+            mensaje("Inicio preparación de etiquetas RAU.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
-            util.mensaje("Fin preparación de etiquetas.")
+            mensaje("Fin preparación de etiquetas.")
             return True
-    util.mensaje("No se completó la preparación del mapa para sección RAU.")
+    mensaje("No se completó la preparación del mapa para sección RAU.")
     return False
 
 def preparaMapaRural(mxd, extent, escala, datosRural):
     actualizaVinetaSeccionRural(mxd, datosRural)
-    if util.zoom(mxd, extent, escala):
+    if zoom(mxd, extent, escala):
         nombreCapa = leeNombreCapa("Rural")
         poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas("Rural")
-            util.mensaje("Inicio preparación de etiquetas Rural.")
+            mensaje("Inicio preparación de etiquetas Rural.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
-            util.mensaje("Fin preparación de etiquetas.")
+            mensaje("Fin preparación de etiquetas.")
             return True
-    util.mensaje("No se completó la preparación del mapa para sección Rural.")
+    mensaje("No se completó la preparación del mapa para sección Rural.")
     return False
 
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estadoViviendas = "Rechazado"
         registro.motivoViviendas = "Manzana con menos de 8 viviendas"
-        util.mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
+        mensaje("Manzana con menos de 8 viviendas. ({})".format(totalViviendas))
         return "Rechazado"
 
     if viviendasEncuestar == -1:    # no se evalua
-        util.mensaje("No se evalua cantidad de viviendas a encuestar.")
+        mensaje("No se evalua cantidad de viviendas a encuestar.")
         registro.estadoViviendas = "Correcto"
         registro.motivoViviendas = "Se cumple con el rango de viviendas de la manzana"
         return "Correcto"
@@ -700,30 +701,30 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
         if dictRangos.has_key(viviendasEncuestar):
             rango = dictRangos[viviendasEncuestar]
             if rango[0] <= totalViviendas <= rango[1]:
-                util.mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                util.mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
-                util.mensaje("Total Viviendas. ({})".format(totalViviendas))
-                util.mensaje("Se cumple con el rango de viviendas de la manzana.")
+                mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
+                mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
+                mensaje("Total Viviendas. ({})".format(totalViviendas))
+                mensaje("Se cumple con el rango de viviendas de la manzana.")
                 registro.estadoViviendas = "Correcto"
                 registro.motivoViviendas = "Se cumple con el rango de viviendas de la manzana"
                 return "Correcto"
             else:
-                util.mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                util.mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
-                util.mensaje("Total Viviendas. ({})".format(totalViviendas))
-                util.mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
+                mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
+                mensaje("Rango Mínimo/Máximo. ({},{})".format(rango[0],rango[1]))
+                mensaje("Total Viviendas. ({})".format(totalViviendas))
+                mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
                 registro.estadoViviendas = "Rechazado"
                 registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana"
                 return "Rechazado"
         else:    # no existe el rango
-            util.mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
+            mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
 
 def procesaManzana(codigo, viviendasEncuestar):
     try:
         ############################################################## [INICIO SECCION ANALISIS DE MANZANA] #####################################################################
         registro = Registro(codigo)
-        token = util.obtieneToken(usuario, clave, urlPortal)
+        token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             registro.homologacion, totalViviendas = obtieneHomologacion(codigo, infoMarco.urlHomologacion, token)
             resultado = validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
@@ -743,9 +744,9 @@ def procesaManzana(codigo, viviendasEncuestar):
                 if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
                     mxd, infoMxd, escala = controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
-                        util.mensaje(datosManzana)
+                        mensaje(datosManzana)
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
-                            util.mensaje("Registrando la operación.")
+                            mensaje("Registrando la operación.")
                             registro.formato = infoMxd['formato']
                             registro.orientacion = infoMxd['orientacion']
                             registro.escala = escala
@@ -773,7 +774,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                 # ************************** inicio if para Genera PDF pero Rechaza la manzana **********************************************
 
             else:
-                util.mensaje("Manzana No Existe")
+                mensaje("Manzana No Existe")
                 registro.estado = "Manzana No Existe"
                 registro.motivo = "Croquis No generado"
                 registro.estadoViviendas = ""
@@ -791,7 +792,7 @@ def procesaManzana(codigo, viviendasEncuestar):
         registro.intersectaCRF = ""
         registro.intersectaAV = ""
         registro.Homologacion = ""
-        util.mensaje("No se completó el proceso de Manzana.")
+        mensaje("No se completó el proceso de Manzana.")
     mensajeEstado(registro)
     registros.append(registro)
     return
@@ -799,14 +800,14 @@ def procesaManzana(codigo, viviendasEncuestar):
 def procesaRAU(codigo):
     try:
         registro = Registro(codigo)
-        token = util.obtieneToken(usuario, clave, urlPortal)
+        token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             datosRAU, extent = obtieneInfoSeccionRAU(codigo, token)
             if datosRAU != None:
                 mxd, infoMxd, escala = controlTemplates.buscaTemplateRAU(extent)
                 if mxd != None:
                     if preparaMapaRAU(mxd, extent, escala, datosRAU):
-                        util.mensaje("Registrando la operación.")
+                        mensaje("Registrando la operación.")
                         registro.formato = infoMxd['formato']
                         registro.orientacion = infoMxd['orientacion']
                         registro.escala = escala
@@ -829,7 +830,7 @@ def procesaRAU(codigo):
     except:
         registro.estado = "Seccion No Existe"
         registro.motivo = "Croquis No generado"
-        util.mensaje("No se completó el proceso de sección RAU.")
+        mensaje("No se completó el proceso de sección RAU.")
     registros.append(registro)
     mensajeEstado(registro)
 
@@ -838,13 +839,13 @@ def procesaRAU(codigo):
 def procesaRural(codigo):
     try:
         registro = Registro(codigo)
-        token = util.obtieneToken(usuario, clave, urlPortal)
+        token = obtieneToken(usuario, clave, urlPortal)
         datosRural, extent = obtieneInfoSeccionRural(codigo, token)
         if datosRural != None:
             mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
             if mxd != None:
                 if preparaMapaRural(mxd, extent, escala, datosRural):
-                    util.mensaje("Registrando la operación.")
+                    mensaje("Registrando la operación.")
                     registro.formato = infoMxd['formato']
                     registro.orientacion = infoMxd['orientacion']
                     registro.escala = escala
@@ -867,20 +868,20 @@ def procesaRural(codigo):
     except:
         registro.estado = "No generado"
         registro.motivo = "Seccion no existe"
-        util.mensaje("No se completó el proceso de sección Rural.")
+        mensaje("No se completó el proceso de sección Rural.")
     registros.append(registro)
     mensajeEstado(registro)
     return
 
 def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
-    util.mensaje("Validando areas destacadas.")
+    mensaje("Validando areas destacadas.")
     listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
     if len(listaAreas) > 0:
-        util.mensaje("Se detectaron áreas destacadas dentro de la sección.")
+        mensaje("Se detectaron áreas destacadas dentro de la sección.")
         for area in listaAreas:
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
     else:
-        util.mensaje("No se detectaron áreas destacadas dentro de la sección.")
+        mensaje("No se detectaron áreas destacadas dentro de la sección.")
 
 def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     try:
@@ -890,7 +891,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
         mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
         if mxd != None:
             if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-                util.mensaje("Registrando la operación.")
+                mensaje("Registrando la operación.")
                 registro.formato = infoMxd['formato']
                 registro.orientacion = infoMxd['orientacion']
                 registro.escala = escala
@@ -915,14 +916,14 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza viñeta de MXD de manzana con datos RAU o Rural
-    if util.zoom(mxd, extent, escala):
+    if zoom(mxd, extent, escala):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
         lyr.visible = False
         #zoomEsquicio(mxd, datosSeccion[0].extent)
-        util.mensaje("Se completó la preparación del mapa para area destacada.")
+        mensaje("Se completó la preparación del mapa para area destacada.")
         return True
-    util.mensaje("No se completó la preparación del mapa para area destacada.")
+    mensaje("No se completó la preparación del mapa para area destacada.")
     return False
 
 def buscaTemplateAreaDestacada(extent):
@@ -946,12 +947,12 @@ def leeJsonConfiguracion():
 def actualizaVinetaManzanas(mxd,datosManzana):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
     try:
-        nombre_region = nombreRegion(datosManzana[2])
-        nombre_provincia = nombreProvincia(datosManzana[3])
-        nombre_comuna = nombreComuna(datosManzana[4])
+        nombre_region = dic.nombreRegion(datosManzana[2])
+        nombre_provincia = dic.nombreProvincia(datosManzana[3])
+        nombre_comuna = dic.nombreComuna(datosManzana[4])
         nombre_urbano = nombreUrbano(datosManzana[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
-        util.mensaje(codigo_barra)
+        mensaje(codigo_barra)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -978,19 +979,19 @@ def actualizaVinetaManzanas(mxd,datosManzana):
                 elm.text = datosManzana[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        util.mensaje("Se actualizaron las viñetas para manzana.")
+        mensaje("Se actualizaron las viñetas para manzana.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para manzana.")
+        mensaje("No se pudo actualizar las viñetas para manzana.")
 
 def actualizaVinetaSeccionRAU(mxd,datosRAU):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
     try:
-        nombre_region = nombreRegion(datosRAU[2])
-        nombre_provincia = nombreProvincia(datosRAU[3])
-        nombre_comuna = nombreComuna(datosRAU[4])
+        nombre_region = dic.nombreRegion(datosRAU[2])
+        nombre_provincia = dic.nombreProvincia(datosRAU[3])
+        nombre_comuna = dic.nombreComuna(datosRAU[4])
         nombre_urbano = nombreUrbano(datosRAU[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
-        util.mensaje(codigo_barra)
+        mensaje(codigo_barra)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -1017,16 +1018,16 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
                 elm.text = datosRAU[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        util.mensaje("Se actualizaron las viñetas para RAU.")
+        mensaje("Se actualizaron las viñetas para RAU.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para RAU.")
+        mensaje("No se pudo actualizar las viñetas para RAU.")
 
 def actualizaVinetaSeccionRural(mxd,datosRural):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
     try:
-        nombre_region = nombreRegion(datosRural[2])
-        nombre_provincia = nombreProvincia(datosRural[3])
-        nombre_comuna = nombreComuna(datosRural[4])
+        nombre_region = dic.nombreRegion(datosRural[2])
+        nombre_provincia = dic.nombreProvincia(datosRural[3])
+        nombre_comuna = dic.nombreComuna(datosRural[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
@@ -1054,16 +1055,16 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
                 elm.text = datosRural[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        util.mensaje("Se actualizaron las viñetas para Rural.")
+        mensaje("Se actualizaron las viñetas para Rural.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para Rural.")
+        mensaje("No se pudo actualizar las viñetas para Rural.")
 
 def actualizaVinetaAreaDestacada(mxd,datosSeccion):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
     try:
-        nombre_region = nombreRegion(datosSeccion[2])
-        nombre_provincia = nombreProvincia(datosSeccion[3])
-        nombre_comuna = nombreComuna(datosSeccion[4])
+        nombre_region = dic.nombreRegion(datosSeccion[2])
+        nombre_provincia = dic.nombreProvincia(datosSeccion[3])
+        nombre_comuna = dic.nombreComuna(datosSeccion[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosSeccion)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
@@ -1091,9 +1092,9 @@ def actualizaVinetaAreaDestacada(mxd,datosSeccion):
                 elm.text = datosSeccion[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        util.mensaje("Se actualizaron las viñetas para Área Destacada.")
+        mensaje("Se actualizaron las viñetas para Área Destacada.")
     except:
-        util.mensaje("No se pudo actualizar las viñetas para Área Destacada.")
+        mensaje("No se pudo actualizar las viñetas para Área Destacada.")
 
 def normalizaPalabra(s):
     replacements = (
@@ -1135,30 +1136,30 @@ def generaPDF(mxd, nombrePDF, datos):
 
         # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
         if parametroSoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
+            nueva_region = normalizaPalabra(dic.nombreRegion(datos[2]))
+            nueva_comuna = normalizaPalabra(dic.nombreComuna(datos[4]))
 
             if parametroEstrato == "Rural":
                 rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
             else:
                 nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-                util.mensaje(nueva_urbano)
+                mensaje(nueva_urbano)
                 rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
         else:
             rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
 
-        util.mensaje(rutaDestino)
+        mensaje(rutaDestino)
 
         if not os.path.exists(rutaDestino):
             os.makedirs(rutaDestino)
 
         destinoPDF = os.path.join(rutaDestino, nombrePDF)
-        util.mensaje(destinoPDF)
+        mensaje(destinoPDF)
         arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
-        util.mensaje("Croquis Exportado a pdf")
+        mensaje("Croquis Exportado a pdf")
         return destinoPDF
     except:
-        util.mensaje("No se pudo exportar Croquis a pdf")
+        mensaje("No se pudo exportar Croquis a pdf")
         return None
 
 def generaNombrePDF(datosEntidad, infoMxd):
@@ -1174,7 +1175,7 @@ def generaNombrePDF(datosEntidad, infoMxd):
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
-def generaNombrePDFPlanoUbicacion(infoMxd):
+""" def generaNombrePDFPlanoUbicacion(infoMxd):
     f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
     if parametroEstrato == "Manzana":
         tipo = "MZ_Plano_Ubicacion_"+str(f)
@@ -1185,7 +1186,7 @@ def generaNombrePDFPlanoUbicacion(infoMxd):
     elif parametroEstrato == "Rural":
         tipo = "Rural_Plano_Ubicacion_"+str(f)
         nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
-    return nombre
+    return nombre """
 
 def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encuesta, marco):
     if estrato == "RAU":
@@ -1271,7 +1272,7 @@ def escribeCSV(registros, f):
         if contenidoCsv == 1:
             nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
             rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
-            util.mensaje("Ruta CSV :{}".format(rutaCsv))
+            mensaje("Ruta CSV :{}".format(rutaCsv))
             with open(rutaCsv, "wb") as f:
                 wr = csv.writer(f, delimiter=';')
                 a = ['Hora', 'Codigo', 'Estado Proceso', 'Motivo Proceso', 'Estado Superficie','Motivo Superficie','Estado Viviendas','Motivo Viviendas','CUT', 'CODIGO DISTRITO', 'CODIGO LOCALIDAD O ZONA', 'CODIGO ENTIDAD', 'Ruta PDF', 'Intersecta PE', 'Intersecta CRF', 'Intersecta AV', 'Homologacion', 'Formato / Orientacion', 'Escala', "Codigo barra"]
@@ -1285,7 +1286,7 @@ def escribeCSV(registros, f):
         if contenidoCsv == 2:
             nombre = 'Reporte_log_{}_{}_{}.csv'.format(tipo, parametroEncuesta, f)
             rutaCsv = os.path.join(config['rutabase'], "LOG", nombre)
-            util.mensaje("Ruta CSV :{}".format(rutaCsv))
+            mensaje("Ruta CSV :{}".format(rutaCsv))
             with open(rutaCsv, "wb") as f:
                 wr = csv.writer(f, delimiter=';')
                 a = ['Hora', 'Codigo', 'Estado Proceso', 'Motivo Proceso','Ruta PDF','Formato / Orientacion', 'Escala', "Codigo barra"]
@@ -1326,7 +1327,7 @@ def descomponeManzent(codigo):
     ent = c[-3:]
     return cut, dis, area, loc, ent
 
-def nombreRegion(codigo):
+""" def nombreRegion(codigo):
     if dictRegiones.has_key(codigo):
         return dictRegiones[codigo].encode('utf8')
     else:
@@ -1342,13 +1343,13 @@ def nombreComuna(codigo):
     if dictComunas.has_key(codigo):
         return dictComunas[codigo].encode('utf8')
     else:
-        return codigo
+        return codigo """
 
-def nombreUrbano(codigo):
-    if diccionario.has_key(codigo):
-        return diccionario[codigo].encode('utf8')
+""" def nombreUrbano(codigo):
+    if dictUrbano.has_key(codigo):
+        return dictUrbano[codigo].encode('utf8')
     else:
-        return codigo
+        return codigo """
 
 def enviarMail(registros):
     try:
@@ -1476,12 +1477,12 @@ def enviarMail(registros):
         mailserver.starttls()
         mailserver.login(fromMail, passwordFromMail)
         mailserver.sendmail(fromMail, toMail, msg.as_string())
-        util.mensaje("Reporte Enviado")
+        mensaje("Reporte Enviado")
         mailserver.quit()
     except:
-        util.mensaje("No se pudo enviar correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
+        mensaje("No se pudo enviar correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
 
-class Registro:
+""" class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
         self.codigo = codigo
@@ -1501,7 +1502,7 @@ class Registro:
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
-        self.rutaPDF = ""
+        self.rutaPDF = "" """
 
 class InfoMarco:
     def __init__(self, codigo, config):
@@ -1516,7 +1517,6 @@ class InfoMarco:
         self.urlCRF = ''
         self.urlAV = ''
         self.urlHomologacion = ''
-
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
         self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACIÓN"
         self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
@@ -1550,17 +1550,47 @@ class Parametros:
         self.SoloAnalisis = arcpy.GetParameterAsText(5)
         self.SoloPlanoUbicacion = arcpy.GetParameterAsText(6)
 
+class Diccionario:
+    def __init__(self, config):
+        self.dictRegiones   = {r['codigo']:r['nombre'] for r in config['regiones']}
+        self.dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
+        self.dictComunas    = {r['codigo']:r['nombre'] for r in config['comunas']}
+        self.dictUrbano = {}
+
+    def nombreRegion(self, codigo):
+        if self.dictRegiones.has_key(codigo):
+            return self.dictRegiones[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreProvincia(self, codigo):
+        if self.dictProvincias.has_key(codigo):
+            return self.dictProvincias[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreComuna(self, codigo):
+        if self.dictComunas.has_key(codigo):
+            return self.dictComunas[codigo].encode('utf8')
+        else:
+            return codigo
+
+    def nombreUrbano(self, codigo):
+        if self.dictUrbano.has_key(codigo):
+            return self.dictUrbano[codigo].encode('utf8')
+        else:
+            return codigo
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion.json'
+""" urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion.json'
 urlComunas2016        = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016     = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016       = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
 urlUrbanosManzana2016 = 'https://gis.ine.cl/croquis/ubicacion/urbanosManzana_2016.json'
-urlUrbanosRAU2016     = 'https://gis.ine.cl/croquis/ubicacion/urbanosRAU_2016.json'
-urlPortal             = 'https://gis.ine.cl/portal'
+urlUrbanosRAU2016     = 'https://gis.ine.cl/croquis/ubicacion/urbanosRAU_2016.json' """
 
+urlPortal = 'https://gis.ine.cl/portal'
 usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
@@ -1569,10 +1599,9 @@ config = leeJsonConfiguracion()
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
 dictProvincias = {r['codigo']:r['nombre'] for r in config['provincias']}
 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
-dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}
-dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
-parametros = Parametros()
+dictRangos = {r[0]:[r[1],r[2]] for r in config['rangos']}   # para manzanas
+#dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
 # ---------------------- PARAMETROS DINAMICOS -------------------------
 parametroEncuesta = arcpy.GetParameterAsText(0)
@@ -1615,32 +1644,41 @@ parametroSoloPlanoUbicacion = "Si"
 """
 # ---------------------- PARAMETROS EN DURO ---------------------------
 
+parametros = Parametros()
+dic = Diccionario(config)
 infoMarco = InfoMarco(parametroMarco, config)
+
+controlTemplates = Templates.Templates(config)
+
 listaCodigos = generaListaCodigos(parametroCodigos)
 listaViviendasEncuestar = generaListaCodigos(parametroViviendas)
 registros = []
-util.mensaje("Estrato: {}".format(parametroEstrato))
 
-controlTemplates = templates.Templates(config)
+mensaje("Estrato: {}".format(parametroEstrato))
 
 # ##################################################################### [INICIO DE EJECUCIÓN DEL PROCESO] #############################################################################
 
 # SECCION GENERAR PLANO UBICACIÓN
 if parametroSoloPlanoUbicacion == 'Si':
     try:
-        token = util.obtieneToken(usuario, clave, urlPortal)
+        token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
-            if parametroEstrato == "Manzana":
+            plano = PlanoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
+
+            plano.procesa()
+
+
+            """ if parametroEstrato == "Manzana":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
                 mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
-                diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+                dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
                 mxd, infoMxd, escala = controlTemplates.buscaTemplatePlanoUbicacion(extent)
-                diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+                dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "Rural":
                 #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
@@ -1649,7 +1687,7 @@ if parametroSoloPlanoUbicacion == 'Si':
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
             destacaListaPoligonos(mxd, fc)
-            util.zoom(mxd, extent, escala)
+            zoom(mxd, extent, escala)
             nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
 
             registro = Registro(listaCodigos)
@@ -1659,7 +1697,7 @@ if parametroSoloPlanoUbicacion == 'Si':
             registro.escala = escala
             if registro.rutaPDF != "":
                 registro.estado = "Plano Ubicacion"
-                registro.motivo = "Croquis generado"
+                registro.motivo = "Croquis generado" """
     except:
         registro.estado = "Plano Ubicacion"
         registro.motivo = "Croquis NO generado"
@@ -1668,9 +1706,9 @@ if parametroSoloPlanoUbicacion == 'Si':
 # SECCION GENERAR CROQUIS
 else:
     if parametroEstrato == "Manzana":
-        diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
+        dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
     elif parametroEstrato == "RAU":
-        diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
+        dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
 
     for indice, codigo in enumerate(listaCodigos):
         if parametroEstrato == 'Manzana':
@@ -1683,19 +1721,19 @@ else:
         elif parametroEstrato == 'Rural':
             procesaRural(codigo)
         else:
-            util.mensaje("El estrato no existe")
+            mensaje("El estrato no existe")
             quit()
-        util.mensaje("-------------------------------------------------\n")
+        mensaje("-------------------------------------------------\n")
 # ######################################################################### [FIN DE EJECUCIÓN DEL PROCESO] #############################################################################
 
 
 f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
 rutaCSV = escribeCSV(registros,f)
 
-rutaZip = util.comprime(nombreZip(), registros, rutaCSV)
+rutaZip = comprime(nombreZip(), registros, rutaCSV)
 arcpy.SetParameterAsText(7, rutaZip)
 
-util.mensaje("El GeoProceso ha terminado correctamente")
+mensaje("El GeoProceso ha terminado correctamente")
 enviarMail(registros)
 
 """
