@@ -222,6 +222,42 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
+def comparaManzanas(datosManzana, datosManzana2017, registro):
+    try:
+        manzana2016 = datosManzana[1]
+        manzana2017 = datosManzana2017[0]
+        util.mensaje(manzana2016)
+        util.mensaje(manzana2017)
+        if manzana2017 != None:
+            #print("----------------- Calculo ------------------------")
+            if manzana2016 > manzana2017:
+                diferencia = manzana2016 -  manzana2017
+                porc = diferencia/manzana2016
+                #util.mensaje(diferencia)
+            else:
+                diferencia = manzana2017 - manzana2016
+                porc = diferencia/manzana2017
+                #util.mensaje(diferencia)
+
+            porcentaje = int(round(porc*100,0))
+            #util.mensaje(porcentaje)
+
+            if porcentaje <= 5:
+                estadoSuperficie = "OK"
+                motivoSuperficie = "Diferencia en superficie es menor a 5 porciento"
+                #util.mensaje("OK: Diferencia en superficie es menor a 5 porciento")
+            elif porcentaje >= 6 and porcentaje <= 40:
+                estadoSuperficie = "Alerta"
+                motivoSuperficie = "Diferencia en superficie entre 6 y 40 porciento"
+                #util.mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
+            elif porcentaje > 40:
+                estadoSuperficie = "Rechazada"
+                motivoSuperficie = "Diferencia en superficie supera 40 porciento"
+    except:
+        estadoSuperficie = "No encontrada"
+        motivoSuperficie = "Manzana no encontrada en Censo2017"
+    return estadoSuperficie, motivoSuperficie
+
 def comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro):
     try:
         # Set local variables
@@ -254,7 +290,8 @@ def listaMXDs(estrato, ancho):
     return lista
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
-def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
+#infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token
+def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, codigos, token):
     lista = []
     try:
         condiciones = []
@@ -266,15 +303,10 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlServicio, token, query))
+        fs.load(url.format(urlEstrato, token, query))
 
         fc = os.path.join("in_memory", "fc")
         fs.save(fc)
-
-        desc = arcpy.Describe(fc)
-        extent = desc.extent
-
-        mensaje(extent)
 
         if parametroEstrato == "Manzana":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
@@ -285,15 +317,16 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
 
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
-        #mensaje(len(lista[0]))
-        #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
+
+        extent = obtieneExtentUrbano(urlPlano, lista[0][0], token)
 
         mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
     except:
         mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
     return lista[0], extent, fc
 
-def obtieneExtentUrbano(urlUrbano, poligono, token):
+def obtieneExtentUrbano(urlPlano, poligono, token):
+
     #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     params = {
         'token':token,
@@ -305,10 +338,12 @@ def obtieneExtentUrbano(urlUrbano, poligono, token):
         'geometryType':'esriGeometryPolygon'
     }
 
-    url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
+    url = '{}/query?{}'.format(urlPlano, urllib.urlencode(params))
+    mensaje(url)
 
     fs = arcpy.FeatureSet()
     fs.load(url)
+    mensaje("3")
 
     fc = os.path.join("in_memory","fc")
     fs.save(fc)
@@ -949,7 +984,8 @@ def procesaManzana(codigo, viviendasEncuestar):
 
             datosManzana, extent, fcManzana = obtieneInfoManzana(codigo, token)
             datosManzana2017, fcManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-            est, mot = comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro)
+            est, mot = comparaManzanas(datosManzana, datosManzana2017, registro)
+            #est, mot = comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro)
             registro.estadoSuperficie = est
             registro.motivoSuperficie = mot
 
@@ -1842,20 +1878,20 @@ if parametroSoloPlanoUbicacion == 'Si':
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             if parametroEstrato == "Manzana":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
+                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
+                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "Rural":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
+                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
