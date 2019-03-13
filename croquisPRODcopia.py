@@ -318,15 +318,19 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, codigos, token):
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
 
-        extent = obtieneExtentUrbano(urlPlano, lista[0][0], token)
-
-        mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+        if  lista != None and len(lista) >= 1:
+            mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+            extent = obtieneExtentUrbano(urlPlano, lista[0][0], token)
+            return lista[0], extent, fc
+        else:
+            mensaje("** Los registros no existen")
+            return None, None, None
     except:
         mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-    return lista[0], extent, fc
+        return None, None, None
 
 def obtieneExtentUrbano(urlPlano, poligono, token):
-    url = '{}/query?token={}&where=1%3D1&text=&objectIds=&time=&geometry={}&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+    url = '{}/query?token={}&where=1%3D1&text=&objectIds=&time=&{}&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     """params = {
         'token':token,
         'f':'json',
@@ -336,10 +340,14 @@ def obtieneExtentUrbano(urlPlano, poligono, token):
         'geometry':poligono.JSON,
         'geometryType':'esriGeometryPolygon'
     }"""
+    mensaje("1")
+    params = {
+        'geometry':poligono.JSON
+    }
 
     #url = '{}/query?{}'.format(urlPlano, urllib.urlencode(params))
-    u = url.format(urlPlano, token, poligono.JSON)
-    #mensaje(url)
+    u = url.format(urlPlano, token, urllib.urlencode(params))
+    mensaje(u)
 
     fs = arcpy.FeatureSet()
     fs.load(u)
