@@ -37,10 +37,10 @@ def zoom(mxd, extent, escala):
         newExtent.XMax, newExtent.YMax = extent.XMax, extent.YMax
         df.extent = newExtent
         df.scale = escala
-        #util.mensaje('Se ajusto el extent del mapa.')
+        mensaje('Se ajusto el extent del mapa.')
         return True
     except:
-        #util.mensaje('** No se ajusto el extent del mapa.')
+        mensaje('** No se ajusto el extent del mapa.')
         return False
 
 def zoomEsquicio(mxd, extent):
@@ -88,6 +88,72 @@ def comprime(nombreZip, registros, rutaCSV):
                 myzip.write(archivo, os.path.basename(archivo))
         return rutaZip
     except:
+        return None
+
+def normalizaPalabra(s):
+    replacements = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+        ("ñ", "n"),
+        ("Á", "A"),
+        ("É", "E"),
+        ("Í", "I"),
+        ("Ó", "O"),
+        ("Ú", "U"),
+        ("Ñ", "N"),
+        (" ", "_"),
+        ("'", ""),
+    )
+    for a, b in replacements:
+        s = s.replace(a, b).replace(a.upper(), b.upper())
+    return s
+
+def generaPDF(mxd, nombrePDF, datos, parametros):
+    try:
+        data_frame = 'PAGE_LAYOUT'
+        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        resolution = 200
+        image_quality = 'BETTER' #'BEST' 'FASTER'
+        color_space = 'RGB'
+        compress_vectors = True
+        image_compression = 'ADAPTIVE'
+        picture_symbol = 'RASTERIZE_BITMAP'
+        convert_markers = True
+        embed_fonts = True
+        layers_attributes = 'LAYERS_ONLY'
+        georef_info = True #Parametro para generar GEOPDF
+        jpeg_compression_quality = 80
+
+        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
+        if parametros.SoloPlanoUbicacion != "Si":
+            nueva_region = normalizaPalabra(dic.nombreRegion(datos[2]))
+            nueva_comuna = normalizaPalabra(dic.nombreComuna(datos[4]))
+
+            if parametros.Estrato == "Rural":
+                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, nueva_region, nueva_comuna)
+            else:
+                nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
+                mensaje(nueva_urbano)
+                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+        else:
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
+
+        mensaje(rutaDestino)
+
+        if not os.path.exists(rutaDestino):
+            os.makedirs(rutaDestino)
+
+        destinoPDF = os.path.join(rutaDestino, nombrePDF)
+        mensaje(destinoPDF)
+        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
+        mensaje("Croquis Exportado a pdf")
+        return destinoPDF
+    except:
+        mensaje("No se pudo exportar Croquis a pdf")
         return None
 
 class Registro:
