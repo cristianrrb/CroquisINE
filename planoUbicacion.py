@@ -15,8 +15,11 @@ class PlanoUbicacion:
         self.controlTemplates = controlTemplates
         self.token = token
         self.dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
+        self.tiempo = ""
 
     def procesa(self):
+        self.tiempo = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        registros = []
         registro = Registro(self.listaCodigos)
         try:
             if self.parametros.Estrato == "Manzana":
@@ -55,7 +58,15 @@ class PlanoUbicacion:
             registro.estado = "Plano Ubicacion"
             registro.motivo = "Croquis NO generado"
 
-        return registro
+        registros.append(registro)
+
+        nombreCsv = 'Reporte_log_{}_{}_{}.csv'.format(tipo, self.parametros.Encuesta, self.tiempo)
+        rutaCsv = self.escribeCSV(nombreCsv, resgistros)
+
+        nombreZip = 'Comprimido_PlanoUbicacion_{}_{}.zip'.format(self.parametros.Encuesta, self.tiempo)
+        rutaZip = comprime(nombreZip, registros, rutaCSV)
+
+        return rutaZip
 
     def generaRutaPDF(self, nombrePDF):
         destinoPDF = ""
@@ -239,3 +250,21 @@ class PlanoUbicacion:
             tipo = "Rural_Plano_Ubicacion_" + str(f)
             nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], self.parametros.Encuesta, self.parametros.Marco[2:4])
         return nombre
+
+    def escribeCSV(self, nombreCsv, registros):
+        try:
+            rutaCsv = os.path.join(self.config['rutabase'], "LOG", nombreCsv)
+            mensaje("Ruta CSV :{}".format(rutaCsv))
+            with open(rutaCsv, "wb") as f:
+                wr = csv.writer(f, delimiter=';')
+                a = ['Hora', 'Codigo', 'Estado Proceso', 'Motivo Proceso','Ruta PDF','Formato / Orientacion', 'Escala', "Codigo barra"]
+                wr.writerow(a)
+                for r in registros:
+                    a = [r.hora, r.codigo, r.estado, r.motivo, r.rutaPDF, r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                    wr.writerow(a)
+            return rutaCsv
+        except:
+            return None
+
+
+
