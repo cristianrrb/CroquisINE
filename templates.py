@@ -79,18 +79,17 @@ class Templates:
                 escala = self.mejorEscalaMXDManzana(infoMxd, alto, ancho)
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                    #util.mensaje("1")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
-                    # util.mensaje('Se selecciono layout para manzana.')
+                    # mensaje('Se selecciono layout para manzana.')
                     return mxd, infoMxd, escala
         except:
             pass
-        # util.mensaje('** Error: No se selecciono layout para manzana.')
+        # mensaje('** Error: No se selecciono layout para manzana.')
         return None, None, None
 
     def buscaTemplateRAU(self, extent):
         try:
-            #util.mensaje("funcion buscaTemplateRAU")
+            #mensaje("funcion buscaTemplateRAU")
             ancho = extent.XMax - extent.XMin
             alto = extent.YMax - extent.YMin
             lista = self.listaMXDs("RAU", (ancho > alto))
@@ -99,9 +98,9 @@ class Templates:
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
-                    #util.mensaje('Se seleccionó layout para RAU.')
-                    #util.mensaje("infoMxd = {}".format(infoMxd))
-                    #util.mensaje("escala = {}".format(escala))
+                    #mensaje('Se seleccionó layout para RAU.')
+                    #mensaje("infoMxd = {}".format(infoMxd))
+                    #mensaje("escala = {}".format(escala))
                     return mxd, infoMxd, escala
 
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
@@ -109,13 +108,13 @@ class Templates:
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                #util.mensaje('Se seleccionó layout para RAU.(Excede escala)')
-                #util.mensaje("infoMxd = {}".format(infoMxd))
-                #util.mensaje("escala = {}".format(escala))
+                #mensaje('Se seleccionó layout para RAU.(Excede escala)')
+                #mensaje("infoMxd = {}".format(infoMxd))
+                #mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
         except:
             pass
-        #util.mensaje('** Error: No se selecciono layout para RAU. (Excede escala)')
+        #mensaje('** Error: No se selecciono layout para RAU. (Excede escala)')
         return None, None, None
 
     def buscaTemplateRural(self, extent):
@@ -128,7 +127,7 @@ class Templates:
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
-                    #util.mensaje('Se selecciono layout para Rural.')
+                    #mensaje('Se selecciono layout para Rural.')
                     return mxd, infoMxd, escala
 
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
@@ -136,11 +135,11 @@ class Templates:
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                #util.mensaje('Se selecciono layout para Rural. (Excede escala)')
+                #mensaje('Se selecciono layout para Rural. (Excede escala)')
                 return mxd, infoMxd, escala
         except:
             pass
-        #util.mensaje('** Error: No se selecciono layout para Rural.')
+        #mensaje('** Error: No se selecciono layout para Rural.')
         return None, None, None
 
     def buscaTemplatePlanoUbicacion(self, estrato, extent):
@@ -157,15 +156,15 @@ class Templates:
                     return mxd, infoMxd, escala
 
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
-            escala = mejorEscalaMXD(infoMxd, alto, ancho)
+            escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                util.mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
-                util.mensaje("infoMxd = {}".format(infoMxd))
-                util.mensaje("escala = {}".format(escala))
+                mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
+                mensaje("infoMxd = {}".format(infoMxd))
+                mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
         except:
             pass
-        util.mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
+        mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
         return None, None, None
