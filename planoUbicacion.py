@@ -38,7 +38,9 @@ class PlanoUbicacion:
             zoom(mxd, extent, escala)
 
             nombrePDF = self.generaNombrePDFPlanoUbicacion(infoMxd)
+            mensaje(nombrePDF)
             rutaPDF = self.generaRutaPDF(nombrePDF)
+            mensaje(rutaPDF)
 
             #registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic, self.config)
             registro.rutaPDF = generaPDF2(mxd, rutaPDF)
@@ -55,27 +57,16 @@ class PlanoUbicacion:
 
         return registro
 
-    def generaRutaPDF(nombrePDF):
-        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
-        if self.parametros.SoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(dic.nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(dic.nombreComuna(datos[4]))
-
-            if self.parametros.Estrato == "Rural":
-                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna)
-            else:
-                nueva_urbano = normalizaPalabra(self.dic.nombreUrbano(datos[5]))
-                mensaje(nueva_urbano)
-                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
-        else:
+    def generaRutaPDF(self, nombrePDF):
+        destinoPDF = ""
+        try:
             rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, "PLANOS_UBICACION")
-
-        mensaje(rutaDestino)
-
-        if not os.path.exists(rutaDestino):
-            os.makedirs(rutaDestino)
-
-        destinoPDF = os.path.join(rutaDestino, nombrePDF)
+            if not os.path.exists(rutaDestino):
+                os.makedirs(rutaDestino)
+            destinoPDF = os.path.join(rutaDestino, nombrePDF)
+            mensaje(rutaDestino)
+        except:
+            mensaje("No se pudo crear Ruta Destino PDF ")
         return destinoPDF
 
     def obtieneInfoParaPlanoUbicacion(self, urlServicio):
