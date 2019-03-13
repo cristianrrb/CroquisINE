@@ -111,7 +111,7 @@ def normalizaPalabra(s):
         s = s.replace(a, b).replace(a.upper(), b.upper())
     return s
 
-def generaPDF(mxd, nombrePDF, datos, parametros, dic):
+def generaPDF(mxd, nombrePDF, datos, parametros, dic, config):
     try:
         data_frame = 'PAGE_LAYOUT'
         df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
@@ -138,9 +138,9 @@ def generaPDF(mxd, nombrePDF, datos, parametros, dic):
             else:
                 nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
                 mensaje(nueva_urbano)
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
         else:
-            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, "PLANOS_UBICACION")
 
         mensaje(rutaDestino)
 
