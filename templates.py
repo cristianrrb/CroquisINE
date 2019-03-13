@@ -5,7 +5,7 @@ from util import mensaje
 
 class Templates:
 
-    def __init__(self, config):
+    def __init__(self, config, parametros):
         self.config = config
 
     def listaMXDs(self, estrato, ancho):
@@ -143,17 +143,17 @@ class Templates:
         #util.mensaje('** Error: No se selecciono layout para Rural.')
         return None, None, None
 
-    def buscaTemplatePlanoUbicacion(self, extent):
+    def buscaTemplatePlanoUbicacion(self, estrato, extent):
         try:
             ancho = extent.XMax - extent.XMin
             alto = extent.YMax - extent.YMin
-            lista = self.listaMXDsPlanoUbicacion(parametroEstrato, (ancho > alto))
+            lista = self.listaMXDsPlanoUbicacion(estrato, (ancho > alto))
             for infoMxd in lista:
                 escala = self.mejorEscalaMXDPlanoUbicacion(infoMxd, alto, ancho)
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
-                    #util.mensaje('Se selecciono layout para Plano Ubicacion.')
+                    mensaje('Se selecciono layout para Plano Ubicacion.')
                     return mxd, infoMxd, escala
 
             # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
@@ -161,11 +161,11 @@ class Templates:
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                #util.mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
-                #util.mensaje("infoMxd = {}".format(infoMxd))
-                #util.mensaje("escala = {}".format(escala))
+                util.mensaje('Se selecciono layout para Plano Ubicacion (Excede escala)')
+                util.mensaje("infoMxd = {}".format(infoMxd))
+                util.mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
         except:
             pass
-        #util.mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
+        util.mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
         return None, None, None
