@@ -1302,9 +1302,8 @@ if parametros.SoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
         plano = planoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
-        registro = plano.procesa()
-        registros.append(registro)
-        mensajeEstado(registro)
+        rutaZip = plano.procesa()
+
 # SECCION GENERAR CROQUIS
 else:
     if parametroEstrato == "Manzana":
@@ -1326,13 +1325,13 @@ else:
             mensaje("El estrato no existe")
             quit()
         mensaje("-------------------------------------------------\n")
+
+    f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+    rutaCSV = escribeCSV(registros,f)
+    rutaZip = comprime(nombreZip(), registros, rutaCSV)
 # ########################################################### [FIN DE EJECUCIÓN DEL PROCESO] #############################################################################
 
 
-f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
-rutaCSV = escribeCSV(registros,f)
-
-rutaZip = comprime(nombreZip(), registros, rutaCSV)
 arcpy.SetParameterAsText(7, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
