@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import arcpy
 import os
-import util
+from util import mensaje
 
 class Templates:
 
@@ -79,7 +79,7 @@ class Templates:
                 escala = self.mejorEscalaMXDManzana(infoMxd, alto, ancho)
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
-                    util.mensaje("1")
+                    #util.mensaje("1")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     # util.mensaje('Se selecciono layout para manzana.')
                     return mxd, infoMxd, escala
