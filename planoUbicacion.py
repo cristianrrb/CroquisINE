@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 import arcpy
-from util import mensaje, zoom, generaPDF2, normalizaPalabra, Registro
 import os
 import datetime
+from util import mensaje, zoom, generaPDF2, normalizaPalabra, Registro
 
 class PlanoUbicacion:
 
@@ -55,21 +55,8 @@ class PlanoUbicacion:
 
         return registro
 
-    def generaRutaPDF(nombrePDF):
-        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
-        if self.parametros.SoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(dic.nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(dic.nombreComuna(datos[4]))
-
-            if self.parametros.Estrato == "Rural":
-                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna)
-            else:
-                nueva_urbano = normalizaPalabra(self.dic.nombreUrbano(datos[5]))
-                mensaje(nueva_urbano)
-                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
-        else:
-            rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, "PLANOS_UBICACION")
-
+    def generaRutaPDF(self, nombrePDF):
+        rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, "PLANOS_UBICACION")
         mensaje(rutaDestino)
 
         if not os.path.exists(rutaDestino):
