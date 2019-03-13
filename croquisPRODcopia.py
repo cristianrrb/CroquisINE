@@ -326,9 +326,8 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, codigos, token):
     return lista[0], extent, fc
 
 def obtieneExtentUrbano(urlPlano, poligono, token):
-
-    #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
-    params = {
+    url = '{}/query?token={}&where=1%3D1&text=&objectIds=&time=&geometry={}&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+    """params = {
         'token':token,
         'f':'json',
         'where':'1=1',
@@ -336,14 +335,15 @@ def obtieneExtentUrbano(urlPlano, poligono, token):
         'returnIdsOnly':'true',
         'geometry':poligono.JSON,
         'geometryType':'esriGeometryPolygon'
-    }
+    }"""
 
-    url = '{}/query?{}'.format(urlPlano, urllib.urlencode(params))
-    mensaje(url)
+    #url = '{}/query?{}'.format(urlPlano, urllib.urlencode(params))
+    u = url.format(urlPlano, token, poligono.JSON)
+    #mensaje(url)
 
     fs = arcpy.FeatureSet()
-    fs.load(url)
-    mensaje("3")
+    fs.load(u)
+    mensaje("falla en el load")
 
     fc = os.path.join("in_memory","fc")
     fs.save(fc)
