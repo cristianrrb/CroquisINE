@@ -38,7 +38,7 @@ class PlanoUbicacion:
         nombrePDF = self.generaNombrePDFPlanoUbicacion(infoMxd)
 
         registro = Registro(listaCodigos)
-        registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros)
+        registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic)
         registro.formato = infoMxd['formato']
         registro.orientacion = infoMxd['orientacion']
         registro.escala = escala
