@@ -1072,8 +1072,8 @@ def nombreZip():
         else:
             tipo = "Rural"
 
-    nombreZip = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
-    return nombreZip
+    nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
+    return nombre
 
 def descomponeManzent(codigo):
     c = "{}".format(codigo)
@@ -1364,14 +1364,12 @@ mensaje("Estrato: {}".format(parametroEstrato))
 # ##################################################################### [INICIO DE EJECUCIÓN DEL PROCESO] #############################################################################
 
 # SECCION GENERAR PLANO UBICACIÓN
-if parametroSoloPlanoUbicacion == 'Si':
+if parametros.SoloPlanoUbicacion == 'Si':
     token = obtieneToken(usuario, clave, urlPortal)
     if token != None:
         plano = planoUbicacion.PlanoUbicacion(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, token)
-
         registro = plano.procesa()
         registros.append(registro)
-
         mensajeEstado(registro)
 # SECCION GENERAR CROQUIS
 else:
