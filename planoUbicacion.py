@@ -14,44 +14,49 @@ class PlanoUbicacion:
         self.dic = dic
         self.controlTemplates = controlTemplates
         self.token = token
-
         self.dictCamposId = {"Manzana": "MANZENT", "RAU": "CU_SECCION", "Rural": "CU_SECCION"}
 
     def procesa(self):
-        if self.parametros.Estrato == "Manzana":
-            entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-            self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
-            self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
-        if self.parametros.Estrato == "RAU":
-            entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-            self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
-            self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
-        if self.parametros.Estrato == "Rural":
-            entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural)
-            mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-            self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+        registro = Registro(self.listaCodigos)
+        try:
+            if self.parametros.Estrato == "Manzana":
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
+                self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
+            if self.parametros.Estrato == "RAU":
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
+                self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
+            if self.parametros.Estrato == "Rural":
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
-        self.destacaListaPoligonos(mxd, fc)
-        zoom(mxd, extent, escala)
-        nombrePDF = self.generaNombrePDFPlanoUbicacion(infoMxd)
+            self.destacaListaPoligonos(mxd, fc)
+            zoom(mxd, extent, escala)
+            nombrePDF = self.generaNombrePDFPlanoUbicacion(infoMxd)
 
-        registro = Registro(listaCodigos)
-        registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic)
-        registro.formato = infoMxd['formato']
-        registro.orientacion = infoMxd['orientacion']
-        registro.escala = escala
-        if registro.rutaPDF != "":
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic, self.config)
+            registro.formato = infoMxd['formato']
+            registro.orientacion = infoMxd['orientacion']
+            registro.escala = escala
+            if registro.rutaPDF != "":
+                registro.estado = "Plano Ubicacion"
+                registro.motivo = "Croquis generado"
+        except:
             registro.estado = "Plano Ubicacion"
-            registro.motivo = "Croquis generado"
+            registro.motivo = "Croquis NO generado"
+            
+        return registro
 
     def obtieneInfoParaPlanoUbicacion(self, urlServicio):
         lista = []
         try:
             condiciones = []
             for codigo in self.listaCodigos:
-                condicion = "{}+%3D+{}".format(self.dictCamposId[self.parametros.Estratos], codigo)
+                condicion = "{}+%3D+{}".format(self.dictCamposId[self.parametros.Estrato], codigo)
                 condiciones.append(condicion)
 
             query = " + OR +".join(condiciones)
