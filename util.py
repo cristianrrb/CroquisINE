@@ -5,6 +5,7 @@ import urllib
 import json
 import os
 import uuid
+import zipfile
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -78,13 +79,13 @@ def calculaExtent(fs, metrosBuffer):
 def comprime(nombreZip, registros, rutaCSV):
     try:
         rutaZip = os.path.join(arcpy.env.scratchFolder, nombreZip)
-        #util.mensaje("Ruta ZIP {}".format(rutaZip))
+        mensaje("Ruta ZIP {}".format(rutaZip))
         with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
             myzip.write(rutaCSV, os.path.basename(rutaCSV))
 
             listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
             for archivo in listaPDFs:
-                #util.mensaje("Comprimiendo {}".format(os.path.basename(archivo)))
+                mensaje("Comprimiendo {}".format(os.path.basename(archivo)))
                 myzip.write(archivo, os.path.basename(archivo))
         return rutaZip
     except:
@@ -151,6 +152,31 @@ def generaPDF(mxd, nombrePDF, datos, parametros, dic, config):
         mensaje(destinoPDF)
         arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
         mensaje("Croquis Exportado a pdf")
+        return destinoPDF
+    except:
+        mensaje("No se pudo exportar Croquis a pdf")
+        return None
+
+def generaPDF2(mxd, destinoPDF):
+    try:
+        data_frame = 'PAGE_LAYOUT'
+        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+        resolution = 200
+        image_quality = 'BETTER' #'BEST' 'FASTER'
+        color_space = 'RGB'
+        compress_vectors = True
+        image_compression = 'ADAPTIVE'
+        picture_symbol = 'RASTERIZE_BITMAP'
+        convert_markers = True
+        embed_fonts = True
+        layers_attributes = 'LAYERS_ONLY'
+        georef_info = True #Parametro para generar GEOPDF
+        jpeg_compression_quality = 80
+
+        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
+        mensaje("Croquis Exportado a pdf")
+
         return destinoPDF
     except:
         mensaje("No se pudo exportar Croquis a pdf")
