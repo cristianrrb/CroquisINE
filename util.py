@@ -111,7 +111,7 @@ def normalizaPalabra(s):
         s = s.replace(a, b).replace(a.upper(), b.upper())
     return s
 
-def generaPDF(mxd, nombrePDF, datos, parametros):
+def generaPDF(mxd, nombrePDF, datos, parametros, dic):
     try:
         data_frame = 'PAGE_LAYOUT'
         df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
