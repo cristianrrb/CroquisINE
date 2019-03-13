@@ -2,7 +2,9 @@
 import arcpy
 import os
 import datetime
-from util import mensaje, zoom, generaPDF2, normalizaPalabra, Registro
+import csv
+import requests
+from util import mensaje, zoom, generaPDF2, comprime, normalizaPalabra, Registro
 
 class PlanoUbicacion:
 
@@ -60,11 +62,11 @@ class PlanoUbicacion:
 
         registros.append(registro)
 
-        nombreCsv = 'Reporte_log_{}_{}_{}.csv'.format(tipo, self.parametros.Encuesta, self.tiempo)
-        rutaCsv = self.escribeCSV(nombreCsv, resgistros)
+        nombreCsv = 'Reporte_log_PlanoUbicacion_{}_{}.csv'.format(self.parametros.Encuesta, self.tiempo)
+        rutaCsv = self.escribeCSV(nombreCsv, registros)
 
         nombreZip = 'Comprimido_PlanoUbicacion_{}_{}.zip'.format(self.parametros.Encuesta, self.tiempo)
-        rutaZip = comprime(nombreZip, registros, rutaCSV)
+        rutaZip = comprime(nombreZip, registros, rutaCsv)
 
         return rutaZip
 
@@ -120,17 +122,40 @@ class PlanoUbicacion:
         return lista[0], extent, fc
 
     def obtieneExtentUrbano(self, urlUrbano, poligono, token):
+
+        url = "{}/query".format(urlUrbano)
+        #url = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/3/query'
+        params = {
+            'f':'json',
+            'where':'1=1',
+            'outFields':'*',
+            'returnIdsOnly':'true',
+            'geometry':poligono.JSON,
+            'geometryType':'esriGeometryPolygon',
+            'returnExtentOnly':'true'
+        }
+
+        params = {
+            'f':'json',
+            'where':'1=1',
+            'geometry':geometry,
+            'geometryType':'esriGeometryPolygon',
+            'returnExtentOnly':'true'
+        }
+
+        r = requests.post(url, data=params)
+        j = r.json()
+        oids = j['objectIds']
+
         #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
         params = {
             'token':token,
             'f':'json',
             'where':'1=1',
             'outFields':'*',
-            'returnIdsOnly':'true',
-            'geometry':poligono.JSON,
-            'geometryType':'esriGeometryPolygon'
+            'objectIds': oids,
+            'returnIdsOnly':'false'
         }
-
         url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
 
         fs = arcpy.FeatureSet()
