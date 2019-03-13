@@ -74,3 +74,18 @@ def calculaExtent(fs, metrosBuffer):
     except:
         mensaje("** Error en calculaExtent.")
         return None
+
+def comprime(nombreZip, registros, rutaCSV):
+    try:
+        rutaZip = os.path.join(arcpy.env.scratchFolder, nombreZip)
+        #util.mensaje("Ruta ZIP {}".format(rutaZip))
+        with zipfile.ZipFile(rutaZip, 'w', zipfile.ZIP_DEFLATED) as myzip:
+            myzip.write(rutaCSV, os.path.basename(rutaCSV))
+
+            listaPDFs = [r.rutaPDF for r in registros if r.rutaPDF != ""]
+            for archivo in listaPDFs:
+                #util.mensaje("Comprimiendo {}".format(os.path.basename(archivo)))
+                myzip.write(archivo, os.path.basename(archivo))
+        return rutaZip
+    except:
+        return None
