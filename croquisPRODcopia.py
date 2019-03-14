@@ -291,11 +291,10 @@ def listaMXDs(estrato, ancho):
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 #infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token
-def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, codigos, token):
-    lista = []
+def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
     try:
         condiciones = []
-        for codigo in codigos:
+        for codigo in listaCodigos:
             condicion = "{}+%3D+{}".format(dictCamposId[parametroEstrato], codigo)
             condiciones.append(condicion)
 
@@ -315,21 +314,21 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, codigos, token):
         elif parametroEstrato == "Rural":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'CUT', 'COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
+        lista = []
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
 
-        if  lista != None and len(lista) >= 1:
+        if  len(lista) > 0:
             mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
-            extent = obtieneExtentUrbano(urlPlano, lista[0][0], token)
+            extent = obtieneExtentUrbano(urlPlano, lista[0][0])
             return lista[0], extent, fc
         else:
-            mensaje("** Los registros no existen")
-            return None, None, None
+            mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
     except:
         mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-        return None, None, None
+    return None, None, None
 
-def obtieneExtentUrbano(urlPlano, poligono, token):
+def obtieneExtentUrbano(urlPlano, poligono):
     url = '{}/query?token={}&where=1%3D1&text=&objectIds=&time=&{}&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
     """params = {
         'token':token,
@@ -947,17 +946,15 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     return False
 
 def preparaMapaPlanoUbicacion(mxd, extent, escala, datosRural):
-    actualizaVinetaSeccionRural(mxd, datosRural)
-    if zoom(mxd, extent, escala):
-        nombreCapa = leeNombreCapa("Rural")
-        poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
-        if poligono != None:
-            lista_etiquetas = listaEtiquetas("Rural")
-            mensaje("Inicio preparación de etiquetas Rural.")
-            for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono)
-            mensaje("Fin preparación de etiquetas.")
-            return True
+    nombreCapa = leeNombreCapa("Rural")
+    poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
+    if poligono != None:
+        lista_etiquetas = listaEtiquetas("Rural")
+        mensaje("Inicio preparación de etiquetas Rural.")
+        for capa in lista_etiquetas:
+            cortaEtiqueta(mxd, capa, poligono)
+        mensaje("Fin preparación de etiquetas.")
+        return True
     mensaje("No se completó la preparación del mapa para sección Rural.")
     return False
 
@@ -1901,20 +1898,17 @@ if parametroSoloPlanoUbicacion == 'Si':
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             if parametroEstrato == "Manzana":
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
-                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "Rural":
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
-                #entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
