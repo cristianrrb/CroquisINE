@@ -4,7 +4,9 @@ import os
 import datetime
 import csv
 import sys
-import requests
+#import requests
+import urllib
+import urllib2
 from util import mensaje, zoom, generaPDF2, comprime, normalizaPalabra, Registro
 
 class PlanoUbicacion:
@@ -133,14 +135,18 @@ class PlanoUbicacion:
                 'geometry':poligono.JSON,
                 'geometryType':'esriGeometryPolygon'
             }
-            respuesta = requests.post(url, data=params)
-            j = respuesta.json()
+            headers = {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+            req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
+            response = urllib2.urlopen(req).read()
+            response_text = response.decode('UTF-8')
+            j = json.load(response_text)
+
             if j.has_key('extent'):
                 je = j['extent']
                 extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
                 return extent
 
-        except:
+        except Exception:
             mensaje(sys.exc_info()[1].args[0])
 
         return None
