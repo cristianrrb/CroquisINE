@@ -86,7 +86,6 @@ class PlanoUbicacion:
         return destinoPDF
 
     def obtieneInfoParaPlanoUbicacion(self, urlEstrato, urlPlano):
-    #def obtieneInfoParaPlanoUbicacion(self, urlServicio):
         lista = []
         try:
             condiciones = []
