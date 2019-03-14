@@ -173,9 +173,9 @@ class PlanoUbicacion:
                     elm.text = nombre_comuna
                 if elm.name == "Nombre_Urbano":
                     elm.text = nombre_urbano
-            mensaje("Se actualizaron las viÃ±etas para manzana Plano Ubicacion.")
+            mensaje("Se actualizaron las viñetas para manzana Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viÃ±etas para manzana Plano Ubicacion.")
+            mensaje("No se pudo actualizar las viñetas para manzana Plano Ubicacion.")
 
     def actualizaVinetaSeccionRAU_PlanoUbicacion(self, mxd, datosRAU):
         try:
@@ -199,9 +199,9 @@ class PlanoUbicacion:
                     elm.text = nombre_comuna
                 if elm.name == "Nombre_Urbano":
                     elm.text = nombre_urbano
-            mensaje("Se actualizaron las viÃ±etas para RAU Plano Ubicacion.")
+            mensaje("Se actualizaron las viñetas para RAU Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viÃ±etas para RAU Plano Ubicacion.")
+            mensaje("No se pudo actualizar las viñetas para RAU Plano Ubicacion.")
 
     def actualizaVinetaSeccionRural_PlanoUbicacion(self, mxd, datosRural):
         try:
@@ -222,9 +222,9 @@ class PlanoUbicacion:
                     elm.text = nombre_provincia
                 if elm.name == "Nombre_Comuna":
                     elm.text = nombre_comuna
-            mensaje("Se actualizaron las viÃ±etas para Rural Plano Ubicacion.")
+            mensaje("Se actualizaron las viñetas para Rural Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viÃ±etas para Rural Plano Ubicacion.")
+            mensaje("No se pudo actualizar las viñetas para Rural Plano Ubicacion.")
 
     def destacaListaPoligonos(self, mxd, fc):
         try:
