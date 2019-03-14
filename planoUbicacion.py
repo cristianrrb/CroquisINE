@@ -25,17 +25,17 @@ class PlanoUbicacion:
         registro = Registro(self.listaCodigos)
         try:
             if self.parametros.Estrato == "Manzana":
-                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas)
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if self.parametros.Estrato == "RAU":
-                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU)
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if self.parametros.Estrato == "Rural":
-                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural)
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComuna)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
@@ -82,7 +82,8 @@ class PlanoUbicacion:
             mensaje("No se pudo crear Ruta Destino PDF ")
         return destinoPDF
 
-    def obtieneInfoParaPlanoUbicacion(self, urlServicio):
+    def obtieneInfoParaPlanoUbicacion(self, urlEstrato, urlPlano):
+    #def obtieneInfoParaPlanoUbicacion(self, urlServicio):
         lista = []
         try:
             condiciones = []
@@ -94,7 +95,7 @@ class PlanoUbicacion:
             url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
             fs = arcpy.FeatureSet()
-            fs.load(url.format(urlServicio, self.token, query))
+            fs.load(url.format(urlEstrato, self.token, query))
 
             fc = os.path.join("in_memory", "fc")
             fs.save(fc)
@@ -114,59 +115,26 @@ class PlanoUbicacion:
             with arcpy.da.SearchCursor(fs, fields) as rows:
                 lista = [r for r in rows]
             #mensaje(len(lista[0]))
-            #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
+            extent = obtieneExtentUrbano(urlPlano, lista[0][0])
 
             mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
         except:
             mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
         return lista[0], extent, fc
 
-    def obtieneExtentUrbano(self, urlUrbano, poligono, token):
-
+    def obtieneExtentUrbano(self, urlUrbano, poligono):
         url = "{}/query".format(urlUrbano)
-        #url = 'https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/3/query'
         params = {
+            'token': self.token,
             'f':'json',
             'where':'1=1',
-            'outFields':'*',
-            'returnIdsOnly':'true',
-            'geometry':poligono.JSON,
-            'geometryType':'esriGeometryPolygon',
-            'returnExtentOnly':'true'
+            'returnExtentOnly':'true',
+            'geometry':jpoligon,
+            'geometryType':'esriGeometryPolygon'
         }
-
-        params = {
-            'f':'json',
-            'where':'1=1',
-            'geometry':geometry,
-            'geometryType':'esriGeometryPolygon',
-            'returnExtentOnly':'true'
-        }
-
         r = requests.post(url, data=params)
         j = r.json()
-        oids = j['objectIds']
-
-        #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
-        params = {
-            'token':token,
-            'f':'json',
-            'where':'1=1',
-            'outFields':'*',
-            'objectIds': oids,
-            'returnIdsOnly':'false'
-        }
-        url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
-
-        fs = arcpy.FeatureSet()
-        fs.load(url)
-
-        fc = os.path.join("in_memory","fc")
-        fs.save(fc)
-
-        desc = arcpy.Describe(fc)
-        extent = desc.extent
-
+        extent = j['extent']
         return extent
 
     def actualizaVinetaManzanas_PlanoUbicacion(self, mxd, entidad):
@@ -292,4 +260,40 @@ class PlanoUbicacion:
             return None
 
 
-
+""" params = {
+    'where':'1=1',
+    #'text':'',
+    #'objectIds':'',
+    #'time':'',
+    'geometry':geometry,
+    'geometryType':'esriGeometryPolygon',
+    #'inSR':'',
+    'spatialRel':'esriSpatialRelIntersects',
+    #'relationParam':'',
+    #'outFields':'',
+    'returnGeometry':'false',
+    'returnTrueCurves':'false',
+    #'maxAllowableOffset':'',
+    #'geometryPrecision':'',
+    #'outSR':'',
+    #'having':'',
+    'returnIdsOnly':'true',
+    'returnCountOnly':'false',
+    #'orderByFields':'',
+    #'groupByFieldsForStatistics':'',
+    #'outStatistics':'',
+    'returnZ':'false',
+    'returnM':'false',
+    #'gdbVersion':'',
+    #'historicMoment':'',
+    'returnDistinctValues':'false',
+    #'resultOffset':'',
+    #'resultRecordCount':'', 
+    #'queryByDistance':'',
+    'returnExtentOnly':'false',
+    #'datumTransformation':'',
+    #'parameterValues':'',
+    #'rangeValues':'',
+    #'quantizationParameters':'',
+    'f': 'pjson'
+} """
