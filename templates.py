@@ -63,7 +63,7 @@ class Templates:
         return None
 
     def mejorEscalaMXDPlanoUbicacion(self, mxd, alto, ancho):
-        # Plano UbicaciÃ³n A0 1: 7.500
+        # Plano Ubicación A0 1: 7.500
         escalas = [e for e in range(5, 76)]
         for e in escalas:
             if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
@@ -98,17 +98,17 @@ class Templates:
                 if escala != None:
                     rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
-                    #mensaje('Se seleccionÃ³ layout para RAU.')
+                    #mensaje('Se seleccionó layout para RAU.')
                     #mensaje("infoMxd = {}".format(infoMxd))
                     #mensaje("escala = {}".format(escala))
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mÃ¡s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
                 mxd = arcpy.mapping.MapDocument(rutaMXD)
-                #mensaje('Se seleccionÃ³ layout para RAU.(Excede escala)')
+                #mensaje('Se seleccionó layout para RAU.(Excede escala)')
                 #mensaje("infoMxd = {}".format(infoMxd))
                 #mensaje("escala = {}".format(escala))
                 return mxd, infoMxd, escala
@@ -130,7 +130,7 @@ class Templates:
                     #mensaje('Se selecciono layout para Rural.')
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mÃ¡s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
@@ -155,7 +155,7 @@ class Templates:
                     mensaje('Se selecciono layout para Plano Ubicacion.')
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mÃ¡s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel más grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
