@@ -132,10 +132,14 @@ class PlanoUbicacion:
             'geometry':jpoligon,
             'geometryType':'esriGeometryPolygon'
         }
-        r = requests.post(url, data=params)
-        j = r.json()
-        extent = j['extent']
-        return extent
+        respuesta = requests.post(url, data=params)
+        j = respuesta.json()
+        if j.has_key('extent'):
+            je = j['extent']
+            extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
+            return extent
+        else:
+            return None
 
     def actualizaVinetaManzanas_PlanoUbicacion(self, mxd, entidad):
         try:
