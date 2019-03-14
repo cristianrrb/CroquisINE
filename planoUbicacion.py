@@ -4,9 +4,8 @@ import os
 import datetime
 import csv
 import sys
-#import requests
-import urllib
-import urllib2
+import requests
+import urllib2, urllib
 import json
 from util import mensaje, zoom, generaPDF2, comprime, normalizaPalabra, Registro
 
@@ -129,26 +128,26 @@ class PlanoUbicacion:
         try:
             url = "{}/query".format(urlPlano)
             params = {
-                #'token': self.token,
+                'token': self.token,
                 'f':'json',
                 'where':'1=1',
                 'returnExtentOnly':'true',
                 'geometry':poligono.JSON,
                 'geometryType':'esriGeometryPolygon'
             }
-            headers = {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'}
+            headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
             req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
             response = urllib2.urlopen(req).read()
             response_text = response.decode('UTF-8')
-            j = json.load(response_text)
+            j = json.loads(response_text)
 
+            #respuesta = requests.post(url, data=params)
             if j.has_key('extent'):
                 je = j['extent']
                 extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
                 return extent
-
         except Exception:
-            mensaje(sys.exc_info()[1].args[0])
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
 
         return None
 
