@@ -946,6 +946,21 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completó la preparación del mapa para sección Rural.")
     return False
 
+def preparaMapaPlanoUbicacion(mxd, extent, escala, datosRural):
+    actualizaVinetaSeccionRural(mxd, datosRural)
+    if zoom(mxd, extent, escala):
+        nombreCapa = leeNombreCapa("Rural")
+        poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
+        if poligono != None:
+            lista_etiquetas = listaEtiquetas("Rural")
+            mensaje("Inicio preparación de etiquetas Rural.")
+            for capa in lista_etiquetas:
+                cortaEtiqueta(mxd, capa, poligono)
+            mensaje("Fin preparación de etiquetas.")
+            return True
+    mensaje("No se completó la preparación del mapa para sección Rural.")
+    return False
+
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estadoViviendas = "Rechazado"

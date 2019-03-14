@@ -7,6 +7,7 @@ import sys
 #import requests
 import urllib
 import urllib2
+import json
 from util import mensaje, zoom, generaPDF2, comprime, normalizaPalabra, Registro
 
 class PlanoUbicacion:
@@ -302,7 +303,7 @@ class PlanoUbicacion:
     #'historicMoment':'',
     'returnDistinctValues':'false',
     #'resultOffset':'',
-    #'resultRecordCount':'', 
+    #'resultRecordCount':'',
     #'queryByDistance':'',
     'returnExtentOnly':'false',
     #'datumTransformation':'',
