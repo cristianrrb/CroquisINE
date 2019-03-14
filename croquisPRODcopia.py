@@ -329,36 +329,29 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
     return None, None, None
 
 def obtieneExtentUrbano(urlPlano, poligono):
-    url = '{}/query?token={}&where=1%3D1&text=&objectIds=&time=&{}&geometryType=esriGeometryPolygon&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
-    """params = {
-        'token':token,
-        'f':'json',
-        'where':'1=1',
-        'outFields':'*',
-        'returnIdsOnly':'true',
-        'geometry':poligono.JSON,
-        'geometryType':'esriGeometryPolygon'
-    }"""
-    mensaje("1")
-    params = {
-        'geometry':poligono.JSON
-    }
+    try:
+        url = "{}/query".format(urlPlano)
+        params = {
+            'token': token,
+            'f':'json',
+            'where':'1=1',
+            'returnExtentOnly':'true',
+            'geometry':poligono.JSON,
+            'geometryType':'esriGeometryPolygon'
+        }
+        headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
+        response = urllib2.urlopen(req).read()
+        response_text = response.decode('UTF-8')
+        j = json.loads(response_text)
 
-    #url = '{}/query?{}'.format(urlPlano, urllib.urlencode(params))
-    u = url.format(urlPlano, token, urllib.urlencode(params))
-    mensaje(u)
-
-    fs = arcpy.FeatureSet()
-    fs.load(u)
-    mensaje("falla en el load")
-
-    fc = os.path.join("in_memory","fc")
-    fs.save(fc)
-
-    desc = arcpy.Describe(fc)
-    extent = desc.extent
-
-    return extent
+        if j.has_key('extent'):
+            je = j['extent']
+            extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
+            return extent
+    except Exception:
+        arcpy.AddMessage(sys.exc_info()[1].args[0])
+    return None
 
 def listaMXDsPlanoUbicacion(estrato, ancho):
 
@@ -497,7 +490,10 @@ def destacaListaPoligonos(mxd, fc):
                 cursor.updateRow(a)
         arcpy.MakeFeatureLayer_management(fc, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
+        if parametroEstrato == "Manzana":
+            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
+        else:
+            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         mensaje("Entidades Destacadas")
@@ -1446,6 +1442,23 @@ def generaNombrePDF(datosEntidad, infoMxd):
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
+def generaNombrePDFPlanoUbicacion_NUEVO(datosEntidad):
+    try:
+        tipo = "PU"
+        if parametroEstrato == "Manzana":
+            descripcionUrbano = normalizaPalabra(nombreUrbano(datosEntidad[5]))
+            nombre = "{}_{}_{}{}.pdf".format(tipo, descripcionUrbano, parametroEncuesta, parametroMarco[2:4])
+        elif parametroEstrato == "RAU":
+            descripcionUrbano = normalizaPalabra(nombreUrbano(datosEntidad[5]))
+            nombre = "{}_{}_{}{}_{}_{}.pdf".format(int(datosEntidad[6]), descripcionUrbano, parametroEncuesta, parametroMarco[2:4], tipo, parametroEstrato)
+        elif parametroEstrato == "Rural":
+            descripcionComuna = normalizaPalabra(nombreComuna(datosEntidad[4]))
+            mensaje(descripcionComuna)
+            nombre = "{}_{}_{}{}_{}_R.pdf".format(int(datosEntidad[5]), descripcionComuna, parametroEncuesta, parametroMarco[2:4], tipo)
+        return nombre
+    except:
+        mensaje("No se logró Generar Nombre PDF Plano Ubicación")
+
 def generaNombrePDFPlanoUbicacion(infoMxd):
     f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
     if parametroEstrato == "Manzana":
@@ -1910,11 +1923,12 @@ if parametroSoloPlanoUbicacion == 'Si':
             if parametroEstrato == "Rural":
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
             destacaListaPoligonos(mxd, fc)
             zoom(mxd, extent, escala)
-            nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
+            nombrePDF = generaNombrePDFPlanoUbicacion_NUEVO(entidad)
 
             registro = Registro(listaCodigos)
             registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
