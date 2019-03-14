@@ -3,6 +3,7 @@ import arcpy
 import os
 import datetime
 import csv
+import sys
 import requests
 from util import mensaje, zoom, generaPDF2, comprime, normalizaPalabra, Registro
 
@@ -35,7 +36,7 @@ class PlanoUbicacion:
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if self.parametros.Estrato == "Rural":
-                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComuna)
+                entidad, extent, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
 
@@ -100,11 +101,6 @@ class PlanoUbicacion:
             fc = os.path.join("in_memory", "fc")
             fs.save(fc)
 
-            desc = arcpy.Describe(fc)
-            extent = desc.extent
-
-            mensaje(extent)
-
             if self.parametros.Estrato == "Manzana":
                 fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
             elif self.parametros.Estrato == "RAU":
@@ -112,34 +108,42 @@ class PlanoUbicacion:
             elif self.parametros.Estrato == "Rural":
                 fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'CUT', 'COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
+            lista = []
             with arcpy.da.SearchCursor(fs, fields) as rows:
                 lista = [r for r in rows]
-            #mensaje(len(lista[0]))
-            extent = obtieneExtentUrbano(urlPlano, lista[0][0])
 
-            mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+            if len(lista) > 0:
+                extent = self.obtieneExtentUrbano(urlPlano, lista[0][0])
+                mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+                return lista[0], extent, fc
+            else:
+                mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
             mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-        return lista[0], extent, fc
+        return None, None, None
 
-    def obtieneExtentUrbano(self, urlUrbano, poligono):
-        url = "{}/query".format(urlUrbano)
-        params = {
-            'token': self.token,
-            'f':'json',
-            'where':'1=1',
-            'returnExtentOnly':'true',
-            'geometry':jpoligon,
-            'geometryType':'esriGeometryPolygon'
-        }
-        respuesta = requests.post(url, data=params)
-        j = respuesta.json()
-        if j.has_key('extent'):
-            je = j['extent']
-            extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
-            return extent
-        else:
-            return None
+    def obtieneExtentUrbano(self, urlPlano, poligono):
+        try:
+            url = "{}/query".format(urlPlano)
+            params = {
+                #'token': self.token,
+                'f':'json',
+                'where':'1=1',
+                'returnExtentOnly':'true',
+                'geometry':poligono.JSON,
+                'geometryType':'esriGeometryPolygon'
+            }
+            respuesta = requests.post(url, data=params)
+            j = respuesta.json()
+            if j.has_key('extent'):
+                je = j['extent']
+                extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
+                return extent
+
+        except:
+            mensaje(sys.exc_info()[1].args[0])
+
+        return None
 
     def actualizaVinetaManzanas_PlanoUbicacion(self, mxd, entidad):
         try:
