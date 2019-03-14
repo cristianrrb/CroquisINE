@@ -67,7 +67,7 @@ def calculaExtent(fs, metrosBuffer):
             lista = [r[0] for r in rows]
         arcpy.Delete_management(buffer)
         if lista != None and len(lista) > 0:
-            mensaje("Extensi√≥n del poligono obtenida correctamente.")
+            mensaje("ExtensiÛn del poligono obtenida correctamente.")
             return lista[0].extent
         else:
             mensaje("No se pudo calcular extension del poligono.")
@@ -93,18 +93,18 @@ def comprime(nombreZip, registros, rutaCSV):
 
 def normalizaPalabra(s):
     replacements = (
-        ("√°", "a"),
-        ("√©", "e"),
-        ("√≠", "i"),
-        ("√≥", "o"),
-        ("√∫", "u"),
-        ("√±", "n"),
-        ("√Å", "A"),
-        ("√â", "E"),
-        ("√ç", "I"),
-        ("√ì", "O"),
-        ("√ö", "U"),
-        ("√ë", "N"),
+        ("·", "a"),
+        ("È", "e"),
+        ("Ì", "i"),
+        ("Û", "o"),
+        ("˙", "u"),
+        ("Ò", "n"),
+        ("¡", "A"),
+        ("…", "E"),
+        ("Õ", "I"),
+        ("”", "O"),
+        ("⁄", "U"),
+        ("—", "N"),
         (" ", "_"),
         ("'", ""),
     )
@@ -193,7 +193,7 @@ class Registro:
         self.intersectaAV = ""
         self.homologacion = ""
         self.codigoBarra = ""
-        # Analisis de comparaci√≥n de superficie de manzanas
+        # Analisis de comparaciÛn de superficie de manzanas
         self.estadoSuperficie = ""
         self.motivoSuperficie = ""
         # Analisis de Rechazo por cantidad de viviendas
@@ -249,7 +249,7 @@ class InfoMarco:
         self.urlAV = ''
         self.urlHomologacion = ''
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
-        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACI√ìN"
+        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACI”N"
         self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
         self.leeConfiguracion(codigo, config)
 
