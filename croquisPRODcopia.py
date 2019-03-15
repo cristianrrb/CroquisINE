@@ -321,6 +321,8 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
         if  len(lista) > 0:
             mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
             extent = obtieneExtentUrbano(urlPlano, lista[0][0])
+            #poligonoPlano = obtienePoligonoUrbano(urlPlano, lista[0][0])
+            #return lista[0], extent, fc, poligonoPlano
             return lista[0], extent, fc
         else:
             mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
@@ -330,13 +332,16 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
 
 def obtieneExtentUrbano(urlPlano, poligono):
     try:
+        polygonBuffer = poligono.buffer(-10)
+        polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono.spatialReference)
+
         url = "{}/query".format(urlPlano)
         params = {
             'token': token,
             'f':'json',
             'where':'1=1',
             'returnExtentOnly':'true',
-            'geometry':poligono.JSON,
+            'geometry':polygonBufferNew.JSON,
             'geometryType':'esriGeometryPolygon'
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
@@ -349,6 +354,32 @@ def obtieneExtentUrbano(urlPlano, poligono):
             je = j['extent']
             extent = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
             return extent
+    except Exception:
+        arcpy.AddMessage(sys.exc_info()[1].args[0])
+    return None
+
+def obtienePoligonoUrbano(urlPlano, poligono):
+    try:
+        polygonBuffer = poligono.buffer(-10)
+        polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono.spatialReference)
+
+        url = "{}/query".format(urlPlano)
+        params = {
+            'token': token,
+            'f':'json',
+            'where':'1=1',
+            'returnExtentOnly':'false',
+            'geometry':polygonBufferNew.JSON,
+            'geometryType':'esriGeometryPolygon'
+        }
+        headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
+        response = urllib2.urlopen(req).read()
+        response_text = response.decode('UTF-8')
+        j = json.loads(response_text)
+        #mensaje(j)
+
+        return j
     except Exception:
         arcpy.AddMessage(sys.exc_info()[1].args[0])
     return None
@@ -499,6 +530,26 @@ def destacaListaPoligonos(mxd, fc):
         mensaje("Entidades Destacadas")
     except:
         mensaje("No se pudo destacar entidades")
+
+def listaEtiquetasPlanoUbicacion(estrato):
+    d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = []
+    for e in config['estratos']:
+        if e['nombre'] == estrato:
+            lista = [m for m in config['estratos'][d[estrato]]['capas_labels_plano_ubicacion']]
+    return lista
+
+def preparaMapaPlanoUbicacion(mxd, poligonoPlano):
+    try:
+        lista_etiquetas = listaEtiquetasPlanoUbicacion(parametroEstrato)
+        mensaje("Inicio preparación de etiquetas Plano Ubicacion")
+        for capa in lista_etiquetas:
+            cortaEtiqueta(mxd, capa, poligonoPlano)
+        mensaje("Fin preparación de etiquetas.")
+        return True
+    except:
+        mensaje("No se completó la preparación del mapa para sección Rural.")
+    return False
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
@@ -941,19 +992,6 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completó la preparación del mapa para sección Rural.")
     return False
 
-def preparaMapaPlanoUbicacion(mxd, extent, escala, datosRural):
-    nombreCapa = leeNombreCapa("Rural")
-    poligono = limpiaMapaRural(mxd, datosRural, nombreCapa)
-    if poligono != None:
-        lista_etiquetas = listaEtiquetas("Rural")
-        mensaje("Inicio preparación de etiquetas Rural.")
-        for capa in lista_etiquetas:
-            cortaEtiqueta(mxd, capa, poligono)
-        mensaje("Fin preparación de etiquetas.")
-        return True
-    mensaje("No se completó la preparación del mapa para sección Rural.")
-    return False
-
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estadoViviendas = "Rechazado"
@@ -1389,8 +1427,8 @@ def generaPDF(mxd, nombrePDF, datos):
         data_frame = 'PAGE_LAYOUT'
         df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
         df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-        resolution = 200
-        image_quality = 'BETTER' #'BEST' 'FASTER'
+        resolution = 300
+        image_quality = 'BEST' #'BEST' 'FASTER'
         color_space = 'RGB'
         compress_vectors = True
         image_compression = 'ADAPTIVE'
@@ -1401,19 +1439,15 @@ def generaPDF(mxd, nombrePDF, datos):
         georef_info = True #Parametro para generar GEOPDF
         jpeg_compression_quality = 80
 
-        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
-        if parametroSoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
+        nueva_region = normalizaPalabra(nombreRegion(datos[2]))
+        nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
-            if parametroEstrato == "Rural":
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
-            else:
-                nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-                mensaje(nueva_urbano)
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+        if parametroEstrato == "Rural":
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
         else:
-            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
+            nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
+            mensaje(nueva_urbano)
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
 
         mensaje(rutaDestino)
 
@@ -1838,7 +1872,7 @@ class InfoMarco:
 
 arcpy.env.overwriteOutput = True
 
-urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion.json'
+urlConfiguracion      = 'https://gis.ine.cl/croquis/configuracion_dev.json'
 urlComunas2016        = 'https://gis.ine.cl/croquis/ubicacion/comunas_2016.json'
 urlProvincias2016     = 'https://gis.ine.cl/croquis/ubicacion/provincias_2016.json'
 urlRegiones2016       = 'https://gis.ine.cl/croquis/ubicacion/regiones_2016.json'
@@ -1921,17 +1955,21 @@ if parametroSoloPlanoUbicacion == 'Si':
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "Rural":
+                #entidad, extent, fc, poligonoPlano = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
                 entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
                 dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+
+            #respuesta = preparaMapaPlanoUbicacion(mxd, poligonoPlano)
+            #mensaje(respuesta)
 
             destacaListaPoligonos(mxd, fc)
             zoom(mxd, extent, escala)
             nombrePDF = generaNombrePDFPlanoUbicacion_NUEVO(entidad)
 
             registro = Registro(listaCodigos)
-            registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, entidad)
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala

@@ -81,6 +81,11 @@
                "ruta": "Mz\\Mz_Perso_V"
             }
          ],
+         "capas_labels_plano_ubicacion": [
+            "Eje_Vial",
+            "Etiquetas_Limites",
+            "Cursos_Hidricos_Marco"
+         ],
          "mxdsPlanoUbicacion":[
            {
               "ancho": 106.859,
@@ -152,6 +157,11 @@
                "ruta": "RAU\\Rau_P1_V"
             }
 
+         ],
+         "capas_labels_plano_ubicacion": [
+            "Eje_Vial",
+            "Etiquetas_Limites",
+            "Cursos_Hidricos_Marco"
          ],
          "mxdsPlanoUbicacion":[
            {
@@ -237,6 +247,11 @@
                "orientacion": "Horizontal",
                "ruta": "Rural\\Sec_P3_H"
             }
+         ],
+         "capas_labels_plano_ubicacion": [
+            "Eje_Vial",
+            "Etiquetas_Limites",
+            "Cursos_Hidricos_Marco"
          ],
          "mxdsPlanoUbicacion":[
            {
