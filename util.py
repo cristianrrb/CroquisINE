@@ -67,7 +67,7 @@ def calculaExtent(fs, metrosBuffer):
             lista = [r[0] for r in rows]
         arcpy.Delete_management(buffer)
         if lista != None and len(lista) > 0:
-            mensaje("ExtensiÛn del poligono obtenida correctamente.")
+            mensaje("Extensi√≥n del poligono obtenida correctamente.")
             return lista[0].extent
         else:
             mensaje("No se pudo calcular extension del poligono.")
@@ -91,97 +91,6 @@ def comprime(nombreZip, registros, rutaCSV):
     except:
         return None
 
-def normalizaPalabra(s):
-    replacements = (
-        ("·", "a"),
-        ("È", "e"),
-        ("Ì", "i"),
-        ("Û", "o"),
-        ("˙", "u"),
-        ("Ò", "n"),
-        ("¡", "A"),
-        ("…", "E"),
-        ("Õ", "I"),
-        ("”", "O"),
-        ("⁄", "U"),
-        ("—", "N"),
-        (" ", "_"),
-        ("'", ""),
-    )
-    for a, b in replacements:
-        s = s.replace(a, b).replace(a.upper(), b.upper())
-    return s
-
-def generaPDF(mxd, nombrePDF, datos, parametros, dic, config):
-    try:
-        data_frame = 'PAGE_LAYOUT'
-        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-        resolution = 200
-        image_quality = 'BETTER' #'BEST' 'FASTER'
-        color_space = 'RGB'
-        compress_vectors = True
-        image_compression = 'ADAPTIVE'
-        picture_symbol = 'RASTERIZE_BITMAP'
-        convert_markers = True
-        embed_fonts = True
-        layers_attributes = 'LAYERS_ONLY'
-        georef_info = True #Parametro para generar GEOPDF
-        jpeg_compression_quality = 80
-
-        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
-        if parametros.SoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(dic.nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(dic.nombreComuna(datos[4]))
-
-            if parametros.Estrato == "Rural":
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, nueva_region, nueva_comuna)
-            else:
-                nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-                mensaje(nueva_urbano)
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
-        else:
-            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametros.Encuesta, "PLANOS_UBICACION")
-
-        mensaje(rutaDestino)
-
-        if not os.path.exists(rutaDestino):
-            os.makedirs(rutaDestino)
-
-        destinoPDF = os.path.join(rutaDestino, nombrePDF)
-        mensaje(destinoPDF)
-        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
-        mensaje("Croquis Exportado a pdf")
-        return destinoPDF
-    except:
-        mensaje("No se pudo exportar Croquis a pdf")
-        return None
-
-def generaPDF2(mxd, destinoPDF):
-    try:
-        data_frame = 'PAGE_LAYOUT'
-        df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-        df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-        resolution = 200
-        image_quality = 'BETTER' #'BEST' 'FASTER'
-        color_space = 'RGB'
-        compress_vectors = True
-        image_compression = 'ADAPTIVE'
-        picture_symbol = 'RASTERIZE_BITMAP'
-        convert_markers = True
-        embed_fonts = True
-        layers_attributes = 'LAYERS_ONLY'
-        georef_info = True #Parametro para generar GEOPDF
-        jpeg_compression_quality = 80
-
-        arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
-        mensaje("Croquis Exportado a pdf")
-
-        return destinoPDF
-    except:
-        mensaje("No se pudo exportar Croquis a pdf")
-        return None
-
 class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
@@ -193,7 +102,7 @@ class Registro:
         self.intersectaAV = ""
         self.homologacion = ""
         self.codigoBarra = ""
-        # Analisis de comparaciÛn de superficie de manzanas
+        # Analisis de comparaci√Ø¬ø¬Ωn de superficie de manzanas
         self.estadoSuperficie = ""
         self.motivoSuperficie = ""
         # Analisis de Rechazo por cantidad de viviendas
@@ -249,7 +158,7 @@ class InfoMarco:
         self.urlAV = ''
         self.urlHomologacion = ''
         self.nombreCampoIdHomologacion = "MANZENT_MM2014"
-        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACI”N"
+        self.nombreCampoTipoHomologacion = "TIPO_HOMOLOGACI√Ø¬ø¬ΩN"
         self.nombreCampoTotalViviendas = "TOT_VIV_PART_PC2016"
         self.leeConfiguracion(codigo, config)
 
@@ -271,3 +180,76 @@ class InfoMarco:
                 self.nombreCampoTipoHomologacion = marco['config']['nombreCampoTipoHomologacion']
                 self.nombreCampoTotalViviendas   = marco['config']['nombreCampoTotalViviendas']
 
+class GeneraPDF:
+    def __init__(self, config, dic, parametros):
+        self.config = config
+        self.dic = dic
+        self.parametros = parametros
+
+    def generaRutaPDF(self, nombrePDF, datos):
+        try:
+            nueva_region = self.normalizaPalabra(self.dic.nombreRegion(datos[2]))
+            nueva_comuna = self.normalizaPalabra(self.dic.nombreComuna(datos[4]))
+
+            if self.parametros.Estrato == "Rural":
+                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna)
+            else:
+                nueva_urbano = self.normalizaPalabra(self.dic.nombreUrbano(datos[5]))
+                rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
+
+            if not os.path.exists(rutaDestino):
+                os.makedirs(rutaDestino)
+
+            destinoPDF = os.path.join(rutaDestino, nombrePDF)
+            mensaje(destinoPDF)
+            mensaje("Se cre√≥ la ruta de destino PDF")
+            return destinoPDF
+        except:
+            mensaje("No se pudo crear el destino PDF")
+            return None
+
+    def generaPDF(self, mxd, destinoPDF):
+        try:
+            data_frame = 'PAGE_LAYOUT'
+            df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+            df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
+            resolution = 200
+            image_quality = 'BETTER' #'BEST' 'FASTER'
+            color_space = 'RGB'
+            compress_vectors = True
+            image_compression = 'ADAPTIVE'
+            picture_symbol = 'RASTERIZE_BITMAP'
+            convert_markers = True
+            embed_fonts = True
+            layers_attributes = 'LAYERS_ONLY'
+            georef_info = True #Parametro para generar GEOPDF
+            jpeg_compression_quality = 80
+
+            arcpy.mapping.ExportToPDF(mxd, destinoPDF, data_frame, df_export_width, df_export_height, resolution, image_quality, color_space, compress_vectors, image_compression, picture_symbol, convert_markers, embed_fonts, layers_attributes,georef_info,jpeg_compression_quality)
+            mensaje("Croquis Exportado a pdf")
+
+            return destinoPDF
+        except:
+            mensaje("No se pudo exportar Croquis a pdf")
+            return None
+
+    def normalizaPalabra(self, s):
+        replacements = (
+            ("√°", "a"),
+            ("√©", "e"),
+            ("√≠", "i"),
+            ("√≥", "o"),
+            ("√∫", "u"),
+            ("√±", "n"),
+            ("√Å", "A"),
+            ("√â", "E"),
+            ("√ç", "I"),
+            ("√ì", "O"),
+            ("√ö", "U"),
+            ("√ë", "N"),
+            (" ", "_"),
+            ("'", ""),
+        )
+        for a, b in replacements:
+            s = s.replace(a, b).replace(a.upper(), b.upper())
+        return s
