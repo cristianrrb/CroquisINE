@@ -201,7 +201,6 @@ class GeneraPDF:
                 os.makedirs(rutaDestino)
 
             destinoPDF = os.path.join(rutaDestino, nombrePDF)
-            mensaje(destinoPDF)
             mensaje("Se creó la ruta de destino PDF")
             return destinoPDF
         except:

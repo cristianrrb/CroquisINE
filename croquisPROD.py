@@ -589,8 +589,10 @@ def procesaManzana(codigo, viviendasEncuestar):
                             registro.codigoBarra = generaCodigoBarra(parametroEstrato, datosManzana)
 
                             nombrePDF = generaNombrePDF(datosManzana, infoMxd)
-                            rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosManzana)
-                            registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                            mensaje(nombrePDF)
+                            rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosManzana)
+                            mensaje(rutaPDF)
+                            registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
                             if registro.rutaPDF != "":
                                 registro.estado = "Genera PDF"
@@ -651,8 +653,10 @@ def procesaRAU(codigo):
                         registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRAU)
 
                         nombrePDF = generaNombrePDF(datosRAU, infoMxd)
-                        rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosRAU)
-                        registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                        mensaje(nombrePDF)
+                        rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosRAU)
+                        mensaje(rutaPDF)
+                        registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
@@ -666,7 +670,7 @@ def procesaRAU(codigo):
                 registro.estado = "Seccion No Existe"
                 registro.motivo = "Croquis No generado"
     except:
-        registro.estado = "Seccion No Existe"
+        registro.estado = "Error"
         registro.motivo = "Croquis No generado"
         mensaje("No se completó el proceso de sección RAU.")
     registros.append(registro)
@@ -690,8 +694,10 @@ def procesaRural(codigo):
                     registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosRural)
 
                     nombrePDF = generaNombrePDF(datosRural, infoMxd)
-                    rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosRural)
-                    registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                    mensaje(nombrePDF)
+                    rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosRural)
+                    mensaje(rutaPDF)
+                    registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
 
@@ -705,9 +711,9 @@ def procesaRural(codigo):
             registro.estado = "Seccion No Existe"
             registro.motivo = "Croquis No generado"
     except:
-        registro.estado = "No generado"
-        registro.motivo = "Seccion no existe"
-        mensaje("No se completó el proceso de secció Rural.")
+        registro.estado = "Error"
+        registro.motivo = "Croquis No generado"
+        mensaje("No se completó el proceso de sección Rural.")
     registros.append(registro)
     mensajeEstado(registro)
     return
@@ -737,8 +743,8 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosSeccion)
 
                 nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
-                rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosSeccion)
-                registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosSeccion)
+                registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
                 if registro.rutaPDF != "":
                     registro.estado = "Correcto"
@@ -787,10 +793,10 @@ def leeJsonConfiguracion():
 def actualizaVinetaManzanas(mxd,datosManzana):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
     try:
-        nombre_region = self.dic.nombreRegion(datosManzana[2])
-        nombre_provincia = self.dic.nombreProvincia(datosManzana[3])
-        nombre_comuna = self.dic.nombreComuna(datosManzana[4])
-        nombre_urbano = self.dic.nombreUrbano(datosManzana[5])
+        nombre_region = dic.nombreRegion(datosManzana[2])
+        nombre_provincia = dic.nombreProvincia(datosManzana[3])
+        nombre_comuna = dic.nombreComuna(datosManzana[4])
+        nombre_urbano = dic.nombreUrbano(datosManzana[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosManzana)
         mensaje(codigo_barra)
 
@@ -819,17 +825,17 @@ def actualizaVinetaManzanas(mxd,datosManzana):
                 elm.text = datosManzana[9]
             if elm.name == "barcode":
                 elm.text = codigo_barra
-        mensaje("Se actualizaron las vióetas para manzana.")
+        mensaje("Se actualizaron las viñetas para manzana.")
     except:
         mensaje("No se pudo actualizar las viñetas para manzana.")
 
 def actualizaVinetaSeccionRAU(mxd,datosRAU):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','EST_GEOGRAFICO','COD_CARTO','COD_SECCION']
     try:
-        nombre_region = self.dic.nombreRegion(datosRAU[2])
-        nombre_provincia = self.dic.nombreProvincia(datosRAU[3])
-        nombre_comuna = self.dic.nombreComuna(datosRAU[4])
-        nombre_urbano = self.nombreUrbano(datosRAU[5])
+        nombre_region = dic.nombreRegion(datosRAU[2])
+        nombre_provincia = dic.nombreProvincia(datosRAU[3])
+        nombre_comuna = dic.nombreComuna(datosRAU[4])
+        nombre_urbano = dic.nombreUrbano(datosRAU[5])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRAU)
         mensaje(codigo_barra)
 
@@ -865,9 +871,9 @@ def actualizaVinetaSeccionRAU(mxd,datosRAU):
 def actualizaVinetaSeccionRural(mxd,datosRural):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO']
     try:
-        nombre_region = self.dic.nombreRegion(datosRural[2])
-        nombre_provincia = self.dic.nombreProvincia(datosRural[3])
-        nombre_comuna = self.dic.nombreComuna(datosRural[4])
+        nombre_region = dic.nombreRegion(datosRural[2])
+        nombre_provincia = dic.nombreProvincia(datosRural[3])
+        nombre_comuna = dic.nombreComuna(datosRural[4])
         codigo_barra = generaCodigoBarra(parametroEstrato,datosRural)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
