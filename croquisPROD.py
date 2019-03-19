@@ -1226,7 +1226,7 @@ urlPortal = 'https://gis.ine.cl/portal'
 usuario = 'esri_chile'
 clave = '(esrichile2018)'
 
-urlConfiguracion = 'https://gis.ine.cl/croquis/configuracion.json'
+urlConfiguracion = 'https://gis.ine.cl/croquis/configuracion_dev.json'
 config = leeJsonConfiguracion()
 
 dictRegiones = {r['codigo']:r['nombre'] for r in config['regiones']}
