@@ -60,7 +60,9 @@ class PlanoUbicacion:
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
                 zoom(mxd, extent_PU, escala)
-                #self.preparaMapa_PU(mxd, polygonPU)
+                #pol = entidad[0]
+                #comu = entidad[4]
+                self.preparaMapa_PU(mxd, entidad)
 
             self.destacaListaPoligonos(mxd, fc)
             nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad)
@@ -78,7 +80,7 @@ class PlanoUbicacion:
                 registro.estado = "Plano Ubicacion"
                 registro.motivo = "Croquis generado"
         except Exception:
-            mensaje("error")
+            mensaje("Error en procesa")
             registro.estado = "Plano Ubicacion"
             registro.motivo = "Croquis No generado"
 
@@ -125,7 +127,7 @@ class PlanoUbicacion:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
             mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-        return None, None, None, None
+        return None, None, None
 
     def obtieneExtent_PU(self, urlPlano, poligono):
         try:
@@ -292,11 +294,10 @@ class PlanoUbicacion:
         except:
             return None
 
-    def preparaMapa_PU(mxd, extent, escala, datosRural):
-        nombreCapa = leeNombreCapa(parametroEstrato)
-        poligono = limpiaMapa_PU(mxd, datosRural, nombreCapa)
+    def preparaMapa_PU(mxd, entidad):
+        poligono = limpiaMapa_PU(mxd, entidad, "Comuna")
         if poligono != None:
-            lista_etiquetas = listaEtiquetas_PU(parametroEstrato)
+            lista_etiquetas = listaEtiquetas_PU(self.parametros.Estrato)
             mensaje("Inicio preparacion de etiquetas Rural.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
@@ -305,21 +306,15 @@ class PlanoUbicacion:
         mensaje("No se completo la preparacion del mapa para seccion Rural.")
         return False
 
-    def leeNombreCapa(estrato):
-        #d = {"Manzana":0,"RAU":1,"Rural":2}
-        lista = ""
-        for e in self.config['estratos']:
-            if e['nombre'] == estrato:
-                lista = e['nombre_capa']
-        return lista
-
     # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
-    def limpiaMapa_PU(mxd, datosRural, nombreCapa):
+    #
+    def limpiaMapa_PU(mxd, entidad, nombreCapa):
         try:
-            mensaje("Limpieza de mapa 'Seccion Rural' iniciada.")
+            mensaje(nombreCapa)
+            mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
             lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
-            sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
+            sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "COMUNA"), int(entidad[4]))
             lyr.definitionQuery = sql_exp
             FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
             arcpy.AddField_management(FC, "tipo", "LONG")
@@ -329,9 +324,8 @@ class PlanoUbicacion:
             sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
 
-            # aqui deberia pasarle el poligono de la comuna del plano de ubicacion  -->>> esta variable poligonoPlano *********************************************************************************************
-            seccionRural = datosRural[0]
-            ext = seccionRural.projectAs(df.spatialReference)
+            comunaRural = entidad[0]
+            ext = comunaRural.projectAs(df.spatialReference)
             dist = calculaDistanciaBufferRural(ext.area)
             dist_buff = float(dist.replace(" Meters", ""))
             polgrande = ext.buffer(dist_buff * 100)
@@ -346,14 +340,22 @@ class PlanoUbicacion:
             lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
             lyr1.definitionQuery = sql_exp
             lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
-            sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(datosRural[4]))
+            sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
             lyr2.definitionQuery = sql_exp
             mensaje("Limpieza de mapa correcta.")
             return polchico
         except Exception:
             mensaje(sys.exc_info()[1].args[0])
-            mensaje("Error en limpieza de mapa 'Seccion Rural'.")
+            mensaje("Error en limpieza de mapa 'Comuna Rural'.")
         return None
+
+    def leeNombreCapa(estrato):
+        #d = {"Manzana":0,"RAU":1,"Rural":2}
+        lista = ""
+        for e in self.config['estratos']:
+            if e['nombre'] == estrato:
+                lista = e['nombre_capa']
+        return lista
 
     def listaEtiquetas_PU(estrato):
         d = {"Manzana":0,"RAU":1,"Rural":2}
