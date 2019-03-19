@@ -363,7 +363,7 @@ class PlanoUbicacion:
         poligonoMascara = polgrande.difference(polchico)
 
         cursor = arcpy.da.InsertCursor(lyr, ['SHAPE@', "TIPO"])
-        cursor.insertRow([poligonoMascara,0])
+        cursor.insertRow([poligonoMascara, 0])
         del cursor
         return polchico
 
