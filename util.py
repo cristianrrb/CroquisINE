@@ -6,6 +6,7 @@ import json
 import os
 import uuid
 import zipfile
+import sys
 
 def mensaje(m):
     n = datetime.datetime.now()
@@ -229,7 +230,7 @@ class GeneraPDF:
             data_frame = 'PAGE_LAYOUT'
             df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
             df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-            resolution = 100
+            resolution = 200
             image_quality = 'BETTER' #'BEST' 'FASTER'
             color_space = 'RGB'
             compress_vectors = True
@@ -245,7 +246,8 @@ class GeneraPDF:
             mensaje("Croquis Exportado a pdf")
 
             return destinoPDF
-        except:
+        except Exception:
+            mensaje(sys.exc_info()[1].args[0])
             mensaje("No se pudo exportar Croquis a pdf")
             return None
 

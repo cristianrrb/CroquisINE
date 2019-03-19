@@ -60,18 +60,14 @@ class PlanoUbicacion:
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
                 zoom(mxd, extent_PU, escala)
-                #pol = entidad[0]
-                #comu = entidad[4]
                 self.preparaMapa_PU(mxd, entidad)
-                mensaje("paso por preparaMapa_PU")
 
             self.destacaListaPoligonos(mxd, fc)
+
             nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad)
             mensaje(nombrePDF)
             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad)
             mensaje(rutaPDF)
-
-            #registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic, self.config)
             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
 
             registro.formato = infoMxd['formato']
@@ -82,6 +78,7 @@ class PlanoUbicacion:
                 registro.motivo = "Croquis generado"
         except Exception:
             mensaje("Error en procesa")
+            mensaje(sys.exc_info()[1].args[0])
             registro.estado = "Plano Ubicacion"
             registro.motivo = "Croquis No generado"
 
@@ -252,9 +249,11 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
+            mensaje("destacaListaPoligonos-------")
+            mensaje(self.parametros.Estrato)
             if self.parametros.Estrato == "Manzana":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
-            else:
+            if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
@@ -296,11 +295,8 @@ class PlanoUbicacion:
             return None
 
     def preparaMapa_PU(self, mxd, entidad):
-        mensaje("preparaMapa_PU")
         poligono = self.limpiaMapa_PU(mxd, entidad)
         if poligono != None:
-            lista = [m['nombre'] for m in self.config['estratos']]
-            mensaje(lista)
             lista_etiquetas = [m for m in self.config['estratos'][2]['capas_labels_plano_ubicacion']]
             mensaje("Inicio preparacion de etiquetas Rural.")
             for capa in lista_etiquetas:
@@ -310,8 +306,6 @@ class PlanoUbicacion:
         mensaje("No se completo la preparacion del mapa para seccion Rural.")
         return False
 
-    # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
-    #
     def limpiaMapa_PU(self, mxd, entidad):
         try:
             mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
@@ -328,6 +322,9 @@ class PlanoUbicacion:
             #sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
             #lyr2.definitionQuery = sql_exp
 
+
+            self.limpiaEsquicio(mxd, "Comuna_ESQ", "COMUNA", int(entidad[4]))
+
             mensaje("Limpieza de mapa correcta.")
             return polchico
 
@@ -343,7 +340,6 @@ class PlanoUbicacion:
         lyrComuna = arcpy.mapping.ListLayers(mxd, "Comuna", df)[0]
         sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyrComuna.dataSource, "COMUNA"), codigoComuna)
         lyrComuna.definitionQuery = sql_exp
-
         cursor = arcpy.da.SearchCursor(lyrComuna, ['SHAPE@'])
         for row in cursor:
             poligono = row[0]
@@ -383,9 +379,6 @@ class PlanoUbicacion:
         arcpy.mapping.AddLayer(df, lyr, "TOP")
         return lyr
 
-    def listaEtiquetas_PU(self):
-        return [m for m in self.config['estratos'][2]['capas_labels_plano_ubicacion']]
-
     def cortaEtiqueta(self, mxd, elLyr, poly):
         try:
             path_scratchGDB = arcpy.env.scratchGDB
@@ -409,3 +402,16 @@ class PlanoUbicacion:
             mensaje(sys.exc_info()[1].args[0])
             mensaje("Error en preparacion de etiquetas.")
         return False
+
+    def limpiaEsquicio(self, mxd, capa, campo, valor):
+        try:
+            mensaje("Limpieza de esquicio iniciada.")
+            df = arcpy.mapping.ListDataFrames(mxd)[1]
+            lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+            sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, campo), valor)
+            lyr.definitionQuery = sql_exp
+            mensaje(sql_exp)
+        except Exception:
+            mensaje(sys.exc_info()[1].args[0])
+            mensaje("Error en limpieza de esquicio.")
+        return None
