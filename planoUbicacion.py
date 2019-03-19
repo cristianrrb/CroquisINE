@@ -154,8 +154,10 @@ class PlanoUbicacion:
                 je = j['extent']
                 extentPU = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
             # ****************************************** OBTIENE EXTENT PU ****************************************
+            mensaje("OK obtieneExtent_PU")
             return extentPU
         except Exception:
+            mensaje("Error obtieneExtent_PU")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
         return None
 
@@ -181,9 +183,9 @@ class PlanoUbicacion:
                     elm.text = nombre_comuna
                 if elm.name == "Nombre_Urbano":
                     elm.text = nombre_urbano
-            mensaje("Se actualizaron las viñetas para manzana Plano Ubicacion.")
+            mensaje("Se actualizaron las vinetas para manzana Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viñetas para manzana Plano Ubicacion.")
+            mensaje("No se pudo actualizar las vinetas para manzana Plano Ubicacion.")
 
     def actualizaVinetaSeccionRAU_PlanoUbicacion(self, mxd, datosRAU):
         try:
@@ -207,9 +209,9 @@ class PlanoUbicacion:
                     elm.text = nombre_comuna
                 if elm.name == "Nombre_Urbano":
                     elm.text = nombre_urbano
-            mensaje("Se actualizaron las viï¿½etas para RAU Plano Ubicacion.")
+            mensaje("Se actualizaron las vinetas para RAU Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viï¿½etas para RAU Plano Ubicacion.")
+            mensaje("No se pudo actualizar las vinetas para RAU Plano Ubicacion.")
 
     def actualizaVinetaSeccionRural_PlanoUbicacion(self, mxd, datosRural):
         try:
@@ -230,9 +232,9 @@ class PlanoUbicacion:
                     elm.text = nombre_provincia
                 if elm.name == "Nombre_Comuna":
                     elm.text = nombre_comuna
-            mensaje("Se actualizaron las viï¿½etas para Rural Plano Ubicacion.")
+            mensaje("Se actualizaron las vinetas para Rural Plano Ubicacion.")
         except:
-            mensaje("No se pudo actualizar las viï¿½etas para Rural Plano Ubicacion.")
+            mensaje("No se pudo actualizar las vinetas para Rural Plano Ubicacion.")
 
     def destacaListaPoligonos(self, mxd, fc):
         try:
@@ -266,9 +268,10 @@ class PlanoUbicacion:
                 descripcionComuna = self.controlPDF.normalizaPalabra(self.dic.nombreComuna(datosEntidad[4]))
                 mensaje(descripcionComuna)
                 nombre = "{}_{}_{}{}_{}_R.pdf".format(int(datosEntidad[5]), descripcionComuna, self.parametros.Encuesta, self.parametros.Marco[2:4], tipo)
+            mensaje("Se Genera Nombre PDF Plano Ubicacion")
             return nombre
         except:
-            mensaje("No se logró Generar Nombre PDF Plano Ubicación")
+            mensaje("No se logro Generar Nombre PDF Plano Ubicacion")
 
     def escribeCSV(self, nombreCsv, registros):
         try:
@@ -285,19 +288,17 @@ class PlanoUbicacion:
         except:
             return None
 
-
-
     def preparaMapa_PU(mxd, extent, escala, datosRural):
         nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapa_PU(mxd, datosRural, nombreCapa)
         if poligono != None:
             lista_etiquetas = listaEtiquetas_PU(parametroEstrato)
-            mensaje("Inicio preparaciÃ³n de etiquetas Rural.")
+            mensaje("Inicio preparacion de etiquetas Rural.")
             for capa in lista_etiquetas:
                 cortaEtiqueta(mxd, capa, poligono)
-            mensaje("Fin preparaciÃ³n de etiquetas.")
+            mensaje("Fin preparacion de etiquetas.")
             return True
-        mensaje("No se completÃ³ la preparaciÃ³n del mapa para secciÃ³n Rural.")
+        mensaje("No se completo la preparacion del mapa para seccion Rural.")
         return False
 
     def leeNombreCapa(estrato):
@@ -311,7 +312,7 @@ class PlanoUbicacion:
     # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
     def limpiaMapa_PU(mxd, datosRural, nombreCapa):
         try:
-            mensaje("Limpieza de mapa 'SecciÃ³n Rural' iniciada.")
+            mensaje("Limpieza de mapa 'Seccion Rural' iniciada.")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
             lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
             sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
@@ -347,7 +348,7 @@ class PlanoUbicacion:
             return polchico
         except Exception:
             mensaje(sys.exc_info()[1].args[0])
-            mensaje("Error en limpieza de mapa 'SecciÃ³n Rural'.")
+            mensaje("Error en limpieza de mapa 'Seccion Rural'.")
         return None
 
     def listaEtiquetas_PU(estrato):
@@ -379,5 +380,5 @@ class PlanoUbicacion:
             return True
         except Exception:
             mensaje(sys.exc_info()[1].args[0])
-            mensaje("Error en preparaciÃ³n de etiquetas.")
+            mensaje("Error en preparacion de etiquetas.")
         return False
