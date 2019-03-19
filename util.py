@@ -229,7 +229,7 @@ class GeneraPDF:
             data_frame = 'PAGE_LAYOUT'
             df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
             df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-            resolution = 200
+            resolution = 100
             image_quality = 'BETTER' #'BEST' 'FASTER'
             color_space = 'RGB'
             compress_vectors = True
