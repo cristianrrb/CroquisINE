@@ -249,7 +249,7 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            if parametroEstrato == "Manzana":
+            if self.parametros.Estrato == "Manzana":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
             else:
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
