@@ -13,7 +13,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from util import mensaje, zoom, calculaExtent, obtieneToken, comprime, Registro, Diccionario, InfoMarco, GeneraPDF
+from util import *
 import templates
 import planoUbicacion
 
@@ -250,22 +250,7 @@ def leeNombreCapa(estrato):
             lista = e['nombre_capa']
     return lista
 
-def calculaDistanciaBufferManzana(area):
-    #print
-    return '15 Meters'
 
-def calculaDistanciaBufferRAU(area):
-    if area <= 210000:     # 0 .. 210000
-        return '15 Meters'
-    if area > 210000:      # 210000 ..
-        return '30 Meters'
-
-def calculaDistanciaBufferRural(area):
-    if area <= 932000:      # 0 .. 932000
-        return '50 Meters'
-    if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
-        return '150 Meters'
-    return '500 Meters'     # valor por defecto
 
 def areasExcluidas(poligono, url):
     try:
