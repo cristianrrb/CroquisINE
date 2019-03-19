@@ -285,8 +285,6 @@ class PlanoUbicacion:
         except:
             return None
 
-
-
     def preparaMapa_PU(mxd, extent, escala, datosRural):
         nombreCapa = leeNombreCapa(parametroEstrato)
         poligono = limpiaMapa_PU(mxd, datosRural, nombreCapa)
