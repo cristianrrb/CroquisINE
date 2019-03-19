@@ -7,7 +7,7 @@ import sys
 import requests
 import urllib2, urllib
 import json
-from util import mensaje, zoom, comprime, Registro
+from util import *
 
 class PlanoUbicacion:
 
@@ -295,7 +295,7 @@ class PlanoUbicacion:
             return None
 
     def preparaMapa_PU(mxd, entidad):
-        poligono = limpiaMapa_PU(mxd, entidad, "Comuna")
+        poligono = self.limpiaMapa_PU(mxd, entidad)
         if poligono != None:
             lista_etiquetas = listaEtiquetas_PU(self.parametros.Estrato)
             mensaje("Inicio preparacion de etiquetas Rural.")
@@ -308,46 +308,78 @@ class PlanoUbicacion:
 
     # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
     #
-    def limpiaMapa_PU(mxd, entidad, nombreCapa):
+    def limpiaMapa_PU(mxd, entidad):
         try:
-            mensaje(nombreCapa)
             mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
-            df = arcpy.mapping.ListDataFrames(mxd)[0]
-            lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
-            sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "COMUNA"), int(entidad[4]))
-            lyr.definitionQuery = sql_exp
-            FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
-            arcpy.AddField_management(FC, "tipo", "LONG")
-            tm_path = os.path.join("in_memory", "graphic_lyr")
-            arcpy.MakeFeatureLayer_management(FC, tm_path)
-            tm_layer = arcpy.mapping.Layer(tm_path)
-            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
-            arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
 
-            comunaRural = entidad[0]
-            ext = comunaRural.projectAs(df.spatialReference)
-            dist = calculaDistanciaBufferRural(ext.area)
-            dist_buff = float(dist.replace(" Meters", ""))
-            polgrande = ext.buffer(dist_buff * 100)
-            polchico = ext.buffer(dist_buff)
-            poli = polgrande.difference(polchico)
-            cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
-            cursor.insertRow([poli,0])
-            del cursor
-            del FC
-            arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            df1 = arcpy.mapping.ListDataFrames(mxd)[1]
-            lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
+            poligonoEntrada = self.filtraComunaEnMapa(int(entidad[4]), mxd)
+
+            lyr = self.creaLayerParaMascara()
+            polchico = self.generaMascara(poligonoEntrada, lyr)
+
+            dfEsquicio = arcpy.mapping.ListDataFrames(mxd)[1]
+            lyr1 = arcpy.mapping.ListLayers(mxd, "Comuna", dfEsquicio)[0]
             lyr1.definitionQuery = sql_exp
-            lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
-            sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
-            lyr2.definitionQuery = sql_exp
+
+            #lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
+            #sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
+            #lyr2.definitionQuery = sql_exp
+
             mensaje("Limpieza de mapa correcta.")
             return polchico
+
         except Exception:
             mensaje(sys.exc_info()[1].args[0])
             mensaje("Error en limpieza de mapa 'Comuna Rural'.")
         return None
+
+    def filtraComunaEnMapa(self, codigoComuna, mxd):
+        poligono = None
+         # Filtra comuna en mapa
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyrComuna = arcpy.mapping.ListLayers(mxd, "Comuna", df)[0]
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyrComuna.dataSource, "COMUNA"), codigoComuna)
+        lyrComuna.definitionQuery = sql_exp
+
+        cursor = arcpy.da.SearchCursor(lyrComuna, ['SHAPE@'])
+        for row in cursor:
+            poligono = row[0]
+        del cursor
+        return poligono
+
+    def generaMascara(self, poligonoEntrada, lyr):
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+
+        poligonoProyectado = poligonoEntrada.projectAs(df.spatialReference)
+
+        distancia = float(calculaDistanciaBufferRural(poligonoProyectado.area).replace(" Meters", ""))
+
+        polgrande = poligonoProyectado.buffer(distancia * 100)
+        polchico = poligonoProyectado.buffer(distancia)
+
+        poligonoMascara = polgrande.difference(polchico)
+
+        cursor = arcpy.da.InsertCursor(lyr, ['SHAPE@', "TIPO"])
+        cursor.insertRow([poligonoMascara,0])
+        del cursor
+        return polchico
+
+
+    def creaLayerParaMascara(self):
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        fc = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        arcpy.AddField_management(fc, "tipo", "LONG")
+
+        tmpLyr = os.path.join("in_memory", "graphic_lyr")
+        arcpy.MakeFeatureLayer_management(fc, tmpLyr)
+        lyr = arcpy.mapping.Layer(tmpLyr)
+
+        sourceLyr = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, lyr, sourceLyr, True)
+     
+        # del fc
+        arcpy.mapping.AddLayer(df, lyr, "TOP")
+        return lyr
 
     def leeNombreCapa(estrato):
         #d = {"Manzana":0,"RAU":1,"Rural":2}
