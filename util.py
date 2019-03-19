@@ -67,7 +67,7 @@ def calculaExtent(fs, metrosBuffer):
             lista = [r[0] for r in rows]
         arcpy.Delete_management(buffer)
         if lista != None and len(lista) > 0:
-            mensaje("Extensión del poligono obtenida correctamente.")
+            mensaje("Extension del poligono obtenida correctamente.")
             return lista[0].extent
         else:
             mensaje("No se pudo calcular extension del poligono.")
@@ -97,17 +97,17 @@ class Registro:
         self.codigo = codigo
         self.estado = ""
         self.motivo = ""
+        # variables analisis manzanas
         self.intersectaPE = ""
         self.intersectaCRF = ""
         self.intersectaAV = ""
         self.homologacion = ""
-        self.codigoBarra = ""
-        # Analisis de comparaciï¿½n de superficie de manzanas
         self.estadoSuperficie = ""
         self.motivoSuperficie = ""
-        # Analisis de Rechazo por cantidad de viviendas
         self.estadoViviendas = ""
         self.motivoViviendas = ""
+        # variables analisis manzanas
+        self.codigoBarra = ""
         self.formato = ""
         self.orientacion = ""
         self.escala = ""
@@ -201,8 +201,7 @@ class GeneraPDF:
                 os.makedirs(rutaDestino)
 
             destinoPDF = os.path.join(rutaDestino, nombrePDF)
-            mensaje(destinoPDF)
-            mensaje("Se creó la ruta de destino PDF")
+            mensaje("Se creo la ruta de destino PDF")
             return destinoPDF
         except:
             mensaje("No se pudo crear el destino PDF")

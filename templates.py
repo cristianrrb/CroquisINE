@@ -30,7 +30,6 @@ class Templates:
                     lista = [m for m in self.config['estratos'][d[estrato]]['mxdsPlanoUbicacion'] if m['ancho'] <= m['alto']]
         return lista
 
-
     def mejorEscalaMXD(self, mxd, alto, ancho):
         mensaje("Escala rango 500 a 100.000")
         escalas = [e for e in range(5, 10000)]
