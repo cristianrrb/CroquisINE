@@ -63,12 +63,13 @@ class PlanoUbicacion:
                 #pol = entidad[0]
                 #comu = entidad[4]
                 self.preparaMapa_PU(mxd, entidad)
+                mensaje("paso por preparaMapa_PU")
 
             self.destacaListaPoligonos(mxd, fc)
             nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad)
-            #mensaje(nombrePDF)
+            mensaje(nombrePDF)
             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad)
-            #mensaje(rutaPDF)
+            mensaje(rutaPDF)
 
             #registro.rutaPDF = generaPDF(mxd, nombrePDF, "", self.parametros, self.dic, self.config)
             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
@@ -294,13 +295,16 @@ class PlanoUbicacion:
         except:
             return None
 
-    def preparaMapa_PU(mxd, entidad):
+    def preparaMapa_PU(self, mxd, entidad):
+        mensaje("preparaMapa_PU")
         poligono = self.limpiaMapa_PU(mxd, entidad)
         if poligono != None:
-            lista_etiquetas = listaEtiquetas_PU(self.parametros.Estrato)
+            lista = [m['nombre'] for m in self.config['estratos']]
+            mensaje(lista)
+            lista_etiquetas = [m for m in self.config['estratos'][2]['capas_labels_plano_ubicacion']]
             mensaje("Inicio preparacion de etiquetas Rural.")
             for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono)
+                self.cortaEtiqueta(mxd, capa, poligono)
             mensaje("Fin preparacion de etiquetas.")
             return True
         mensaje("No se completo la preparacion del mapa para seccion Rural.")
@@ -308,18 +312,17 @@ class PlanoUbicacion:
 
     # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
     #
-    def limpiaMapa_PU(mxd, entidad):
+    def limpiaMapa_PU(self, mxd, entidad):
         try:
             mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
-
             poligonoEntrada = self.filtraComunaEnMapa(int(entidad[4]), mxd)
 
-            lyr = self.creaLayerParaMascara()
-            polchico = self.generaMascara(poligonoEntrada, lyr)
+            lyr = self.creaLayerParaMascara(mxd)
+            polchico = self.generaMascara(mxd, poligonoEntrada, lyr)
 
-            dfEsquicio = arcpy.mapping.ListDataFrames(mxd)[1]
-            lyr1 = arcpy.mapping.ListLayers(mxd, "Comuna", dfEsquicio)[0]
-            lyr1.definitionQuery = sql_exp
+            #dfEsquicio = arcpy.mapping.ListDataFrames(mxd)[1]
+            #lyr1 = arcpy.mapping.ListLayers(mxd, "Comuna", dfEsquicio)[0]
+            #lyr1.definitionQuery = sql_exp
 
             #lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
             #sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
@@ -347,7 +350,7 @@ class PlanoUbicacion:
         del cursor
         return poligono
 
-    def generaMascara(self, poligonoEntrada, lyr):
+    def generaMascara(self, mxd, poligonoEntrada, lyr):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
 
         poligonoProyectado = poligonoEntrada.projectAs(df.spatialReference)
@@ -364,8 +367,7 @@ class PlanoUbicacion:
         del cursor
         return polchico
 
-
-    def creaLayerParaMascara(self):
+    def creaLayerParaMascara(self, mxd):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         fc = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(fc, "tipo", "LONG")
@@ -376,28 +378,15 @@ class PlanoUbicacion:
 
         sourceLyr = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, lyr, sourceLyr, True)
-     
+
         # del fc
         arcpy.mapping.AddLayer(df, lyr, "TOP")
         return lyr
 
-    def leeNombreCapa(estrato):
-        #d = {"Manzana":0,"RAU":1,"Rural":2}
-        lista = ""
-        for e in self.config['estratos']:
-            if e['nombre'] == estrato:
-                lista = e['nombre_capa']
-        return lista
+    def listaEtiquetas_PU(self):
+        return [m for m in self.config['estratos'][2]['capas_labels_plano_ubicacion']]
 
-    def listaEtiquetas_PU(estrato):
-        d = {"Manzana":0,"RAU":1,"Rural":2}
-        lista = []
-        for e in config['estratos']:
-            if e['nombre'] == estrato:
-                lista = [m for m in config['estratos'][d[estrato]]['capas_labels_plano_ubicacion']]
-        return lista
-
-    def cortaEtiqueta(mxd, elLyr, poly):
+    def cortaEtiqueta(self, mxd, elLyr, poly):
         try:
             path_scratchGDB = arcpy.env.scratchGDB
             df = arcpy.mapping.ListDataFrames(mxd)[0]
