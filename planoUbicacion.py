@@ -294,13 +294,13 @@ class PlanoUbicacion:
         except:
             return None
 
-    def preparaMapa_PU(mxd, entidad):
+    def preparaMapa_PU(self, mxd, entidad):
         poligono = self.limpiaMapa_PU(mxd, entidad)
         if poligono != None:
-            lista_etiquetas = listaEtiquetas_PU(self.parametros.Estrato)
+            lista_etiquetas = self.listaEtiquetas_PU(self.parametros.Estrato)
             mensaje("Inicio preparacion de etiquetas Rural.")
             for capa in lista_etiquetas:
-                cortaEtiqueta(mxd, capa, poligono)
+                self.cortaEtiqueta(mxd, capa, poligono)
             mensaje("Fin preparacion de etiquetas.")
             return True
         mensaje("No se completo la preparacion del mapa para seccion Rural.")
@@ -308,7 +308,7 @@ class PlanoUbicacion:
 
     # limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
     #
-    def limpiaMapa_PU(mxd, entidad):
+    def limpiaMapa_PU(self, mxd, entidad):
         try:
             mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
 
@@ -360,10 +360,9 @@ class PlanoUbicacion:
         poligonoMascara = polgrande.difference(polchico)
 
         cursor = arcpy.da.InsertCursor(lyr, ['SHAPE@', "TIPO"])
-        cursor.insertRow([poligonoMascara,0])
+        cursor.insertRow([poligonoMascara, 0])
         del cursor
         return polchico
-
 
     def creaLayerParaMascara(self):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -381,15 +380,15 @@ class PlanoUbicacion:
         arcpy.mapping.AddLayer(df, lyr, "TOP")
         return lyr
 
-    def leeNombreCapa(estrato):
+    """ def leeNombreCapa(self, estrato):
         #d = {"Manzana":0,"RAU":1,"Rural":2}
         lista = ""
         for e in self.config['estratos']:
             if e['nombre'] == estrato:
                 lista = e['nombre_capa']
-        return lista
+        return lista """
 
-    def listaEtiquetas_PU(estrato):
+    def listaEtiquetas_PU(self, estrato):
         d = {"Manzana":0,"RAU":1,"Rural":2}
         lista = []
         for e in config['estratos']:
@@ -397,7 +396,7 @@ class PlanoUbicacion:
                 lista = [m for m in config['estratos'][d[estrato]]['capas_labels_plano_ubicacion']]
         return lista
 
-    def cortaEtiqueta(mxd, elLyr, poly):
+    def cortaEtiqueta(self, mxd, elLyr, poly):
         try:
             path_scratchGDB = arcpy.env.scratchGDB
             df = arcpy.mapping.ListDataFrames(mxd)[0]
