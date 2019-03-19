@@ -34,9 +34,10 @@ class PlanoUbicacion:
 
                 # validacion escala
                 if escala > 7500:
-                    mensaje("Escala es > 7500, zoom a ListadoPoligonos")
+                    mensaje("Escala es > 7500, Zoom a FC ListadoPoligonos")
                     desc = arcpy.Describe(fc)
                     extentFC = desc.extent
+                    mensaje(extentFC)
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extentFC)
                     mensaje(escala)
                     zoom(mxd, extentFC, escala)
@@ -248,7 +249,10 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
+            if parametroEstrato == "Manzana":
+                sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
+            else:
+                sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
             mensaje("Entidades Destacadas")
