@@ -589,7 +589,7 @@ def procesaManzana(codigo, viviendasEncuestar):
             datosManzana2017 = intersectaManzanaCenso2017(datosManzana[0])
 
             util.mensaje("area_manzana2016 = {}".format(datosManzana[1]))
-            util.mensaje("area_manzana2017 = {}".format(datosManzana2017[0]))
+            util.mensaje("area_manzana2017 = {}".format(datosManzana2017))
 
             #est, mot = comparaManzanas(datosManzana[1], poligono2017[X]) #***************************************************************************************************
             #registro.estadoSuperficie = est
