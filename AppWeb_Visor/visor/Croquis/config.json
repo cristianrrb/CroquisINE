@@ -1,5 +1,5 @@
 {
-    "urlServicio": "https://gis.ine.cl/public/rest/services/ESRI/croquis_prod/GPServer/croquis",
+    "urlServicio": "https://gis.ine.cl/public/rest/services/ESRI/croquis_produccion2/GPServer/croquis",
     "urlConfiguracion": "https://gis.ine.cl/croquis/configuracion.json",
     "estratos":[
         "Manzana",
@@ -17,14 +17,14 @@
         "2016"
     ],
     "simboloArea": {
-		"type": "esriSFS",
-		"style": "esriSFSSolid",
-		"color": [98,194,204,0.5],
-		"outline": {
-			"type": "esriSLS",
-			"style": "esriSLSSolid",
-			"color": [98,194,204],
-			"width": 2
-		}
-	}
+        "type": "esriSFS",
+        "style": "esriSFSSolid",
+        "color": [115,76,0,50],
+        "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [110,110,110,255],
+            "width": 1
+        }
+    }
 }
