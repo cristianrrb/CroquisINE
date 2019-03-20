@@ -249,8 +249,7 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            mensaje("destacaListaPoligonos-------")
-            mensaje(self.parametros.Estrato)
+
             if self.parametros.Estrato == "Manzana":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
             if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
