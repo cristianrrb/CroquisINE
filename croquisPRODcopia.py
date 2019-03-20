@@ -222,6 +222,42 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         mensaje("** Error en obtieneInfoManzana")
         return None, None
 
+def comparaManzanas(datosManzana, datosManzana2017, registro):
+    try:
+        manzana2016 = datosManzana[1]
+        manzana2017 = datosManzana2017[0]
+        util.mensaje(manzana2016)
+        util.mensaje(manzana2017)
+        if manzana2017 != None:
+            #print("----------------- Calculo ------------------------")
+            if manzana2016 > manzana2017:
+                diferencia = manzana2016 -  manzana2017
+                porc = diferencia/manzana2016
+                #util.mensaje(diferencia)
+            else:
+                diferencia = manzana2017 - manzana2016
+                porc = diferencia/manzana2017
+                #util.mensaje(diferencia)
+
+            porcentaje = int(round(porc*100,0))
+            #util.mensaje(porcentaje)
+
+            if porcentaje <= 5:
+                estadoSuperficie = "OK"
+                motivoSuperficie = "Diferencia en superficie es menor a 5 porciento"
+                #util.mensaje("OK: Diferencia en superficie es menor a 5 porciento")
+            elif porcentaje >= 6 and porcentaje <= 40:
+                estadoSuperficie = "Alerta"
+                motivoSuperficie = "Diferencia en superficie entre 6 y 40 porciento"
+                #util.mensaje("Alerta: Diferencia en superficie entre 6 y 40 porciento")
+            elif porcentaje > 40:
+                estadoSuperficie = "Rechazada"
+                motivoSuperficie = "Diferencia en superficie supera 40 porciento"
+    except:
+        estadoSuperficie = "No encontrada"
+        motivoSuperficie = "Manzana no encontrada en Censo2017"
+    return estadoSuperficie, motivoSuperficie
+
 def comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro):
     try:
         # Set local variables
@@ -253,12 +289,12 @@ def listaMXDs(estrato, ancho):
                 lista = [m for m in config['estratos'][d[estrato]]['mxds'] if m['ancho'] <= m['alto']]
     return lista
 
-# ------------------------------- PLANO UBICACION ---------------------------------------------------------
-def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
-    lista = []
+# ------------------------------- SECCION PLANO UBICACION ---------------------------------------------------------
+#infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token
+def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
     try:
         condiciones = []
-        for codigo in codigos:
+        for codigo in listaCodigos:
             condicion = "{}+%3D+{}".format(dictCamposId[parametroEstrato], codigo)
             condiciones.append(condicion)
 
@@ -266,7 +302,7 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
         fs = arcpy.FeatureSet()
-        fs.load(url.format(urlServicio, token, query))
+        fs.load(url.format(urlEstrato, token, query))
 
         fc = os.path.join("in_memory", "fc")
         fs.save(fc)
@@ -283,43 +319,80 @@ def obtieneInfoParaPlanoUbicacion(urlServicio, codigos, token):
         elif parametroEstrato == "Rural":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'CUT', 'COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
 
+        lista = []
         with arcpy.da.SearchCursor(fs, fields) as rows:
             lista = [r for r in rows]
-        #mensaje(len(lista[0]))
-        #extent = obtieneExtentUrbano(urlUrbano, lista[0][0], token)
 
-        mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+        if  len(lista) > 0:
+            mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
+            extent_PU = obtieneExtent_PU(urlPlano, lista[0][0])
+            polygonPU = obtienePoligono_PU(urlPlano, lista[0][0])
+            #return lista[0], extent, fc
+            return lista[0], extent_PU, fc, polygonPU
+        else:
+            mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
     except:
         mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-    return lista[0], extent, fc
+    return None, None, None, None
 
-def obtieneExtentUrbano(urlUrbano, poligono, token):
-    #url = '{}/query?token={}&where=URBANO%3D{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
-    params = {
-        'token':token,
-        'f':'json',
-        'where':'1=1',
-        'outFields':'*',
-        'returnIdsOnly':'true',
-        'geometry':poligono.JSON,
-        'geometryType':'esriGeometryPolygon'
-    }
+def obtieneExtent_PU(urlPlano, poligono):
+    try:
+        polygonBuffer = poligono.buffer(-10)
+        polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono.spatialReference)
 
-    url = '{}/query?{}'.format(urlUrbano, urllib.urlencode(params))
+        url = "{}/query".format(urlPlano)
+        params = {
+            'token': token,
+            'f':'json',
+            'where':'1=1',
+            'returnExtentOnly':'true',
+            'geometry':polygonBufferNew.JSON,
+            'geometryType':'esriGeometryPolygon'
+        }
+        headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
-    fs = arcpy.FeatureSet()
-    fs.load(url)
+        req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
+        response = urllib2.urlopen(req).read()
+        response_text = response.decode('UTF-8')
+        j = json.loads(response_text)
 
-    fc = os.path.join("in_memory","fc")
-    fs.save(fc)
+        if j.has_key('extent'):
+            je = j['extent']
+            extentPU = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
+        return extentPU
+    except Exception:
+        arcpy.AddMessage(sys.exc_info()[1].args[0])
+    return None
 
-    desc = arcpy.Describe(fc)
-    extent = desc.extent
+# Funcion que obtiene el poligono de la Comuna para Plano de Ubicacion
+def obtienePoligono_PU(urlPlano, poligono):
+    try:
+        polygonBuffer = poligono.buffer(-10)
+        polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono.spatialReference)
 
-    return extent
+        url = "{}/query".format(urlPlano)
+        params = {
+            'token': token,
+            'f':'json',
+            'where':'1=1',
+            'returnExtentOnly':'false',
+            'geometry':polygonBufferNew.JSON,
+            'geometryType':'esriGeometryPolygon'
+        }
+        headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        req = urllib2.Request(url, urllib.urlencode(params).encode('UTF-8'), headers)
+        response = urllib2.urlopen(req).read()
+        response_text = response.decode('UTF-8')
+        j = json.loads(response_text)
+        polygon = arcpy.AsShape(j["geometry"], True)
+
+        # Poligono de comuna
+        return polygon
+    except Exception:
+        arcpy.AddMessage(sys.exc_info()[1].args[0])
+    return None
 
 def listaMXDsPlanoUbicacion(estrato, ancho):
-
     d = {"Manzana":0,"RAU":1,"Rural":2}
     lista = []
     for e in config['estratos']:
@@ -455,12 +528,132 @@ def destacaListaPoligonos(mxd, fc):
                 cursor.updateRow(a)
         arcpy.MakeFeatureLayer_management(fc, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
-        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
+        if parametroEstrato == "Manzana":
+            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
+        else:
+            sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
         arcpy.mapping.AddLayer(df, tm_layer, "TOP")
         mensaje("Entidades Destacadas")
     except:
         mensaje("No se pudo destacar entidades")
+
+def listaEtiquetas_PU(estrato):
+    d = {"Manzana":0,"RAU":1,"Rural":2}
+    lista = []
+    for e in config['estratos']:
+        if e['nombre'] == estrato:
+            lista = [m for m in config['estratos'][d[estrato]]['capas_labels_plano_ubicacion']]
+    return lista
+
+def buscaTemplatePlanoUbicacion_Manzana(extent):
+    try:
+        ancho = extent.XMax - extent.XMin
+        alto = extent.YMax - extent.YMin
+        lista = listaMXDsPlanoUbicacion(parametroEstrato, (ancho > alto))
+        for infoMxd in lista:
+            escala = mejorEscalaMXDPlanoUbicacion_Manzana(infoMxd, alto, ancho)
+            if escala != None:
+                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                mxd = arcpy.mapping.MapDocument(rutaMXD)
+                mensaje('Se selecciono layout para Plano Ubicacion.')
+                return mxd, infoMxd, escala
+    except:
+        pass
+    mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
+    return None, None, None
+
+def mejorEscalaMXDPlanoUbicacion_Manzana(mxd, alto, ancho):
+    mensaje("escala rango 500 a 100.000")
+    escalas = [e for e in range(5, 10000)]
+    for e in escalas:
+        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
+            return e * 100
+    return None
+
+def buscaTemplatePlanoUbicacion_RAU(extent):
+    try:
+        ancho = extent.XMax - extent.XMin
+        alto = extent.YMax - extent.YMin
+        lista = listaMXDsPlanoUbicacion(parametroEstrato, (ancho > alto))
+        for infoMxd in lista:
+            escala = mejorEscalaMXDPlanoUbicacion_RAU(infoMxd, alto, ancho)
+            if escala != None:
+                rutaMXD = os.path.join(config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                mxd = arcpy.mapping.MapDocument(rutaMXD)
+                mensaje('Se selecciono layout para Plano Ubicacion.')
+                return mxd, infoMxd, escala
+    except:
+        pass
+    mensaje('** Error: No se selecciono layout para Plano Ubicacion.')
+    return None, None, None
+
+def mejorEscalaMXDPlanoUbicacion_RAU(mxd, alto, ancho):
+    mensaje("escala rango 3.000 a 100.000")
+    escalas = [e for e in range(30, 10000)]
+    for e in escalas:
+        if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
+            return e * 100
+    return None
+
+# limpiaMapaRural_PU(mxd, poligonoPlano, nombreCapa)
+def limpiaMapa_PU(mxd, datosRural, nombreCapa):
+    try:
+        mensaje("Limpieza de mapa 'Sección Rural' iniciada.")
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr = arcpy.mapping.ListLayers(mxd, nombreCapa, df)[0]
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, "CU_SECCION"), int(datosRural[10]))
+        lyr.definitionQuery = sql_exp
+        FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
+        arcpy.AddField_management(FC, "tipo", "LONG")
+        tm_path = os.path.join("in_memory", "graphic_lyr")
+        with arcpy.da.UpdateCursor(fc, ["TIPO"]) as cursor:
+            for a in cursor:
+                a[0] = 2
+                cursor.updateRow(a)
+        arcpy.MakeFeatureLayer_management(fc, tm_path)
+        tm_layer = arcpy.mapping.Layer(tm_path)
+        sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
+        arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+
+        # aqui deberia pasarle el poligono de la comuna del plano de ubicacion  -->>> esta variable poligonoPlano *********************************************************************************************
+        seccionRural = datosRural[0]
+        ext = seccionRural.projectAs(df.spatialReference)
+        dist = calculaDistanciaBufferRural(ext.area)
+        dist_buff = float(dist.replace(" Meters", ""))
+        polgrande = ext.buffer(dist_buff * 100)
+        polchico = ext.buffer(dist_buff)
+        poli = polgrande.difference(polchico)
+        cursor = arcpy.da.InsertCursor(tm_layer, ['SHAPE@', "TIPO"])
+        cursor.insertRow([poli,0])
+        del cursor
+        del FC
+        arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        df1 = arcpy.mapping.ListDataFrames(mxd)[1]
+        lyr1 = arcpy.mapping.ListLayers(mxd, nombreCapa, df1)[0]
+        lyr1.definitionQuery = sql_exp
+        lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
+        sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(datosRural[4]))
+        lyr2.definitionQuery = sql_exp
+        mensaje("Limpieza de mapa correcta.")
+        return polchico
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de mapa 'Sección Rural'.")
+    return None
+
+def preparaMapa_PU(mxd, extent, escala, datosRural):
+    nombreCapa = leeNombreCapa(parametroEstrato)
+    poligono = limpiaMapa_PU(mxd, datosRural, nombreCapa)
+    if poligono != None:
+        lista_etiquetas = listaEtiquetas_PU(parametroEstrato)
+        mensaje("Inicio preparación de etiquetas Rural.")
+        for capa in lista_etiquetas:
+            cortaEtiqueta(mxd, capa, poligono)
+        mensaje("Fin preparación de etiquetas.")
+        return True
+    mensaje("No se completó la preparación del mapa para sección Rural.")
+    return False
 
 # ------------------------------- PLANO UBICACION ---------------------------------------------------------
 
@@ -726,7 +919,6 @@ def limpiaEsquicio(mxd, capa, campo, valor):
     return None
 
 def limpiaMapaRAU(mxd, datosRAU, capa):
-
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -949,7 +1141,8 @@ def procesaManzana(codigo, viviendasEncuestar):
 
             datosManzana, extent, fcManzana = obtieneInfoManzana(codigo, token)
             datosManzana2017, fcManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-            est, mot = comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro)
+            est, mot = comparaManzanas(datosManzana, datosManzana2017, registro)
+            #est, mot = comparacionGeometricaManzanas(fcManzana, fcManzana2017, registro)
             registro.estadoSuperficie = est
             registro.motivoSuperficie = mot
 
@@ -1349,19 +1542,15 @@ def generaPDF(mxd, nombrePDF, datos):
         georef_info = True #Parametro para generar GEOPDF
         jpeg_compression_quality = 80
 
-        # VERIFICA RUTA DE DESTINO DE LOS PLANOS DE UBICACION
-        if parametroSoloPlanoUbicacion != "Si":
-            nueva_region = normalizaPalabra(nombreRegion(datos[2]))
-            nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
+        nueva_region = normalizaPalabra(nombreRegion(datos[2]))
+        nueva_comuna = normalizaPalabra(nombreComuna(datos[4]))
 
-            if parametroEstrato == "Rural":
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
-            else:
-                nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
-                mensaje(nueva_urbano)
-                rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
+        if parametroEstrato == "Rural":
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna)
         else:
-            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, "PLANOS_UBICACION")
+            nueva_urbano = normalizaPalabra(nombreUrbano(datos[5]))
+            mensaje(nueva_urbano)
+            rutaDestino = os.path.join(config['rutabase'], "MUESTRAS_PDF", parametroEncuesta, nueva_region, nueva_comuna, nueva_urbano)
 
         mensaje(rutaDestino)
 
@@ -1390,18 +1579,22 @@ def generaNombrePDF(datosEntidad, infoMxd):
         nombre = "{}_{}_{}_{}_{}_{}_{}.pdf".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
     return nombre
 
-def generaNombrePDFPlanoUbicacion(infoMxd):
-    f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
-    if parametroEstrato == "Manzana":
-        tipo = "MZ_Plano_Ubicacion_"+str(f)
-        nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
-    elif parametroEstrato == "RAU":
-        tipo = "RAU_Plano_Ubicacion_"+str(f)
-        nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
-    elif parametroEstrato == "Rural":
-        tipo = "Rural_Plano_Ubicacion_"+str(f)
-        nombre = "{}_{}_{}_{}_{}.pdf".format(tipo, infoMxd['formato'], infoMxd['orientacion'], parametroEncuesta, parametroMarco[2:4])
-    return nombre
+def generaNombrePDFPlanoUbicacion(datosEntidad):
+    try:
+        tipo = "PU"
+        if parametroEstrato == "Manzana":
+            descripcionUrbano = normalizaPalabra(nombreUrbano(datosEntidad[5]))
+            nombre = "{}_{}_{}{}.pdf".format(tipo, descripcionUrbano, parametroEncuesta, parametroMarco[2:4])
+        elif parametroEstrato == "RAU":
+            descripcionUrbano = normalizaPalabra(nombreUrbano(datosEntidad[5]))
+            nombre = "{}_{}_{}{}_{}_{}.pdf".format(int(datosEntidad[6]), descripcionUrbano, parametroEncuesta, parametroMarco[2:4], tipo, parametroEstrato)
+        elif parametroEstrato == "Rural":
+            descripcionComuna = normalizaPalabra(nombreComuna(datosEntidad[4]))
+            mensaje(descripcionComuna)
+            nombre = "{}_{}_{}{}_{}_R.pdf".format(int(datosEntidad[5]), descripcionComuna, parametroEncuesta, parametroMarco[2:4], tipo)
+        return nombre
+    except:
+        mensaje("No se logró Generar Nombre PDF Plano Ubicación")
 
 def generaNombrePDFAreaDestacada(estrato, datosEntidad, nroAnexo, infoMxd, encuesta, marco):
     if estrato == "RAU":
@@ -1842,29 +2035,44 @@ if parametroSoloPlanoUbicacion == 'Si':
         token = obtieneToken(usuario, clave, urlPortal)
         if token != None:
             if parametroEstrato == "Manzana":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, listaCodigos, token)
-                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlManzanas, infoMarco.urlLUC, token)
+                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion_Manzana(extent)
+
+                # validacion escala
+                if escala > 7500:
+                    mensaje("Escala es > 7500, zoom a ListadoPoligonos")
+                    desc = arcpy.Describe(fc)
+                    extentFC = desc.extent
+                    mxd, infoMxd, escala = buscaTemplatePlanoUbicacion_Manzana(extentFC)
+                    mensaje(escala)
+                    zoom(mxd, extentFC, escala)
+                else:
+                    mensaje("Escala es < 7500, Zoom a Urbano")
+                    mensaje(escala)
+                    zoom(mxd, extent, escala)
+
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
                 actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
             if parametroEstrato == "RAU":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, listaCodigos, token)
-                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_RAU, infoMarco.urlLUC, token)
+                mxd, infoMxd, escala = buscaTemplatePlanoUbicacion_RAU(extent)
                 diccionario = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
                 actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
+                zoom(mxd, extent, escala)
             if parametroEstrato == "Rural":
-                #entidad, extent,fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, listaCodigos, token)
-                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, listaCodigos, token)
+                #entidad, extent, fc, poligonoPlano = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
+                entidad, extent, fc = obtieneInfoParaPlanoUbicacion(infoMarco.urlSecciones_Rural, infoMarco.urlComunas, token)
                 mxd, infoMxd, escala = buscaTemplatePlanoUbicacion(extent)
+                dictComunas = {r['codigo']:r['nombre'] for r in config['comunas']}
                 actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+                zoom(mxd, extent, escala)
+                preparaMapa_PU(mxd, poligonoPlano)
 
             destacaListaPoligonos(mxd, fc)
-            zoom(mxd, extent, escala)
-            nombrePDF = generaNombrePDFPlanoUbicacion(infoMxd)
+            nombrePDF = generaNombrePDFPlanoUbicacion(entidad)
 
             registro = Registro(listaCodigos)
-            registro.rutaPDF = generaPDF(mxd, nombrePDF, "")
+            registro.rutaPDF = generaPDF(mxd, nombrePDF, entidad)
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
             registro.escala = escala
