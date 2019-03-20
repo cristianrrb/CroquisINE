@@ -159,11 +159,9 @@
 
          ],
          "capas_labels_plano_ubicacion": [
-             "Eje_Vial",
-             "Equipamiento",
-             "Cursos_Hidricos_Marco",
-             "Etiquetado_Auxiliar",
-             "Etiquetas_Limites"
+            "Eje_Vial",
+            "Etiquetas_Limites",
+            "Cursos_Hidricos_Marco"
          ],
          "mxdsPlanoUbicacion":[
            {
@@ -186,18 +184,18 @@
          "nombre": "Rural",
          "nombre_capa": "Seccion_Seleccionada",
          "capas_labels": [
-              "Eje_Vial",
-              "Cursos_Hidricos",
-              "Equipamiento",
-              "Etiquetado_Auxiliar",
-              "Etiquetado_Limites",
-              "Localidades",
-              "Entidades",
-              "Cuerpos_De_Agua",
-              "Cotas",
-              "ET_RELIEVE",
-              "ET_RELIEVE_OTROS",
-              "Hipsometria"
+            "Eje_Vial",
+            "Cursos_Hidricos",
+            "Equipamiento",
+            "Etiquetado_Auxiliar",
+            "Etiquetado_Limites",
+            "Localidades",
+            "Entidades",
+            "Cuerpos_De_Agua",
+            "Cotas",
+            "ET_RELIEVE",
+            "ET_RELIEVE_OTROS",
+            "Hipsometria"
          ],
          "mxds": [
             {
@@ -251,18 +249,16 @@
             }
          ],
          "capas_labels_plano_ubicacion": [
-             "Eje_Vial",
-             "Cursos_Hidricos",
-             "Equipamiento",
-             "Etiquetado_Auxiliar",
-             "Etiquetado_Limites",
-             "Localidades",
-             "Entidades",
-             "Cuerpos_De_Agua",
-             "Cotas",
-             "ET_RELIEVE",
-             "ET_RELIEVE_OTROS",
-             "Hipsometria"
+            "Distrito_Censal",
+            "Limite_Urbano_Censal_Marco",
+            "Eje_Vial",
+            "Cursos_Hidricos_Marco",
+            "SECCIONES_SELECCIONADAS",
+            "Cuerpos_de_Agua",
+            "Cotas",
+            "Hipsometria",
+            "ET_RELIEVE",
+            "ET_RELIEVE_OTROS"
          ],
          "mxdsPlanoUbicacion":[
            {
