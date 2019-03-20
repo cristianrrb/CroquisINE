@@ -307,6 +307,11 @@ def obtieneInfoParaPlanoUbicacion(urlEstrato, urlPlano, token):
         fc = os.path.join("in_memory", "fc")
         fs.save(fc)
 
+        desc = arcpy.Describe(fc)
+        extent = desc.extent
+
+        mensaje(extent)
+
         if parametroEstrato == "Manzana":
             fields = ['SHAPE@', 'SHAPE@AREA', 'REGION', 'PROVINCIA', 'COMUNA', 'URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA','MANZENT','MANZ']
         elif parametroEstrato == "RAU":
@@ -602,7 +607,11 @@ def limpiaMapa_PU(mxd, datosRural, nombreCapa):
         FC = arcpy.CreateFeatureclass_management("in_memory", "FC1", "POLYGON", "", "DISABLED", "DISABLED", df.spatialReference, "", "0", "0", "0")
         arcpy.AddField_management(FC, "tipo", "LONG")
         tm_path = os.path.join("in_memory", "graphic_lyr")
-        arcpy.MakeFeatureLayer_management(FC, tm_path)
+        with arcpy.da.UpdateCursor(fc, ["TIPO"]) as cursor:
+            for a in cursor:
+                a[0] = 2
+                cursor.updateRow(a)
+        arcpy.MakeFeatureLayer_management(fc, tm_path)
         tm_layer = arcpy.mapping.Layer(tm_path)
         sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr.lyr")
         arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
