@@ -225,6 +225,8 @@ def intersectaManzanaCenso2017(poligono2016):
             util.mensaje("polygono2016 Intersecta con {} en censo2017".format(len(pols)))
             util.mensaje(polygon)
             return pols
+            # Actualmente estoy retornando el poligono de manzana2017
+            # Necesito retornar SOLO el area_manzana2017
         else:
             return None
     except:
@@ -584,10 +586,10 @@ def procesaManzana(codigo, viviendasEncuestar):
             datosManzana, extent = obtieneInfoManzana(codigo, token)
 
             # solo obtiene el poligono2017, necesito obtener tambien el area para compararlas con area_manzana2016
-            poligono2017 = intersectaManzanaCenso2017(datosManzana[0])
+            datosManzana2017 = intersectaManzanaCenso2017(datosManzana[0])
 
             util.mensaje("area_manzana2016 = {}".format(datosManzana[1]))
-            util.mensaje("area_manzana2017 = {}".format(poligono2017[0]))
+            util.mensaje("area_manzana2017 = {}".format(datosManzana2017[0]))
 
             #est, mot = comparaManzanas(datosManzana[1], poligono2017[X]) #***************************************************************************************************
             #registro.estadoSuperficie = est
