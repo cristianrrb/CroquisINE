@@ -78,7 +78,7 @@ class PlanoUbicacion:
                 registro.motivo = "Croquis generado"
         except Exception:
             mensaje("Error en procesa")
-            mensaje(sys.exc_info()[1].args[0])
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
             registro.estado = "Plano Ubicacion"
             registro.motivo = "Croquis No generado"
 
@@ -328,7 +328,7 @@ class PlanoUbicacion:
             return polchico
 
         except Exception:
-            mensaje(sys.exc_info()[1].args[0])
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
             mensaje("Error en limpieza de mapa 'Comuna Rural'.")
         return None
 
@@ -398,7 +398,7 @@ class PlanoUbicacion:
                 mensaje("No hay registros de {}".format(elLyr))
             return True
         except Exception:
-            mensaje(sys.exc_info()[1].args[0])
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
             mensaje("Error en preparacion de etiquetas.")
         return False
 
@@ -411,6 +411,6 @@ class PlanoUbicacion:
             lyr.definitionQuery = sql_exp
             mensaje(sql_exp)
         except Exception:
-            mensaje(sys.exc_info()[1].args[0])
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
             mensaje("Error en limpieza de esquicio.")
         return None

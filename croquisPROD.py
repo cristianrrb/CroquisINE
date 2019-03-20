@@ -199,10 +199,42 @@ def obtieneInfoManzanaCenso2017(codigo, token):
         util.mensaje("** Error en obtieneInfoManzana")
         return None
 
-def comparaManzanas(datosManzana, datosManzana2017, registro):
+# comprueba si poligono2016 intersecta con poligono2017
+def intersectaManzanaCenso2017(poligono2016):
     try:
-        manzana2016 = datosManzana[1]
-        manzana2017 = datosManzana2017[0]
+        url = infoMarco.urlManzanasCenso2017
+
+        polygonBuffer = poligono2016.buffer(10)
+        polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono2016.spatialReference)
+        params = {'f':'json', 'where':'1=1', 'outFields':'*',  'geometry':polygonBufferNew.JSON, 'geometryType':'esriGeometryPolygon',
+                  'spatialRel':'esriSpatialRelContains', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
+                  'outSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere'}
+        queryURL = "{}/query".format(url)
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        #util.mensaje(ids) # trae todos los registros del poligono en urlManzanasCenso2017
+        pols = []
+        polygonOriginal = polygonBufferNew.buffer(-10)
+        for pol in ids["features"]:
+            polygon = arcpy.AsShape(pol["geometry"], True)
+            util.mensaje(polygonOriginal.contains(polygon, "PROPER"))
+            if polygonOriginal.contains(polygon, "PROPER"):
+                pols.append(polygon)
+        if len(pols) > 0:
+            util.mensaje("polygono2016 Intersecta con {} en censo2017".format(len(pols)))
+            util.mensaje(polygon)
+            return pols
+        else:
+            return None
+    except:
+        util.mensaje('** Error en intersectaManzanaCenso2017.')
+    return ""
+
+def comparaManzanas(area_manzana2016, area_manzana2017):
+    try:
+        manzana2016 = area_manzana2016
+        manzana2017 = area_manzana2017
         util.mensaje(manzana2016)
         util.mensaje(manzana2017)
         if manzana2017 != None:
@@ -550,10 +582,16 @@ def procesaManzana(codigo, viviendasEncuestar):
             resultado = validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
             datosManzana, extent = obtieneInfoManzana(codigo, token)
-            datosManzana2017 = obtieneInfoManzanaCenso2017(codigo, token)
-            est, mot = comparaManzanas(datosManzana, datosManzana2017, registro)
-            registro.estadoSuperficie = est
-            registro.motivoSuperficie = mot
+
+            # solo obtiene el poligono2017, necesito obtener tambien el area para compararlas con area_manzana2016
+            poligono2017 = intersectaManzanaCenso2017(datosManzana[0])
+
+            util.mensaje("area_manzana2016 = {}".format(datosManzana[1]))
+            util.mensaje("area_manzana2017 = {}".format(poligono2017[0]))
+
+            #est, mot = comparaManzanas(datosManzana[1], poligono2017[X]) #***************************************************************************************************
+            #registro.estadoSuperficie = est
+            #registro.motivoSuperficie = mot
 
             if datosManzana != None:
                 registro.intersectaPE = intersectaConArea(datosManzana[0], infoMarco.urlPE, token)
@@ -564,7 +602,7 @@ def procesaManzana(codigo, viviendasEncuestar):
                 if not (registro.estadoViviendas == "Rechazado" or parametroSoloAnalisis == 'si'):
                     mxd, infoMxd, escala = controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
-                        util.mensaje(datosManzana)
+
                         if preparaMapaManzana(mxd, extent, escala, datosManzana):
                             util.mensaje("Registrando la operación.")
                             registro.formato = infoMxd['formato']
