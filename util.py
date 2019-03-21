@@ -104,10 +104,13 @@ def calculaDistanciaBufferRAU(area):
 
 def calculaDistanciaBufferRural(area):
     if area <= 932000:      # 0 .. 932000
-        return '50 Meters'
+        #return '50 Meters'
+        return '20 Meters'
     if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
-        return '150 Meters'
-    return '500 Meters'     # valor por defecto
+        #return '150 Meters'
+        return '50 Meters'
+    #return '500 Meters'     # valor por defecto
+    return '100 Meters'     # valor por defecto
 
 class Registro:
     def __init__(self, codigo):
