@@ -122,6 +122,8 @@ class Registro:
         self.homologacion = ""
         self.estadoSuperficie = ""
         self.motivoSuperficie = ""
+        self.area_manzana2016 = ""
+        self.area_manzana2017 = ""
         self.estadoViviendas = ""
         self.motivoViviendas = ""
         # variables analisis manzanas
