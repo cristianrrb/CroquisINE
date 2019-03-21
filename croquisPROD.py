@@ -697,7 +697,6 @@ def procesaRAU(codigo):
         util.mensaje("No se completo el proceso de seccion RAU.")
     registros.append(registro)
     mensajeEstado(registro)
-
     return
 
 def procesaRural(codigo):
