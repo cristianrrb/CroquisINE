@@ -29,7 +29,7 @@ class PlanoUbicacion:
         registro = Registro(self.listaCodigos)
         try:
             if self.parametros.Estrato == "Manzana":
-                entidad, extent_PU, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
 
                 # validacion escala
@@ -49,17 +49,22 @@ class PlanoUbicacion:
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
 
             if self.parametros.Estrato == "RAU":
-                entidad, extent_PU, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
                 zoom(mxd, extent_PU, escala)
+                capa = "Seccion_Seleccionada"
+                self.etiquetaSeccionSeleccionada(mxd, capa, query)
+
             if self.parametros.Estrato == "Rural":
-                entidad, extent_PU, fc = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
                 zoom(mxd, extent_PU, escala)
+                capa = "SECCIONES_SELECCIONADAS"
+                self.etiquetaSeccionSeleccionada(mxd, capa, query)
                 self.preparaMapa_PU(mxd, entidad)
 
             self.destacaListaPoligonos(mxd, fc)
@@ -101,6 +106,7 @@ class PlanoUbicacion:
 
             query = " + OR +".join(condiciones)
             url = '{}/query?token={}&where={}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+
             fs = arcpy.FeatureSet()
             fs.load(url.format(urlEstrato, self.token, query))
 
@@ -120,7 +126,7 @@ class PlanoUbicacion:
             if len(lista) > 0:
                 extent_PU = self.obtieneExtent_PU(urlPlano, lista[0][0])
                 mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
-                return lista[0], extent_PU, fc
+                return lista[0], extent_PU, fc, query
             else:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
@@ -156,11 +162,24 @@ class PlanoUbicacion:
                 extentPU = arcpy.Extent(je['xmin'], je['ymin'], je['xmax'], je['ymax'])
             # ****************************************** OBTIENE EXTENT PU ****************************************
             mensaje("OK obtieneExtent_PU")
+            mensaje(extentPU)
             return extentPU
         except Exception:
             mensaje("Error obtieneExtent_PU")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
         return None
+
+    def etiquetaSeccionSeleccionada(self, mxd, capa, query):
+        try:
+            mensaje("etiquetando SeccionSeleccionada")
+            query1 = query.replace('+%3D+',' = ')
+            query2 = query1.replace('+ OR +',' OR ')
+
+            df = arcpy.mapping.ListDataFrames(mxd)[0]
+            lyrEtiqueta = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+            lyrEtiqueta.definitionQuery = query2
+        except:
+            mensaje("No se etiqueto la seccion seleccionada")
 
     def actualizaVinetaManzanas_PlanoUbicacion(self, mxd, entidad):
         try:
@@ -257,6 +276,9 @@ class PlanoUbicacion:
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            tm_layer.showLabels = True
+            arcpy.RefreshActiveView()
+            arcpy.RefreshTOC()
             mensaje("Entidades Destacadas")
         except:
             mensaje("No se pudo destacar entidades")
@@ -314,15 +336,6 @@ class PlanoUbicacion:
             lyr = self.creaLayerParaMascara(mxd)
             polchico = self.generaMascara(mxd, poligonoEntrada, lyr)
 
-            #dfEsquicio = arcpy.mapping.ListDataFrames(mxd)[1]
-            #lyr1 = arcpy.mapping.ListLayers(mxd, "Comuna", dfEsquicio)[0]
-            #lyr1.definitionQuery = sql_exp
-
-            #lyr2 = arcpy.mapping.ListLayers(mxd, "COMUNA_ADYACENTE", df)[0]
-            #sql_exp = """{0} <> '{1}'""".format(arcpy.AddFieldDelimiters(lyr2.dataSource, "COMUNA"), int(entidad[4]))
-            #lyr2.definitionQuery = sql_exp
-
-
             self.limpiaEsquicio(mxd, "Comuna_ESQ", "COMUNA", int(entidad[4]))
 
             mensaje("Limpieza de mapa correcta.")
@@ -348,14 +361,10 @@ class PlanoUbicacion:
 
     def generaMascara(self, mxd, poligonoEntrada, lyr):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
-
         poligonoProyectado = poligonoEntrada.projectAs(df.spatialReference)
-
-        distancia = float(calculaDistanciaBufferRural(poligonoProyectado.area).replace(" Meters", ""))
-
-        polgrande = poligonoProyectado.buffer(distancia * 100)
+        distancia = float(self.calculaDistanciaBufferRural_PU(poligonoProyectado.area).replace(" Meters", ""))
+        polgrande = poligonoProyectado.buffer(distancia * 150)
         polchico = poligonoProyectado.buffer(distancia)
-
         poligonoMascara = polgrande.difference(polchico)
 
         cursor = arcpy.da.InsertCursor(lyr, ['SHAPE@', "TIPO"])
@@ -415,3 +424,10 @@ class PlanoUbicacion:
             mensaje(sys.exc_info()[1].args[0])
             mensaje("Error en limpieza de esquicio.")
         return None
+
+    def calculaDistanciaBufferRural_PU(self, area):
+        if area <= 932000:      # 0 .. 932000
+            return '50 Meters'
+        if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
+            return '150 Meters'
+        return '500 Meters'     # valor por defecto

@@ -359,7 +359,6 @@ def limpiaEsquicio(mxd, capa, campo, valor):
     return None
 
 def limpiaMapaRAU(mxd, datosRAU, capa):
-
     try:
         mensaje("Limpieza de mapa iniciada.")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -1239,7 +1238,7 @@ def enviarMail(registros):
         mensaje("Reporte Enviado")
         mailserver.quit()
     except:
-        mensaje("No se envió correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
+        mensaje("No se envia correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
 
 class Parametros:
     def __init__(self):
