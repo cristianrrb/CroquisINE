@@ -131,7 +131,7 @@ class PlanoUbicacion:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
             mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-        return None, None, None
+        return None, None, None, None
 
     def obtieneExtent_PU(self, urlPlano, poligono):
         try:
