@@ -17,7 +17,8 @@ define([
     "esri/Color",
     "esri/layers/GraphicsLayer",
     "esri/tasks/Geoprocessor",
-    "esri/tasks/query"
+    "esri/tasks/query",
+    "dojo/dom-style"
 ],
 function(
     declare,
@@ -38,7 +39,8 @@ function(
     Color,
     GraphicsLayer,
     Geoprocessor,
-    Query
+    Query,
+    domStyle
 ) {
     return declare([BaseWidget], {
         baseClass: 'jimu-widget-croquis-ine',
@@ -95,9 +97,6 @@ function(
                 this.map.addLayer(this.capaGrafica);
 
                 this.shelter.hide();
-                //divGeneraPDF.disabled=true;
-                //divPlanoUbicacion.disabled=true;
-                //divAnalizar.disabled=true;
             }
         },
 
@@ -120,7 +119,21 @@ function(
                 'autoComplete': true,
                 'placeHolder' : "Seleccione",
                 'searchAttr': "id",
-                'style': "width:100%;"
+                'style': "width:100%;",
+                'onChange': lang.hitch(this, function(e){
+                      //console.log(e);
+                      switch(e){
+                          case "Manzana":
+                              domStyle.set(this.divAnalizar, "visibility", "visible");
+                              break;
+                          case "RAU":
+                              domStyle.set(this.divAnalizar, "visibility", "hidden");
+                              break;
+                          case "Rural":
+                              domStyle.set(this.divAnalizar, "visibility", "hidden");
+                              break;
+                      };
+                })
             });
             var lista = [
                 {'id':"Manzana"},

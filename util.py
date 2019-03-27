@@ -104,10 +104,13 @@ def calculaDistanciaBufferRAU(area):
 
 def calculaDistanciaBufferRural(area):
     if area <= 932000:      # 0 .. 932000
-        return '50 Meters'
+        #return '50 Meters'
+        return '20 Meters'
     if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
-        return '150 Meters'
-    return '500 Meters'     # valor por defecto
+        #return '150 Meters'
+        return '50 Meters'
+    #return '500 Meters'     # valor por defecto
+    return '100 Meters'     # valor por defecto
 
 class Registro:
     def __init__(self, codigo):
@@ -122,6 +125,8 @@ class Registro:
         self.homologacion = ""
         self.estadoSuperficie = ""
         self.motivoSuperficie = ""
+        self.area_manzana2016 = ""
+        self.area_manzana2017 = ""
         self.estadoViviendas = ""
         self.motivoViviendas = ""
         # variables analisis manzanas
@@ -230,7 +235,7 @@ class GeneraPDF:
             data_frame = 'PAGE_LAYOUT'
             df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
             df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-            resolution = 200
+            resolution = 190
             image_quality = 'BETTER' #'BEST' 'FASTER'
             color_space = 'RGB'
             compress_vectors = True
