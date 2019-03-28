@@ -64,8 +64,8 @@ class Templates:
         return None
 
     def mejorEscalaMXDPlanoUbicacion(self, mxd, alto, ancho):
-        mensaje("Escala rango 500 a 7.500")
-        escalas = [e for e in range(5, 76)]
+        mensaje("Escala rango 3500 a 1000000")
+        escalas = [e for e in range(35, 10000)]
         for e in escalas:
             if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
                 return e * 100
@@ -101,7 +101,7 @@ class Templates:
                     mxd = arcpy.mapping.MapDocument(rutaMXD)
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mï¿½s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel m�s grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
@@ -125,7 +125,7 @@ class Templates:
                     #mensaje('Se selecciono layout para Rural.')
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mï¿½s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel m�s grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
@@ -150,7 +150,7 @@ class Templates:
                     mensaje('Se selecciono layout para Plano Ubicacion.')
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mï¿½s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel m�s grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
@@ -161,5 +161,5 @@ class Templates:
                 return mxd, infoMxd, escala
         except:
             pass
-        mensaje('** Error: No se selecciono layout para Plano UbicaciÃ³n.')
+        mensaje('** Error: No se selecciono layout para Plano Ubicación.')
         return None, None, None

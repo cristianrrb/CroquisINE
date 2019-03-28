@@ -5,8 +5,7 @@ import datetime
 import csv
 import sys
 import requests
-import urllib2
-import urllib
+import urllib2, urllib
 import json
 from util import *
 
@@ -33,9 +32,11 @@ class PlanoUbicacion:
                 entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
 
-                # validacion escala
+                mensaje("*********** escala es = {}".format(escala))
+
+                # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
-                    mensaje("Escala es > 7500, Zoom a FC ListadoPoligonos")
+                    mensaje("Zoom a FC ListadoPoligonos")
                     desc = arcpy.Describe(fc)
                     extentFC = desc.extent
                     mensaje(extentFC)
@@ -43,36 +44,36 @@ class PlanoUbicacion:
                     mensaje(escala)
                     zoom(mxd, extentFC, escala)
                 else:
-                    mensaje("Escala es < 7500, Zoom a Urbano")
-                    mensaje(escala)
+                    mensaje("Zoom a LUC")
                     zoom(mxd, extent_PU, escala)
+
+                capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
-                self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
+                self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
-                self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
+                self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
                 zoom(mxd, extent_PU, escala)
                 capa = "Seccion_Seleccionada"
-                self.etiquetaSeccionSeleccionada(mxd, capa, query)
 
             if self.parametros.Estrato == "Rural":
                 entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
-                self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+                self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad[0])
                 zoom(mxd, extent_PU, escala)
                 capa = "SECCIONES_SELECCIONADAS"
-                self.etiquetaSeccionSeleccionada(mxd, capa, query)
                 self.preparaMapa_PU(mxd, entidad)
 
+            self.etiquetaSeccionSeleccionada(mxd, capa, query)
             self.destacaListaPoligonos(mxd, fc)
 
-            nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad)
+            nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad[0])
             mensaje(nombrePDF)
-            rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad)
+            rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad[0])
             mensaje(rutaPDF)
             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
 
@@ -127,7 +128,7 @@ class PlanoUbicacion:
             if len(lista) > 0:
                 extent_PU = self.obtieneExtent_PU(urlPlano, lista[0][0])
                 mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
-                return lista[0], extent_PU, fc, query
+                return lista, extent_PU, fc, query
             else:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
