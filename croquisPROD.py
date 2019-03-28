@@ -1345,8 +1345,11 @@ else:
 
     if parametroEstrato == "Manzana":
 
-        controlManzanas = controladorManzanas.ControladorManzanas(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, controlPDF, token)
-        rutaZip = controlManzanas.procesa()
+        token = obtieneToken(usuario, clave, urlPortal)
+        if token != None:
+            controlManzanas = controladorManzanas.ControladorManzanas(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, controlPDF, token)
+            rutaZip = controlManzanas.procesa()
+            # rutaZip = ""
 
     else:
 
