@@ -39,7 +39,7 @@ class ControladorManzanas:
 
         f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         rutaCSV = self.escribeCSV()
-        rutaZip = comprime(nombreZip(), self.registros, rutaCSV)  # util
+        rutaZip = comprime(self.nombreZip(), self.registros, rutaCSV)  # util
         return rutaZip
 
     def procesaManzana(self, codigo, viviendasEncuestar):
@@ -437,7 +437,14 @@ class ControladorManzanas:
                     mensaje("Genera croquis: No se logró generar el croquis para seccion.")
             return "Croquis"
 
+    def nombreZip(self):
+        if self.parametros.SoloPlanoUbicacion == "Si":
+            tipo = "PlanoUbicacion"
+        else:
+            tipo = "MZ"
 
+        nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
+        return nombre
 
 """     def calculaDistanciaBufferManzana(self, area):
         return '15 Meters' """
