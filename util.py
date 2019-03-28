@@ -2,6 +2,7 @@
 import arcpy
 import datetime
 import urllib
+import urllib2
 import json
 import os
 import uuid
@@ -111,6 +112,63 @@ def calculaDistanciaBufferRural(area):
         return '50 Meters'
     #return '500 Meters'     # valor por defecto
     return '100 Meters'     # valor por defecto
+
+def generaListaCodigos(texto):
+    try:
+        lista = texto.split(",")
+        listaNumeros = [int(x) for x in lista]
+        return listaNumeros
+    except:
+        return []
+
+def areasExcluidas(poligono, url):
+    try:
+        poly_paso = poligono.buffer(10)
+        poli = arcpy.Polygon(poly_paso.getPart(0), poligono.spatialReference)
+        params = {'f':'json', 'where':'1=1', 'outFields':'SHAPE',  'geometry':poli.JSON, 'geometryType':'esriGeometryPolygon',
+                  'spatialRel':'esriSpatialRelContains', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
+                  'outSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere'}
+        queryURL = "{}/query".format(url)
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        pols = []
+        poly = poli.buffer(-10)
+        for pol in ids["features"]:
+            polygon = arcpy.AsShape(pol["geometry"], True)
+            mensaje(poly.contains(polygon, "PROPER"))
+            if poly.contains(polygon, "PROPER"):
+                pols.append(polygon)
+        if len(pols) > 0:
+            mensaje(len(pols))
+            return pols
+        else:
+            return None
+    except:
+        mensaje('** Error en areas de exclusion.')
+    return ""
+
+def intersectaConArea(poligono, urlServicio):
+    try:
+        queryURL = "{}/query".format(urlServicio)
+        params = {'token':self.token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
+        req = urllib2.Request(queryURL, urllib.urlencode(params))
+        response = urllib2.urlopen(req)
+        ids = json.load(response)
+        if ids['objectIds'] != None:
+            return "Si"
+    except:
+        pass
+    return "No"
+
+def descomponeManzent(codigo):
+    c = "{}".format(codigo)
+    cut = c[:-9]
+    dis = c[-9:-7]
+    area = c[-7:-6]
+    loc = c[-6:-3]
+    ent = c[-3:]
+    return cut, dis, area, loc, ent
 
 class Registro:
     def __init__(self, codigo):
