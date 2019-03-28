@@ -5,7 +5,8 @@ import datetime
 import csv
 import sys
 import requests
-import urllib2, urllib
+import urllib2
+import urllib
 import json
 from util import *
 
