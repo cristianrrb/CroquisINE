@@ -17,6 +17,7 @@ import util
 from util import *
 import templates
 import planoUbicacion
+import controladorManzanas
 
 def mensajeEstado(registro):
     homologacion = "I"
@@ -85,6 +86,7 @@ def mensajeEstado(registro):
                 mensaje("Genera croquis: No se logró generar el croquis para seccion.")
         return "Croquis"
 
+# solo manzana
 def obtieneInfoManzana(codigo, token):
     try:
         url = '{}/query?token={}&where=MANZENT+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
@@ -229,6 +231,7 @@ def intersectaManzanaCenso2017(poligono2016):
         mensaje('** Error en intersectaManzanaCenso2017.')
     return ""
 
+# solo manzana
 def comparaManzanas(manzana2016, manzana2017, registro):
     try:
         mensaje("area_manzana2016 = {}".format(manzana2016))
@@ -282,7 +285,8 @@ def leeNombreCapa(estrato):
             lista = e['nombre_capa']
     return lista
 
-def areasExcluidas(poligono, url):
+# util
+""" def areasExcluidas(poligono, url):
     try:
         poly_paso = poligono.buffer(10)
         poli = arcpy.Polygon(poly_paso.getPart(0), poligono.spatialReference)
@@ -307,8 +311,9 @@ def areasExcluidas(poligono, url):
             return None
     except:
         mensaje('** Error en areas de exclusion.')
-    return ""
+    return "" """
 
+# solo manzana
 def limpiaMapaManzana(mxd, manzana,cod_manz):
     try:
         mensaje("Limpieza de mapa iniciada.")
@@ -491,6 +496,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         mensaje("Error en preparacion de etiquetas.")
     return False
 
+# solo manzana
 def preparaMapaManzana(mxd, extent, escala, datosManzana):
     actualizaVinetaManzanas(mxd, datosManzana)
     if zoom(mxd, extent, escala):
@@ -535,6 +541,7 @@ def preparaMapaRural(mxd, extent, escala, datosRural):
     mensaje("No se completo la preparacion del mapa para seccion Rural.")
     return False
 
+# solo manzana
 def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
     if totalViviendas < 8:    # se descarta desde el principio
         registro.estadoViviendas = "Rechazado"
@@ -570,6 +577,7 @@ def validaRangoViviendas(viviendasEncuestar, totalViviendas, registro):
         else:    # no existe el rango
             mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
 
+# solo manzana
 def procesaManzana(codigo, viviendasEncuestar):
     try:
         ############################################################## [INICIO SECCION ANALISIS DE MANZANA] #####################################################################
@@ -792,19 +800,12 @@ def buscaTemplateAreaDestacada(extent):
     mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
     return mxd, infoMxd, escala
 
-def generaListaCodigos(texto):
-    try:
-        lista = texto.split(",")
-        listaNumeros = [int(x) for x in lista]
-        return listaNumeros
-    except:
-        return []
-
 def leeJsonConfiguracion():
     response = urllib.urlopen(urlConfiguracion)
     data = json.loads(response.read())
     return data
 
+# solo manzanas
 def actualizaVinetaManzanas(mxd,datosManzana):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','URBANO','CUT','COD_DISTRITO','COD_ZONA','COD_MANZANA']
     try:
@@ -991,6 +992,7 @@ def generaCodigoBarra(estrato, datosEntidad):
         nombre = "*{}-{}-{}-{}-{}*".format(tipo, int(datosEntidad[10]), int(datosEntidad[6]), parametroEncuesta, parametroMarco[2:4])
     return nombre
 
+# solo manzana
 def intersectaConArea(poligono, urlServicio, token):
     try:
         queryURL = "{}/query".format(urlServicio)
@@ -1004,6 +1006,7 @@ def intersectaConArea(poligono, urlServicio, token):
         pass
     return "No"
 
+# solo manzana
 def obtieneHomologacion(codigo, urlServicio, token):
     try:
         #campos = "{},{}".format(infoMarco.nombreCampoTipoHomologacion.decode('utf8'), infoMarco.nombreCampoTotalViviendas.decode('utf8'))
@@ -1100,14 +1103,15 @@ def nombreZip():
     nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
     return nombre
 
-def descomponeManzent(codigo):
+# util
+""" def descomponeManzent(codigo):
     c = "{}".format(codigo)
     cut = c[:-9]
     dis = c[-9:-7]
     area = c[-7:-6]
     loc = c[-6:-3]
     ent = c[-3:]
-    return cut, dis, area, loc, ent
+    return cut, dis, area, loc, ent """
 
 def enviarMail(registros):
     try:
@@ -1331,29 +1335,39 @@ if parametros.SoloPlanoUbicacion == 'Si':
 
 # SECCION GENERAR CROQUIS
 else:
-    if parametroEstrato == "Manzana":
+    """ if parametroEstrato == "Manzana":
         dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosManzana']}
     elif parametroEstrato == "RAU":
+        dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosRAU']} """
+
+    if parametroEstrato == "RAU":
         dic.dictUrbano = {r['codigo']:r['nombre'] for r in config['urbanosRAU']}
 
-    for indice, codigo in enumerate(listaCodigos):
-        if parametroEstrato == 'Manzana':
-            viviendas = -1
-            if len(listaViviendasEncuestar) > 0:
-                viviendas = listaViviendasEncuestar[indice]
-            procesaManzana(codigo, viviendas)
-        elif parametroEstrato == 'RAU':
-            procesaRAU(codigo)
-        elif parametroEstrato == 'Rural':
-            procesaRural(codigo)
-        else:
-            mensaje("El estrato no existe")
-            quit()
-        mensaje("-------------------------------------------------\n")
+    if parametroEstrato == "Manzana":
 
-    f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
-    rutaCSV = escribeCSV(registros,f)
-    rutaZip = comprime(nombreZip(), registros, rutaCSV)
+        controlManzanas = controladorManzanas.ControladorManzanas(parametros, config, infoMarco, listaCodigos, controlTemplates, dic, controlPDF, token)
+        rutaZip = controlManzanas.procesa()
+
+    else:
+
+        for indice, codigo in enumerate(listaCodigos):
+            if parametroEstrato == 'Manzana':
+                viviendas = -1
+                if len(listaViviendasEncuestar) > 0:
+                    viviendas = listaViviendasEncuestar[indice]
+                procesaManzana(codigo, viviendas)
+            elif parametroEstrato == 'RAU':
+                procesaRAU(codigo)
+            elif parametroEstrato == 'Rural':
+                procesaRural(codigo)
+            else:
+                mensaje("El estrato no existe")
+                quit()
+            mensaje("-------------------------------------------------\n")
+
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        rutaCSV = escribeCSV(registros,f)
+        rutaZip = comprime(nombreZip(), registros, rutaCSV)
 # ########################################################### [FIN DE EJECUCIóN DEL PROCESO] #############################################################################
 
 
