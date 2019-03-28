@@ -4,9 +4,9 @@ import os
 import datetime
 import csv
 import sys
-import requests
-import urllib2
+# import requests
 import urllib
+import urllib2
 import json
 from util import *
 
@@ -116,7 +116,7 @@ class ControladorManzanas:
             registro.intersectaAV = ""
             registro.Homologacion = ""
             mensaje("No se completo el proceso de Manzana.")
-        mensajeEstado(registro)
+        self.mensajeEstado(registro)
         self.registros.append(registro)
         return
 
@@ -381,6 +381,63 @@ class ControladorManzanas:
             return rutaCsv
         except:
             return None
+
+    def mensajeEstado(self, registro):
+        homologacion = "I"
+        if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
+            homologacion = 'NI'
+
+        # Mensajes para analisis
+        if self.parametros.SoloAnalisis == "si":
+            if registro.estadoViviendas == "Correcto":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) # Correcto
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Analisis: viviendas correctas.")
+            if registro.estadoViviendas == "Rechazado":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rechazado
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Analisis: Se rechazó la manzana.")
+            if registro.estadoViviendas == "":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Analisis: Manzana No Existe")
+            return "Analisis"
+ 
+        else:
+            # Mensajes para Generar PDF
+            if registro.estadoViviendas == "Correcto":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Genera croquis: viviendas correctas.")
+            if registro.estadoViviendas == "Rechazado":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas)
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Genera croquis: Se rechazo la manzana.")
+            if registro.estadoViviendas == "":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Genera croquis: Manzana No Existe")
+
+            if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
+                print(s)
+                arcpy.AddMessage(s)
+
+                if registro.estado == "Correcto":
+                    mensaje("Genera croquis: Se genera el croquis para Secciones")
+                if registro.estado == "Incorrecto":
+                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+                if registro.estado == "Seccion No Existe":
+                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+            return "Croquis"
+
+
 
 """     def calculaDistanciaBufferManzana(self, area):
         return '15 Meters' """
