@@ -207,6 +207,34 @@ def cortaEtiqueta(mxd, elLyr, poly):
         mensaje("Error en preparacion de etiquetas.")
     return False
 
+def dibujaSeudoManzanas(mxd, elLyr, poly):
+    try:
+        #path_scratchGDB = arcpy.env.scratchGDB
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr_sal = os.path.join("in_memory", "ejes")
+        #lyr_man = os.path.join("in_memory", "seudoman")
+        lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+        mensaje("Layer encontrado {}".format(lyr.name))
+        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
+        arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
+        cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
+        if cuantos > 0:
+            tm_path = os.path.join("in_memory", "seudo_lyr")
+            tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
+            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
+            arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
+            tm_layer = arcpy.mapping.Layer(tm_path)
+            lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
+            arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
+            arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+        else:
+            mensaje("No hay registros de {}".format(elLyr))
+        return True
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en preparacion de etiquetas.")
+    return False
+
 class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
