@@ -129,6 +129,7 @@ def obtieneInfoSeccionRural(codigo, token):
         mensaje("Error URL servicio_Rural")
         return None, None
 
+# para rau y rural
 def obtieneListaAreasDestacadas(codigoSeccion, token):
     try:
         lista = []
@@ -167,19 +168,6 @@ def leeNombreCapa(estrato):
         if e['nombre'] == estrato:
             lista = e['nombre_capa']
     return lista
-
-def limpiaEsquicio(mxd, capa, campo, valor):
-    try:
-        mensaje("Limpieza de esquicio iniciada.")
-        df = arcpy.mapping.ListDataFrames(mxd)[1]
-        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
-        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, campo), valor)
-        lyr.definitionQuery = sql_exp
-        mensaje(sql_exp)
-    except Exception:
-        mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en limpieza de esquicio.")
-    return None
 
 def limpiaMapaRAU(mxd, datosRAU, capa):
     try:
@@ -261,58 +249,6 @@ def limpiaMapaRural(mxd, datosRural, nombreCapa):
         mensaje(sys.exc_info()[1].args[0])
         mensaje("Error en limpieza de mapa 'Sección Rural'.")
     return None
-
-def cortaEtiqueta(mxd, elLyr, poly):
-    try:
-        path_scratchGDB = arcpy.env.scratchGDB
-        df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr_sal = os.path.join("in_memory", elLyr)
-        lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-        mensaje("Layer encontrado {}".format(lyr.name))
-        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
-        arcpy.Clip_analysis(lyr, poly, lyr_sal)
-        cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
-        if cuantos > 0:
-            if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
-                arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
-            arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
-            lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
-            mensaje("Etiquetas correcta de {}".format(elLyr))
-        else:
-            mensaje("No hay registros de {}".format(elLyr))
-        return True
-    except Exception:
-        mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en preparacion de etiquetas.")
-    return False
-
-def dibujaSeudoManzanas(mxd, elLyr, poly):
-    try:
-        #path_scratchGDB = arcpy.env.scratchGDB
-        df = arcpy.mapping.ListDataFrames(mxd)[0]
-        lyr_sal = os.path.join("in_memory", "ejes")
-        #lyr_man = os.path.join("in_memory", "seudoman")
-        lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-        mensaje("Layer encontrado {}".format(lyr.name))
-        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
-        arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
-        cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
-        if cuantos > 0:
-            tm_path = os.path.join("in_memory", "seudo_lyr")
-            tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-            arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
-            arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
-            tm_layer = arcpy.mapping.Layer(tm_path)
-            lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
-            arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
-            arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-        else:
-            mensaje("No hay registros de {}".format(elLyr))
-        return True
-    except Exception:
-        mensaje(sys.exc_info()[1].args[0])
-        mensaje("Error en preparacion de etiquetas.")
-    return False
 
 def preparaMapaRAU(mxd, extent, escala, datosRAU):
     actualizaVinetaSeccionRAU(mxd, datosRAU)
@@ -715,8 +651,6 @@ def nombreZip():
     nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, parametroEncuesta, f)
     return nombre
 
-
-
 class Parametros:
     def __init__(self):
         self.Encuesta = arcpy.GetParameterAsText(0)
@@ -822,8 +756,7 @@ else:
         rutaZip = comprime(nombreZip(), registros, rutaCSV)
 # ########################################################### [FIN DE EJECUCIóN DEL PROCESO] #############################################################################
 
-
 arcpy.SetParameterAsText(7, rutaZip)
 
 mensaje("El GeoProceso ha terminado correctamente")
-enviarMail(registros)
+
