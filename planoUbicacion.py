@@ -39,10 +39,10 @@ class PlanoUbicacion:
                     extent = arcpy.Describe(fc).extent
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 else:
-                    mensaje("Zoom a LUC")
+                    mensaje("Zoom a LUC (escala mayor o igual a 1:7500)")
 
                 mensaje("Escala final {}".format(escala))
-                zoom(mxd, extent_PU, escala)
+                zoom(mxd, extent, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
