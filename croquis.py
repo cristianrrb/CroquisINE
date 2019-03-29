@@ -486,8 +486,12 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
     return False
 
 def buscaTemplateAreaDestacada(extent):
+<<<<<<< HEAD
     # Por el momento se usan los mismos que para Rural
     mxd, infoMxd, escala = controlTemplates.buscaTemplateAnexo(extent)
+=======
+    mxd, infoMxd, escala = controlTemplates.buscaTemplateAreaDestacada(extent)
+>>>>>>> d3a6ef70458fc33e7cae02f6b599eb0792cdd384
     return mxd, infoMxd, escala
 
 def leeJsonConfiguracion():
