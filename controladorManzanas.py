@@ -37,7 +37,6 @@ class ControladorManzanas:
                 viviendas = listaViviendasEncuestar[indice]
             self.procesaManzana(codigo, viviendas)
 
-        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         rutaCSV = self.escribeCSV()
         rutaZip = comprime(self.nombreZip(), self.registros, rutaCSV)  # util
         return rutaZip
@@ -50,18 +49,17 @@ class ControladorManzanas:
             registro.homologacion, totalViviendas = self.obtieneHomologacion(codigo)
             resultado = self.validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
-            datosManzana, extent = self.obtieneInfoManzana(codigo, token)
+            datosManzana, extent = self.obtieneInfoManzana(codigo)
             area_polygon2017 = self.intersectaManzanaCenso2017(datosManzana[0])
 
             self.comparaManzanas(datosManzana[1], area_polygon2017, registro)
 
-"""
             if datosManzana != None:
                 registro.intersectaPE = intersectaConArea(datosManzana[0], self.infoMarco.urlPE)  # util
                 registro.intersectaAV = intersectaConArea(datosManzana[0], self.infoMarco.urlAV)  # util
                 registro.intersectaCRF = intersectaConArea(datosManzana[0], self.infoMarco.urlCRF)  # util
             ############################################################## [FIN SECCION ANALISIS DE MANZANA] #####################################################################
-
+                
                 if not (registro.estadoViviendas == "Rechazado" or self.parametros.SoloAnalisis == 'si'):
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
@@ -96,7 +94,7 @@ class ControladorManzanas:
                     registro.estado = "Genera PDF"
                     registro.motivo = "Croquis No generado"
                 # ************************** inicio if para Genera PDF pero Rechaza la manzana **********************************************
-
+                
             else:
                 mensaje("Manzana No Existe")
                 registro.estado = "Manzana No Existe"
@@ -106,7 +104,7 @@ class ControladorManzanas:
                 registro.intersectaPE = ""
                 registro.intersectaCRF = ""
                 registro.intersectaAV = ""
-                registro.homologacion = "" """
+                registro.homologacion = "" 
         except:
             registro.estado = "Error procesaManzana"
             registro.motivo = "Croquis No generado"
