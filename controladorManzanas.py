@@ -469,30 +469,30 @@ class ControladorManzanas:
         return nombre
 
     def enviarMail(self):
+        fromMail = "COMPLETAR"
+        passwordFromMail = 'COMPLETAR'
+        toMail = "reinaldo.segura@ine.cl"
+
+        msg = MIMEMultipart('alternative')
+
+        encuesta = self.parametros.Encuesta
+        if self.parametros.Encuesta != "ENE":
+            encuesta += " " + self.parametros.Marco
+
+        msg['Subject'] = "Reporte Croquis INE Nro: {} / Encuesta: {}, Estrato: {}".format(str(self.horaInicio), encuesta, self.parametros.Estrato)
+        msg['From'] = fromMail
+        msg['To'] = toMail
+
+        html = "<html>" 
+        html += self._cabeceraCorreo()
+        html += "<body>"
+        html += self._cuerpoTitulo(encuesta)
+        html += self._cuerpoTabla()
+        html += self._cuerpoPie()
+        html += "</body>"
+        html += "</html>"
+
         try:
-            fromMail = "COMPLETAR"
-            passwordFromMail = 'COMPLETAR'
-            toMail = "reinaldo.segura@ine.cl"
-
-            msg = MIMEMultipart('alternative')
-
-            encuesta = self.parametros.Encuesta
-            if self.parametros.Encuesta != "ENE":
-                encuesta += " " + self.parametros.Marco
-
-            msg['Subject'] = "Reporte Croquis INE Nro: {} / Encuesta: {}, Estrato: {}".format(str(self.horaInicio), encuesta, self.parametros.Estrato)
-            msg['From'] = fromMail
-            msg['To'] = toMail
-
-            html = "<html>" 
-            html += self._cabeceraCorreo()
-            html += "<body>"
-            html += self._cuerpoTitulo()
-            html += self._cuerpoTabla()
-            html += self._cuerpoPie()
-            html += "</body>"
-            html += "</html>"
-
             msg.attach(MIMEText(html, 'html'))
             mailserver = smtplib.SMTP('smtp.office365.com', 587)
             mailserver.ehlo()
@@ -523,22 +523,22 @@ class ControladorManzanas:
             </head>
         """
 
-    def _cuerpoTitulo(self):
+    def _cuerpoTitulo(self, encuesta):
         html =  "<h2>Reporte Croquis INE Nro: " + str(self.horaInicio) + "</h2>"
         html += "<h3>Encuesta: " + encuesta + " / Estrato: " + str(self.parametros.Estrato) + "</h3>"
-        html += "<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>"
+        html += "<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadisticas de Chile</p>"
         html += "<u>Motivos de Rechazo:</u>"
         html += "<ul>"
-        html += '  <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>'
+        html += '  <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando "Estado" es, Rechazado.</li>'
         html += '  <li type="disc">Rechazada, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 > 40%, Cuando "Estado superficie" es, Rechazada</li>'
         html += "</ul>"
         html += "<u>Motivos de Alerta:</u>"
         html += "<ul>"
         html += '  <li type="disc">Alerta, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 se encuentra entre 6% y 40% inclusive, Cuando "Estado superficie" es, Alerta</li>'
-        html += '  <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando "Intersecta PE" es, Si.</li>'
-        html += '  <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando "Intersecta CRF" es, Si.</li>'
-        html += '   <li type="disc">Alerta, Manzana Intersecta con óreas Verdes (AV); Cuando "Intersecta AV" es, Si.</li>'
-        html += '   <li type="disc">Alerta, Manzana Homologación No es Idóntica; cuando "Homologación" es, Homologada No Idóntica(s)</li>'
+        html += '  <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificacion (PE); Cuando "Intersecta PE" es, Si.</li>'
+        html += '  <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepcion Final (CRF); Cuando "Intersecta CRF" es, Si.</li>'
+        html += '  <li type="disc">Alerta, Manzana Intersecta con areas Verdes (AV); Cuando "Intersecta AV" es, Si.</li>'
+        html += '  <li type="disc">Alerta, Manzana Homologacion No es Identica; cuando "Homologacion" es, Homologada No Identica(s)</li>'
         html += "</ul>"
         return html
 
@@ -546,9 +546,9 @@ class ControladorManzanas:
         html =  '<div style="overflow-x:auto;">'
         html += '<table>'
         html += '  <tr>'
-        html += '    <th>#</th>'
+        html += '    <th></th>'
         html += '    <th>Hora</th>'
-        html += '    <th>Código</th>'
+        html += '    <th>Codigo</th>'
         html += '    <th>Estado</th>'
         html += '    <th>Motivo</th>'
         html += '    <th>Estado Superficie</th>'
@@ -563,14 +563,14 @@ class ControladorManzanas:
         html += '    <th>Intersecta PE</th>'
         html += '    <th>Intersecta CRF</th>'
         html += '    <th>Intersecta AV</th>'
-        html += '    <th>Homologación</th>'
-        html += '    <th>Formato / Orientación</th>'
+        html += '    <th>Homologacion</th>'
+        html += '    <th>Formato / Orientacion</th>'
         html += '    <th>Escala</th>'
-        html += '    <th>Código barra<th/>'
+        html += '    <th>Codigo barra<th/>'
         html += '  </tr>'
         
         for i, r in enumerate(self.registros, 1):
-            if r.estadoViviendas == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+            if self._enviaCorreo(r):
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
                 a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                 html += '<tr>'
@@ -586,6 +586,30 @@ class ControladorManzanas:
 
         return html
 
+    def _enviaCorreo(self, r):
+        if r.estadoViviendas == "Rechazado":
+            return True
+            
+        if r.estadoSuperficie == "Alerta":
+            return True
+                
+        if r.estadoSuperficie == "Rechazada":
+            return True
+            
+        if r.intersectaPE == "Si" 
+            return True
+
+        if r.intersectaCRF == "Si"
+            return True
+
+        if r.intersectaAV == "Si" 
+            return True
+
+        if r.homologacion != "" and r.homologacion[0:16] == 'Homologada No Id':
+            return True
+
+        return False
+
     def _cuerpoPie(self):
         html =  '</br>'
         html += '<p><b>Departamento de Geografía</b></p>'
@@ -593,19 +617,3 @@ class ControladorManzanas:
         html += '<p>Fono: 232461860</p>'
         return html
 
-
-"""     def calculaDistanciaBufferManzana(self, area):
-        return '15 Meters' """
-
-"""     def intersectaConArea(self, poligono, urlServicio):
-        try:
-            queryURL = "{}/query".format(urlServicio)
-            params = {'token':self.token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
-            req = urllib2.Request(queryURL, urllib.urlencode(params))
-            response = urllib2.urlopen(req)
-            ids = json.load(response)
-            if ids['objectIds'] != None:
-                return "Si"
-        except:
-            pass
-        return "No" """
