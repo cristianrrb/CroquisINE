@@ -28,7 +28,7 @@ class ControladorManzanas:
 
     def procesa(self):
         self.horaInicio = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
-        #self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
+        self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
         listaViviendasEncuestar = generaListaCodigos(self.parametros.Viviendas)   # util
 
         for indice, codigo in enumerate(self.listaCodigos):
@@ -50,12 +50,11 @@ class ControladorManzanas:
             registro.homologacion, totalViviendas = self.obtieneHomologacion(codigo)
             resultado = self.validaRangoViviendas(viviendasEncuestar, totalViviendas, registro)
 
-            datosManzana, extent = self.obtieneInfoManzana(codigo, token)
+            datosManzana, extent = self.obtieneInfoManzana(codigo)
             area_polygon2017 = self.intersectaManzanaCenso2017(datosManzana[0])
 
             self.comparaManzanas(datosManzana[1], area_polygon2017, registro)
 
-"""
             if datosManzana != None:
                 registro.intersectaPE = intersectaConArea(datosManzana[0], self.infoMarco.urlPE)  # util
                 registro.intersectaAV = intersectaConArea(datosManzana[0], self.infoMarco.urlAV)  # util
@@ -65,26 +64,36 @@ class ControladorManzanas:
                 if not (registro.estadoViviendas == "Rechazado" or self.parametros.SoloAnalisis == 'si'):
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
-
                         if self.preparaMapaManzana(mxd, extent, escala, datosManzana):
+                            mensaje("8")
                             mensaje("Registrando la operacion.")
+                            mensaje("9")
                             registro.formato = infoMxd['formato']
+                            mensaje("10")
                             registro.orientacion = infoMxd['orientacion']
+                            mensaje("11")
                             registro.escala = escala
+                            mensaje("12")
                             registro.codigoBarra = self.generaCodigoBarra(datosManzana)
+                            mensaje("13")
 
                             nombrePDF = self.generaNombrePDF(datosManzana, infoMxd)
+                            mensaje("14")
                             mensaje(nombrePDF)
                             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosManzana)
+                            mensaje("15")
                             mensaje(rutaPDF)
                             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                            mensaje("16")
 
                             if registro.rutaPDF != "":
                                 registro.estado = "Genera PDF"
                                 registro.motivo = "Croquis generado"
+                                mensaje("17")
                             else:
                                 registro.estado = "Genera PDF"
                                 registro.motivo = "Croquis No generado"
+                                mensaje("18")
 
                 # ************************** inicio if para solo para analisis cuando se Rechaza la manzana *********************************
                 elif self.parametros.SoloAnalisis == "si":
@@ -106,7 +115,7 @@ class ControladorManzanas:
                 registro.intersectaPE = ""
                 registro.intersectaCRF = ""
                 registro.intersectaAV = ""
-                registro.homologacion = "" """
+                registro.homologacion = ""
         except:
             registro.estado = "Error procesaManzana"
             registro.motivo = "Croquis No generado"
@@ -117,10 +126,26 @@ class ControladorManzanas:
             registro.intersectaAV = ""
             registro.homologacion = ""
             mensaje("Error: no se completo el proceso de Manzana.")
-            
+
         self.mensajeEstado(registro)
         self.registros.append(registro)
         return
+
+    def leeNombreCapa(self, estrato):
+        #d = {"Manzana":0,"RAU":1,"Rural":2}
+        lista = ""
+        for e in self.config['estratos']:
+            if e['nombre'] == estrato:
+                lista = e['nombre_capa']
+        return lista
+
+    def listaEtiquetas(self, estrato):
+        d = {"Manzana":0,"RAU":1,"Rural":2}
+        lista = []
+        for e in self.config['estratos']:
+            if e['nombre'] == estrato:
+                lista = [m for m in self.config['estratos'][d[estrato]]['capas_labels']]
+        return lista
 
     def obtieneHomologacion(self, codigo):
         try:
@@ -268,11 +293,11 @@ class ControladorManzanas:
         return estadoSuperficie, motivoSuperficie
 
     def preparaMapaManzana(self, mxd, extent, escala, datosManzana):
-        actualizaVinetaManzanas(mxd, datosManzana)
+        self.actualizaVinetaManzanas(mxd, datosManzana)
         if zoom(mxd, extent, escala):
-            poligono = limpiaMapaManzana(mxd, datosManzana[0], int(datosManzana[10]))
+            poligono = self.limpiaMapaManzana(mxd, datosManzana[0], int(datosManzana[10]))
             if poligono != None:
-                lista_etiquetas = listaEtiquetas("Manzana")
+                lista_etiquetas = self.listaEtiquetas("Manzana")
                 mensaje("Inicio preparacion de etiquetas Manzana.")
                 for capa in lista_etiquetas:
                     cortaEtiqueta(mxd, capa, poligono)
@@ -357,7 +382,7 @@ class ControladorManzanas:
             del cursor
             del FC
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            limpiaEsquicio(mxd, leeNombreCapa("Manzana"), "manzent", cod_manz)
+            limpiaEsquicio(mxd, self.leeNombreCapa("Manzana"), "manzent", cod_manz)
             mensaje("Limpieza de mapa correcta.")
             return polchico
         except Exception:
@@ -407,7 +432,7 @@ class ControladorManzanas:
                 arcpy.AddMessage(s)
                 mensaje("Analisis: Manzana No Existe")
             return "Analisis"
- 
+
         else:
             # Mensajes para Generar PDF
             if registro.estadoViviendas == "Correcto":

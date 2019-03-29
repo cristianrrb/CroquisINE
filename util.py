@@ -170,6 +170,43 @@ def descomponeManzent(codigo):
     ent = c[-3:]
     return cut, dis, area, loc, ent
 
+def limpiaEsquicio(mxd, capa, campo, valor):
+    try:
+        mensaje("Limpieza de esquicio iniciada.")
+        df = arcpy.mapping.ListDataFrames(mxd)[1]
+        lyr = arcpy.mapping.ListLayers(mxd, capa, df)[0]
+        sql_exp = """{0} = {1}""".format(arcpy.AddFieldDelimiters(lyr.dataSource, campo), valor)
+        lyr.definitionQuery = sql_exp
+        mensaje(sql_exp)
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en limpieza de esquicio.")
+    return None
+
+def cortaEtiqueta(mxd, elLyr, poly):
+    try:
+        path_scratchGDB = arcpy.env.scratchGDB
+        df = arcpy.mapping.ListDataFrames(mxd)[0]
+        lyr_sal = os.path.join("in_memory", elLyr)
+        lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+        mensaje("Layer encontrado {}".format(lyr.name))
+        arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
+        arcpy.Clip_analysis(lyr, poly, lyr_sal)
+        cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
+        if cuantos > 0:
+            if arcpy.Exists(os.path.join(path_scratchGDB, elLyr)):
+                arcpy.Delete_management(os.path.join(path_scratchGDB, elLyr))
+            arcpy.CopyFeatures_management(lyr_sal, os.path.join(path_scratchGDB, elLyr))
+            lyr.replaceDataSource(path_scratchGDB, 'FILEGDB_WORKSPACE', elLyr , True)
+            mensaje("Etiquetas correcta de {}".format(elLyr))
+        else:
+            mensaje("No hay registros de {}".format(elLyr))
+        return True
+    except Exception:
+        mensaje(sys.exc_info()[1].args[0])
+        mensaje("Error en preparacion de etiquetas.")
+    return False
+
 class Registro:
     def __init__(self, codigo):
         self.hora = "{}".format(datetime.datetime.now().strftime("%H:%M:%S"))
@@ -269,13 +306,18 @@ class GeneraPDF:
 
     def generaRutaPDF(self, nombrePDF, datos):
         try:
+            mensaje("a")
             nueva_region = self.normalizaPalabra(self.dic.nombreRegion(datos[2]))
+            mensaje("b")
             nueva_comuna = self.normalizaPalabra(self.dic.nombreComuna(datos[4]))
 
             if self.parametros.Estrato == "Rural":
+                mensaje("c")
                 rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna)
             else:
+                mensaje("d")
                 nueva_urbano = self.normalizaPalabra(self.dic.nombreUrbano(datos[5]))
+                mensaje("e")
                 rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
 
             if not os.path.exists(rutaDestino):

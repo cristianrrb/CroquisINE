@@ -719,15 +719,14 @@ def procesaRural(codigo):
                     mensaje(rutaPDF)
                     registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
+                    procesaAreasDestacadas(codigo, datosRural, token)
+
                     if registro.rutaPDF != "":
                         registro.estado = "Correcto"
                         registro.motivo = "Croquis generado"
                     else:
                         registro.estado = "Incorrecto"
                         registro.motivo = "Croquis No generado"
-
-                    procesaAreasDestacadas(codigo, datosRural, token)
-
         else:
             registro.estado = "Seccion No Existe"
             registro.motivo = "Croquis No generado"
@@ -743,7 +742,7 @@ def procesaAreasDestacadas(codigoSeccion, datosSeccion, token):
     mensaje("Validando areas destacadas.")
     listaAreas = obtieneListaAreasDestacadas(codigoSeccion, token)
     if len(listaAreas) > 0:
-        mensaje("Se detectaron areas destacadas dentro de la seccion.{}".format(len(listaAreas)))
+        mensaje("Se detectaron areas destacadas dentro de la seccion.")
         for area in listaAreas:
             procesaAreaDestacada(codigoSeccion, area, datosSeccion)
     else:
@@ -754,10 +753,9 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
         registro = Registro(codigoSeccion)
         extent = area[0].extent
         nroAnexo = area[2]
-        mensaje("Nro. Anexo = {}".format(nroAnexo))
         mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
         if mxd != None:
-            if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
+            if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
                 mensaje("Registrando la operacion.")
                 registro.formato = infoMxd['formato']
                 registro.orientacion = infoMxd['orientacion']
@@ -771,27 +769,22 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 if registro.rutaPDF != "":
                     registro.estado = "Correcto"
                     registro.motivo= "Croquis generado"
-                    mensaje("Croquis generado Area Destacada")
-
                 else:
                     registro.estado = "Incorrecto"
                     registro.motivo = "Croquis No generado"
-                    mensaje("Croquis No generado Area Destacada")
         else:
             registro.estado = "Incorrecto"
-            registro.motivo = "No encuentra mxd"
-            mensaje("No encuentra mxd")
+            registro.motivo = "Area destacada no existe"
     except:
         #pass
         registro.estado = "Error procesaAreaDestacada"
         registro.motivo = "Area destacada No generada"
-        mensaje("**Error Area destacada No generada")
     registros.append(registro)
     mensajeEstado(registro)
     return
 
-def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
-    actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
+def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
+    actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
@@ -804,7 +797,7 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
 
 def buscaTemplateAreaDestacada(extent):
     # Por el momento se usan los mismos que para Rural
-    mxd, infoMxd, escala = controlTemplates.buscaTemplateAnexo(extent)
+    mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
     return mxd, infoMxd, escala
 
 def leeJsonConfiguracion():
@@ -928,12 +921,13 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las vinetas para Rural.")
 
-def actualizaVinetaAreaDestacada(mxd,datosSeccion, nroAnexo):
+def actualizaVinetaAreaDestacada(mxd,datosSeccion):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
     try:
         nombre_region = dic.nombreRegion(datosSeccion[2])
         nombre_provincia = dic.nombreProvincia(datosSeccion[3])
         nombre_comuna = dic.nombreComuna(datosSeccion[4])
+        codigo_barra = generaCodigoBarra(parametroEstrato,datosSeccion)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -958,8 +952,8 @@ def actualizaVinetaAreaDestacada(mxd,datosSeccion, nroAnexo):
                 elm.text = datosSeccion[8]
             if elm.name == "COD_CARTO":
                 elm.text = datosSeccion[9]
-            if elm.name == "numeroAnexo":
-                elm.text = "N. {}".format(nroAnexo)
+            if elm.name == "barcode":
+                elm.text = codigo_barra
         mensaje("Se actualizaron las vinetas para area Destacada.")
     except:
         mensaje("No se pudo actualizar las vinetas para area Destacada.")
