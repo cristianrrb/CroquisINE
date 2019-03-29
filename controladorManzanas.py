@@ -37,6 +37,7 @@ class ControladorManzanas:
                 viviendas = listaViviendasEncuestar[indice]
             self.procesaManzana(codigo, viviendas)
 
+        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         rutaCSV = self.escribeCSV()
         rutaZip = comprime(self.nombreZip(), self.registros, rutaCSV)  # util
         return rutaZip
@@ -64,35 +65,24 @@ class ControladorManzanas:
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
                         if self.preparaMapaManzana(mxd, extent, escala, datosManzana):
-                            mensaje("8")
                             mensaje("Registrando la operacion.")
-                            mensaje("9")
                             registro.formato = infoMxd['formato']
-                            mensaje("10")
                             registro.orientacion = infoMxd['orientacion']
-                            mensaje("11")
                             registro.escala = escala
-                            mensaje("12")
                             registro.codigoBarra = self.generaCodigoBarra(datosManzana)
-                            mensaje("13")
 
                             nombrePDF = self.generaNombrePDF(datosManzana, infoMxd)
-                            mensaje("14")
                             mensaje(nombrePDF)
                             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosManzana)
-                            mensaje("15")
                             mensaje(rutaPDF)
                             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
-                            mensaje("16")
 
                             if registro.rutaPDF != "":
                                 registro.estado = "Genera PDF"
                                 registro.motivo = "Croquis generado"
-                                mensaje("17")
                             else:
                                 registro.estado = "Genera PDF"
                                 registro.motivo = "Croquis No generado"
-                                mensaje("18")
 
                 # ************************** inicio if para solo para analisis cuando se Rechaza la manzana *********************************
                 elif self.parametros.SoloAnalisis == "si":

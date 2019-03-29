@@ -306,18 +306,13 @@ class GeneraPDF:
 
     def generaRutaPDF(self, nombrePDF, datos):
         try:
-            mensaje("a")
             nueva_region = self.normalizaPalabra(self.dic.nombreRegion(datos[2]))
-            mensaje("b")
             nueva_comuna = self.normalizaPalabra(self.dic.nombreComuna(datos[4]))
 
             if self.parametros.Estrato == "Rural":
-                mensaje("c")
                 rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna)
             else:
-                mensaje("d")
                 nueva_urbano = self.normalizaPalabra(self.dic.nombreUrbano(datos[5]))
-                mensaje("e")
                 rutaDestino = os.path.join(self.config['rutabase'], "MUESTRAS_PDF", self.parametros.Encuesta, nueva_region, nueva_comuna, nueva_urbano)
 
             if not os.path.exists(rutaDestino):
