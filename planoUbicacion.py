@@ -34,17 +34,12 @@ class PlanoUbicacion:
 
                 mensaje("Escala tentativa {}".format(escala))
 
-                # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
                     mensaje("Zoom a Manzanas (escala menor a 1:7500)")
                     extent = arcpy.Describe(fc).extent
-                    # mensaje(extentFC)
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-                    # mensaje(escala)
-                    # zoom(mxd, extentFC, escala)
                 else:
                     mensaje("Zoom a LUC")
-                    # zoom(mxd, extent_PU, escala)
 
                 mensaje("Escala final {}".format(escala))
                 zoom(mxd, extent_PU, escala)
