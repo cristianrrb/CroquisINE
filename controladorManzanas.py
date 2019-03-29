@@ -474,7 +474,6 @@ class ControladorManzanas:
             passwordFromMail = 'COMPLETAR'
             toMail = "reinaldo.segura@ine.cl"
 
-            # Create message container - the correct MIME type is multipart/alternative.
             msg = MIMEMultipart('alternative')
 
             encuesta = self.parametros.Encuesta
@@ -485,10 +484,29 @@ class ControladorManzanas:
             msg['From'] = fromMail
             msg['To'] = toMail
 
-            # Create the body of the message (a plain-text and an HTML version).
-            html = """\
-                <html>
-                <head>
+            html = "<html>" 
+            html += self._cabeceraCorreo()
+            html += "<body>"
+            html += self._cuerpoTitulo()
+            html += self._cuerpoTabla()
+            html += self._cuerpoPie()
+            html += "</body>"
+            html += "</html>"
+
+            msg.attach(MIMEText(html, 'html'))
+            mailserver = smtplib.SMTP('smtp.office365.com',587)
+            mailserver.ehlo()
+            mailserver.starttls()
+            mailserver.login(fromMail, passwordFromMail)
+            mailserver.sendmail(fromMail, toMail, msg.as_string())
+            mensaje("Reporte Enviado")
+            mailserver.quit()
+        except:
+            mensaje("No se envia correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
+
+    def _cabeceraCorreo(self):
+        return """
+            <head>
                 <style>
                     table, td, th {
                         border: 1px solid #ddd;
@@ -502,85 +520,78 @@ class ControladorManzanas:
                         padding: 15px;
                     }
                 </style>
-                </head>
-                <body>
-                <h2>Reporte Croquis INE Nro: """ + str(self.horaInicio) + """</h2>"""
+            </head>
+        """
 
-            html += """<h3>Encuesta: """ + encuesta + """ / Estrato: """ + str(self.parametros.Estrato) + """</h3>"""
+    def _cuerpoTitulo(self):
+        html =  "<h2>Reporte Croquis INE Nro: " + str(self.horaInicio) + "</h2>"
+        html += "<h3>Encuesta: " + encuesta + " / Estrato: " + str(self.parametros.Estrato) + "</h3>"
+        html += "<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadísticas de Chile</p>"
+        html += "<u>Motivos de Rechazo:</u>"
+        html += "<ul>"
+        html += '  <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>'
+        html += '  <li type="disc">Rechazada, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 > 40%, Cuando "Estado superficie" es, Rechazada</li>'
+        html += "</ul>"
+        html += "<u>Motivos de Alerta:</u>"
+        html += "<ul>"
+        html += '  <li type="disc">Alerta, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 se encuentra entre 6% y 40% inclusive, Cuando "Estado superficie" es, Alerta</li>'
+        html += '  <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando "Intersecta PE" es, Si.</li>'
+        html += '  <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando "Intersecta CRF" es, Si.</li>'
+        html += '   <li type="disc">Alerta, Manzana Intersecta con óreas Verdes (AV); Cuando "Intersecta AV" es, Si.</li>'
+        html += '   <li type="disc">Alerta, Manzana Homologación No es Idóntica; cuando "Homologación" es, Homologada No Idóntica(s)</li>'
+        html += "</ul>"
+        return html
 
-            html += """<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadósticas de Chile</p>
-            <u>Motivos de Rechazo:</u>
-            <ul>
-                <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
-                <li type="disc">Rechazada, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 > 40%, Cuando 'Estado superficie' es, Rechazada</li>
-            </ul>
-            <u>Motivos de Alerta:</u>
-            <ul>
-                <li type="disc">Alerta, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 se encuentra entre 6% y 40% inclusive, Cuando 'Estado superficie' es, Alerta</li>
-                <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
-                <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
-                <li type="disc">Alerta, Manzana Intersecta con óreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
-                <li type="disc">Alerta, Manzana Homologación No es Idóntica; cuando 'Homologación' es, Homologada No Idóntica(s)</li>
-            </ul>
-            <div style="overflow-x:auto;">
-            <table>
-                <tr>
-                    <th>#</th>
-                    <th>Hora</th>
-                    <th>Código</th>
-                    <th>Estado</th>
-                    <th>Motivo</th>
-                    <th>Estado Superficie</th>
-                    <th>Motivo Superficie</th>
-                    <th>Estado Viviendas</th>
-                    <th>Motivo Viviendas</th>
-                    <th>CUT</th>
-                    <th>C.DISTRITO</th>
-                    <th>C.ZONA</th>
-                    <th>C.ENTIDAD</th>
-                    <th>Ruta PDF</th>
-                    <th>Intersecta PE</th>
-                    <th>Intersecta CRF</th>
-                    <th>Intersecta AV</th>
-                    <th>Homologación</th>
-                    <th>Formato / Orientación</th>
-                    <th>Escala</th>
-                    <th>Código barra<th/>
-                </tr>
-                """
-            for i, r in enumerate(self.registros, 1):
-                if r.estadoViviendas == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
-                    cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
-                    a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
-                    html += """<tr>"""
-                    html += """<th>%s</th>""" % str(i)
+    def _cuerpoTabla(self):
+        html =  '<div style="overflow-x:auto;">'
+        html += '<table>'
+        html += '  <tr>'
+        html += '    <th>#</th>'
+        html += '    <th>Hora</th>'
+        html += '    <th>Código</th>'
+        html += '    <th>Estado</th>'
+        html += '    <th>Motivo</th>'
+        html += '    <th>Estado Superficie</th>'
+        html += '    <th>Motivo Superficie</th>'
+        html += '    <th>Estado Viviendas</th>'
+        html += '    <th>Motivo Viviendas</th>'
+        html += '    <th>CUT</th>'
+        html += '    <th>C.DISTRITO</th>'
+        html += '    <th>C.ZONA</th>'
+        html += '    <th>C.ENTIDAD</th>'
+        html += '    <th>Ruta PDF</th>'
+        html += '    <th>Intersecta PE</th>'
+        html += '    <th>Intersecta CRF</th>'
+        html += '    <th>Intersecta AV</th>'
+        html += '    <th>Homologación</th>'
+        html += '    <th>Formato / Orientación</th>'
+        html += '    <th>Escala</th>'
+        html += '    <th>Código barra<th/>'
+        html += '  </tr>'
+        
+        for i, r in enumerate(self.registros, 1):
+            if r.estadoViviendas == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+                cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
+                a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                html += '<tr>'
+                html += "<td>{}</td>".format(i)
 
-                    for c in a:
-                        html += """<td>%s</td>""" % str(c)
+                for c in a:
+                    html += "<td>{}</td>".format(c)
 
-                    html += """</tr>"""
+                html += '</tr>'
 
-            html += """</table>
-            </div>
-            </br>
-            <p><b>Departamento de Geografóa</b></p>
-            <p>Instituto Nacional de Estadósticas</p>
-            <p>Fono: 232461860</p>
-            </body>
-            </html>
-            """
+        html += '</table>'
+        html += '</div>'
 
-            part1 = MIMEText(html, 'html')
-            msg.attach(part1)
-            mailserver = smtplib.SMTP('smtp.office365.com',587)
-            mailserver.ehlo()
-            mailserver.starttls()
-            mailserver.login(fromMail, passwordFromMail)
-            mailserver.sendmail(fromMail, toMail, msg.as_string())
-            mensaje("Reporte Enviado")
-            mailserver.quit()
-        except:
-            mensaje("No se envia correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
+        return html
+
+    def _cuerpoPie(self):
+        html =  '</br>'
+        html += '<p><b>Departamento de Geografía</b></p>'
+        html += '<p>Instituto Nacional de Estadísticas</p>'
+        html += '<p>Fono: 232461860</p>'
+        return html
 
 
 """     def calculaDistanciaBufferManzana(self, area):
