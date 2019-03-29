@@ -494,7 +494,7 @@ class ControladorManzanas:
             html += "</html>"
 
             msg.attach(MIMEText(html, 'html'))
-            mailserver = smtplib.SMTP('smtp.office365.com',587)
+            mailserver = smtplib.SMTP('smtp.office365.com', 587)
             mailserver.ehlo()
             mailserver.starttls()
             mailserver.login(fromMail, passwordFromMail)
