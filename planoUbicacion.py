@@ -47,7 +47,7 @@ class PlanoUbicacion:
                     # zoom(mxd, extent_PU, escala)
 
                 mensaje("Escala final {}".format(escala))
-                zoom(mxd, extent_PU, escala)
+                zoom(mxd, extent, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
