@@ -55,14 +55,15 @@ class ControladorManzanas:
 
             self.comparaManzanas(datosManzana[1], area_polygon2017, registro)
 
+"""
             if datosManzana != None:
-                registro.intersectaPE = intersectaConArea(datosManzana[0], self.infoMarco.urlPE)
-                registro.intersectaAV = intersectaConArea(datosManzana[0], self.infoMarco.urlAV)
-                registro.intersectaCRF = intersectaConArea(datosManzana[0], self.infoMarco.urlCRF)
+                registro.intersectaPE = intersectaConArea(datosManzana[0], self.infoMarco.urlPE)  # util
+                registro.intersectaAV = intersectaConArea(datosManzana[0], self.infoMarco.urlAV)  # util
+                registro.intersectaCRF = intersectaConArea(datosManzana[0], self.infoMarco.urlCRF)  # util
             ############################################################## [FIN SECCION ANALISIS DE MANZANA] #####################################################################
 
                 if not (registro.estadoViviendas == "Rechazado" or self.parametros.SoloAnalisis == 'si'):
-                   """  mxd, infoMxd, escala = self.controlTemplates.buscaTemplateManzana(extent)
+                    mxd, infoMxd, escala = self.controlTemplates.buscaTemplateManzana(extent)
                     if mxd != None:
 
                         if self.preparaMapaManzana(mxd, extent, escala, datosManzana):
@@ -83,7 +84,7 @@ class ControladorManzanas:
                                 registro.motivo = "Croquis generado"
                             else:
                                 registro.estado = "Genera PDF"
-                                registro.motivo = "Croquis No generado" """
+                                registro.motivo = "Croquis No generado"
 
                 # ************************** inicio if para solo para analisis cuando se Rechaza la manzana *********************************
                 elif self.parametros.SoloAnalisis == "si":
@@ -100,7 +101,7 @@ class ControladorManzanas:
                 mensaje("Manzana No Existe")
                 registro.estado = "Manzana No Existe"
                 registro.motivo = "Croquis No generado"
-                """ registro.estadoViviendas = ""
+                registro.estadoViviendas = ""
                 registro.motivoViviendas = ""
                 registro.intersectaPE = ""
                 registro.intersectaCRF = ""
@@ -115,7 +116,7 @@ class ControladorManzanas:
             registro.intersectaCRF = ""
             registro.intersectaAV = ""
             registro.homologacion = ""
-            mensaje("No se completo el proceso de Manzana.")
+            mensaje("Error: no se completo el proceso de Manzana.")
             
         self.mensajeEstado(registro)
         self.registros.append(registro)
