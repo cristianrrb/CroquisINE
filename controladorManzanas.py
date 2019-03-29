@@ -10,6 +10,10 @@ import urllib2
 import json
 from util import *
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 class ControladorManzanas:
 
     def __init__(self, parametros, config, infoMarco, listaCodigos, controlTemplates, dic, controlPDF, token):
@@ -37,9 +41,11 @@ class ControladorManzanas:
                 viviendas = listaViviendasEncuestar[indice]
             self.procesaManzana(codigo, viviendas)
 
-        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         rutaCSV = self.escribeCSV()
         rutaZip = comprime(self.nombreZip(), self.registros, rutaCSV)  # util
+
+        self.enviarMail()
+
         return rutaZip
 
     def procesaManzana(self, codigo, viviendasEncuestar):
@@ -461,6 +467,121 @@ class ControladorManzanas:
 
         nombre = 'Comprimido_{}_{}_{}.zip'.format(tipo, self.parametros.Encuesta, self.horaInicio)
         return nombre
+
+    def enviarMail(self):
+        try:
+            fromMail = "COMPLETAR"
+            passwordFromMail = 'COMPLETAR'
+            toMail = "reinaldo.segura@ine.cl"
+
+            # Create message container - the correct MIME type is multipart/alternative.
+            msg = MIMEMultipart('alternative')
+
+            encuesta = self.parametros.Encuesta
+            if self.parametros.Encuesta != "ENE":
+                encuesta += " " + self.parametros.Marco
+
+            msg['Subject'] = "Reporte Croquis INE Nro: {} / Encuesta: {}, Estrato: {}".format(str(self.horaInicio), encuesta, self.parametros.Estrato)
+            msg['From'] = fromMail
+            msg['To'] = toMail
+
+            # Create the body of the message (a plain-text and an HTML version).
+            html = """\
+                <html>
+                <head>
+                <style>
+                    table, td, th {
+                        border: 1px solid #ddd;
+                        text-align: left;
+                    }
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+                    th, td {
+                        padding: 15px;
+                    }
+                </style>
+                </head>
+                <body>
+                <h2>Reporte Croquis INE Nro: """ + str(self.horaInicio) + """</h2>"""
+
+            html += """<h3>Encuesta: """ + encuesta + """ / Estrato: """ + str(self.parametros.Estrato) + """</h3>"""
+
+            html += """<p>Reporte croquis de alertas y rechazo para Instituto Nacional de Estadósticas de Chile</p>
+            <u>Motivos de Rechazo:</u>
+            <ul>
+                <li type="disc">Rechazo, Manzana con menos de 8 viviendas; Cuando 'Estado' es, Rechazado.</li>
+                <li type="disc">Rechazada, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 > 40%, Cuando 'Estado superficie' es, Rechazada</li>
+            </ul>
+            <u>Motivos de Alerta:</u>
+            <ul>
+                <li type="disc">Alerta, Diferencia de AreaManzana_2016 y AreaManzana_Censo2017 se encuentra entre 6% y 40% inclusive, Cuando 'Estado superficie' es, Alerta</li>
+                <li type="disc">Alerta, Manzana Intersecta con Permiso de Edificación (PE); Cuando 'Intersecta PE' es, Si.</li>
+                <li type="disc">Alerta, Manzana Intersecta con Certificado de Recepción Final (CRF); Cuando 'Intersecta CRF' es, Si.</li>
+                <li type="disc">Alerta, Manzana Intersecta con óreas Verdes (AV); Cuando 'Intersecta AV' es, Si.</li>
+                <li type="disc">Alerta, Manzana Homologación No es Idóntica; cuando 'Homologación' es, Homologada No Idóntica(s)</li>
+            </ul>
+            <div style="overflow-x:auto;">
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>Hora</th>
+                    <th>Código</th>
+                    <th>Estado</th>
+                    <th>Motivo</th>
+                    <th>Estado Superficie</th>
+                    <th>Motivo Superficie</th>
+                    <th>Estado Viviendas</th>
+                    <th>Motivo Viviendas</th>
+                    <th>CUT</th>
+                    <th>C.DISTRITO</th>
+                    <th>C.ZONA</th>
+                    <th>C.ENTIDAD</th>
+                    <th>Ruta PDF</th>
+                    <th>Intersecta PE</th>
+                    <th>Intersecta CRF</th>
+                    <th>Intersecta AV</th>
+                    <th>Homologación</th>
+                    <th>Formato / Orientación</th>
+                    <th>Escala</th>
+                    <th>Código barra<th/>
+                </tr>
+                """
+            for i, r in enumerate(self.registros, 1):
+                if r.estadoViviendas == "Rechazado" or r.estadoSuperficie == "Alerta" or r.estadoSuperficie == "Rechazada" or r.intersectaPE == "Si" or r.intersectaCRF == "Si" or r.intersectaAV == "Si" or r.homologacion == 'Homologada No Idéntica' or r.homologacion == 'Homologada No Idénticas':
+                    cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
+                    a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                    html += """<tr>"""
+                    html += """<th>%s</th>""" % str(i)
+
+                    for c in a:
+                        html += """<td>%s</td>""" % str(c)
+
+                    html += """</tr>"""
+
+            html += """</table>
+            </div>
+            </br>
+            <p><b>Departamento de Geografóa</b></p>
+            <p>Instituto Nacional de Estadósticas</p>
+            <p>Fono: 232461860</p>
+            </body>
+            </html>
+            """
+
+            part1 = MIMEText(html, 'html')
+            msg.attach(part1)
+            mailserver = smtplib.SMTP('smtp.office365.com',587)
+            mailserver.ehlo()
+            mailserver.starttls()
+            mailserver.login(fromMail, passwordFromMail)
+            mailserver.sendmail(fromMail, toMail, msg.as_string())
+            mensaje("Reporte Enviado")
+            mailserver.quit()
+        except:
+            mensaje("No se envia correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
+
 
 """     def calculaDistanciaBufferManzana(self, area):
         return '15 Meters' """
