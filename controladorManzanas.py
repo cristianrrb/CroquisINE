@@ -37,7 +37,6 @@ class ControladorManzanas:
                 viviendas = listaViviendasEncuestar[indice]
             self.procesaManzana(codigo, viviendas)
 
-        f = "{}".format(datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         rutaCSV = self.escribeCSV()
         rutaZip = comprime(self.nombreZip(), self.registros, rutaCSV)  # util
         return rutaZip
