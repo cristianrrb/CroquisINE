@@ -20,6 +20,18 @@ class Templates:
                     lista = [m for m in self.config['estratos'][d[estrato]]['mxds'] if m['ancho'] <= m['alto']]
         return lista
 
+    def listaMXDsAnexo(self, estrato, ancho):
+        d = {"Manzana": 0, "RAU": 1, "Rural": 2}
+        lista = []
+        for e in self.config['estratos']:
+            if e['nombre'] == estrato:
+                lista = [m for m in self.config['estratos'][d[estrato]]['mxdAnexo']]
+                """if ancho:
+                    lista = [m for m in self.config['estratos'][d[estrato]]['mxdAnexo'] if m['ancho'] > m['alto']]
+                else:
+                    lista = [m for m in self.config['estratos'][d[estrato]]['mxdAnexo'] if m['ancho'] <= m['alto']]"""
+        return lista
+
     def listaMXDsPlanoUbicacion(self, estrato, ancho):
         d = {"Manzana":0,"RAU":1,"Rural":2}
         lista = []
@@ -58,6 +70,14 @@ class Templates:
     def mejorEscalaMXDRural(self, mxd, alto, ancho):
         #5 a 200x100 (500 a 2000)
         escalas = [e for e in range(5, 210)]
+        for e in escalas:
+            if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
+                return e * 100
+        return None
+
+    def mejorEscalaMXDAnexo(self, mxd, alto, ancho):
+        #5 a 200x100 (500 a 1000000)
+        escalas = [e for e in range(5, 10000)]
         for e in escalas:
             if (ancho < (mxd['ancho'] * e)) and (alto < (mxd['alto'] * e)):
                 return e * 100
@@ -137,6 +157,24 @@ class Templates:
         #mensaje('** Error: No se selecciono layout para Rural.')
         return None, None, None
 
+
+    def buscaTemplateAnexo(self, extent):
+        try:
+            ancho = extent.XMax - extent.XMin
+            alto = extent.YMax - extent.YMin
+            lista = self.listaMXDsAnexo("Rural", (ancho > alto))
+            for infoMxd in lista:
+                escala = self.mejorEscalaMXDAnexo(infoMxd, alto, ancho)
+                if escala != None:
+                    rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")
+                    mxd = arcpy.mapping.MapDocument(rutaMXD)
+                    #mensaje('Se selecciono layout para Rural.')
+                    return mxd, infoMxd, escala
+        except:
+            pass
+        #mensaje('** Error: No se selecciono layout para Rural.')
+        return None, None, None
+
     def buscaTemplatePlanoUbicacion(self, estrato, extent):
         try:
             ancho = extent.XMax - extent.XMin
@@ -150,7 +188,7 @@ class Templates:
                     mensaje('Se selecciono layout para Plano Ubicacion.')
                     return mxd, infoMxd, escala
 
-            # si no se ajusta dentro de las escalas limites se usa el papel mï¿½s grande sin limite de escala
+            # si no se ajusta dentro de las escalas limites se usa el papel grande sin limite de escala
             escala = self.mejorEscalaMXD(infoMxd, alto, ancho)
             if escala != None:
                 rutaMXD = os.path.join(self.config['rutabase'], 'MXD', infoMxd['ruta'] + ".mxd")

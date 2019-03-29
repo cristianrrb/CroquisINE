@@ -479,7 +479,7 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
         lyr.visible = False
-        #zoomEsquicio(mxd, datosSeccion[0].extent)
+        zoomEsquicio(mxd, datosSeccion[0].extent)
         mensaje("Se completo la preparacion del mapa para area destacada.")
         return True
     mensaje("No se completo la preparacion del mapa para area destacada.")
@@ -487,7 +487,7 @@ def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
 
 def buscaTemplateAreaDestacada(extent):
     # Por el momento se usan los mismos que para Rural
-    mxd, infoMxd, escala = controlTemplates.buscaTemplateRural(extent)
+    mxd, infoMxd, escala = controlTemplates.buscaTemplateAnexo(extent)
     return mxd, infoMxd, escala
 
 def leeJsonConfiguracion():
