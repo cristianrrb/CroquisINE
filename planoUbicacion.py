@@ -31,7 +31,7 @@ class PlanoUbicacion:
             if self.parametros.Estrato == "Manzana":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-                mensaje("Escala tentativa {}".format(escala))
+                mensaje("Escala tentativa 1:{}".format(escala))
 
                 if escala > 7500:
                     mensaje("Zoom a Manzanas (escala menor a 1:7500)")
@@ -40,7 +40,7 @@ class PlanoUbicacion:
                 else:
                     mensaje("Zoom a LUC (escala mayor o igual a 1:7500)")
 
-                mensaje("Escala final {}".format(escala))
+                mensaje("Escala final 1:{}".format(escala))
                 zoom(mxd, extent_PU, escala)
 
                 capa = "Marco_Manzana"

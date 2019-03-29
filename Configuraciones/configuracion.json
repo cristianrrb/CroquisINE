@@ -248,10 +248,26 @@
                "ruta": "Rural\\Sec_P3_H"
             }
          ],
+         "mxdAnexo": [
+            {
+               "ancho": 58.501,
+               "alto": 57.999,
+               "formato": "70x60",
+               "orientacion": "Horizontal",
+               "ruta": "Rural\\Anexos_70x60"
+            }
+         ],
          "capas_labels_plano_ubicacion": [
+            "Distrito_Censal",
+            "Limite_Urbano_Censal_Marco",
             "Eje_Vial",
-            "Etiquetas_Limites",
-            "Cursos_Hidricos_Marco"
+            "Cursos_Hidricos_Marco",
+            "SECCIONES_SELECCIONADAS",
+            "Cuerpos_de_Agua",
+            "Cotas",
+            "Hipsometria",
+            "ET_RELIEVE",
+            "ET_RELIEVE_OTROS"
          ],
          "mxdsPlanoUbicacion":[
            {
