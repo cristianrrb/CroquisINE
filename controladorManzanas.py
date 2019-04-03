@@ -178,7 +178,7 @@ class ControladorManzanas:
                 rango = self.dictRangos[viviendasEncuestar]
                 if rango[0] <= totalViviendas <= rango[1]:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0], rango[1]))
+                    mensaje("Rango MÃ³nimo/MÃ³ximo. ({},{})".format(rango[0], rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("Se cumple con el rango de viviendas de la manzana.")
                     registro.estadoViviendas = "Correcto"
@@ -186,7 +186,7 @@ class ControladorManzanas:
                     return "Correcto"
                 else:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0],rango[1]))
+                    mensaje("Rango MÃ³nimo/MÃ³ximo. ({},{})".format(rango[0],rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
@@ -406,7 +406,7 @@ class ControladorManzanas:
 
     def mensajeEstado(self, registro):
         homologacion = "I"
-        if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
+        if registro.homologacion == 'Homologada No IdÃ©ntica' or registro.homologacion == 'Homologada No IdÃ©nticas':
             homologacion = 'NI'
 
         # Mensajes para analisis
@@ -420,7 +420,7 @@ class ControladorManzanas:
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rechazado
                 print(s)
                 arcpy.AddMessage(s)
-                mensaje("Analisis: Se rechazó la manzana.")
+                mensaje("Analisis: Se rechazÃ³ la manzana.")
             if registro.estadoViviendas == "":
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
                 print(s)
@@ -454,9 +454,9 @@ class ControladorManzanas:
                 if registro.estado == "Correcto":
                     mensaje("Genera croquis: Se genera el croquis para Secciones")
                 if registro.estado == "Incorrecto":
-                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+                    mensaje("Genera croquis: No se logrÃ³ generar el croquis para seccion.")
                 if registro.estado == "Seccion No Existe":
-                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
+                    mensaje("Genera croquis: No se logrÃ³ generar el croquis para seccion.")
             return "Croquis"
 
     def nombreZip(self):
@@ -483,21 +483,33 @@ class ControladorManzanas:
         msg['From'] = fromMail
         msg['To'] = toMail
 
-        html = "<html>" 
+        html = "<html>"
+        mensaje("1")
         html += self._cabeceraCorreo()
+        mensaje("2")
         html += "<body>"
+        mensaje("3")
         html += self._cuerpoTitulo(encuesta)
+        mensaje("4")
         html += self._cuerpoTabla()
+        mensaje("5")
         html += self._cuerpoPie()
+        mensaje("6")
         html += "</body>"
+        mensaje("7")
         html += "</html>"
 
         try:
             msg.attach(MIMEText(html, 'html'))
+            mensaje("11")
             mailserver = smtplib.SMTP('smtp.office365.com', 587)
+            mensaje("22")
             mailserver.ehlo()
+            mensaje("33")
             mailserver.starttls()
+            mensaje("44")
             mailserver.login(fromMail, passwordFromMail)
+            mensaje("55")
             mailserver.sendmail(fromMail, toMail, msg.as_string())
             mensaje("Reporte Enviado")
             mailserver.quit()
@@ -543,6 +555,7 @@ class ControladorManzanas:
         return html
 
     def _cuerpoTabla(self):
+        mensaje("a")
         html =  '<div style="overflow-x:auto;">'
         html += '<table>'
         html += '  <tr>'
@@ -568,11 +581,17 @@ class ControladorManzanas:
         html += '    <th>Escala</th>'
         html += '    <th>Codigo barra<th/>'
         html += '  </tr>'
-        
+
         for i, r in enumerate(self.registros, 1):
+            mensaje(i)
             if self._enviaCorreo(r):
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
-                a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                homologacion = r.homologacion
+                if homologacion[0:16] == "Homologada No Id":
+                    homologacion = "Homologada No Identica"
+                if homologacion[0:13] == "Homologada Id":
+                    homologacion = "Homologada Identica"
+                a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, homologacion, r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                 html += '<tr>'
                 html += "<td>{}</td>".format(i)
 
@@ -589,20 +608,20 @@ class ControladorManzanas:
     def _enviaCorreo(self, r):
         if r.estadoViviendas == "Rechazado":
             return True
-            
+
         if r.estadoSuperficie == "Alerta":
             return True
-                
+
         if r.estadoSuperficie == "Rechazada":
             return True
-            
-        if r.intersectaPE == "Si" 
+
+        if r.intersectaPE == "Si":
             return True
 
-        if r.intersectaCRF == "Si"
+        if r.intersectaCRF == "Si":
             return True
 
-        if r.intersectaAV == "Si" 
+        if r.intersectaAV == "Si":
             return True
 
         if r.homologacion != "" and r.homologacion[0:16] == 'Homologada No Id':
@@ -612,8 +631,7 @@ class ControladorManzanas:
 
     def _cuerpoPie(self):
         html =  '</br>'
-        html += '<p><b>Departamento de Geografía</b></p>'
-        html += '<p>Instituto Nacional de Estadísticas</p>'
+        html += '<p><b>Departamento de Geografia</b></p>'
+        html += '<p>Instituto Nacional de Estadisticas</p>'
         html += '<p>Fono: 232461860</p>'
         return html
-

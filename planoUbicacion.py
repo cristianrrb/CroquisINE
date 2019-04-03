@@ -29,25 +29,23 @@ class PlanoUbicacion:
         registro = Registro(self.listaCodigos)
         try:
             if self.parametros.Estrato == "Manzana":
-                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
 
-                mensaje("Escala tentativa {}".format(escala))
+                mensaje("*********** escala es = {}".format(escala))
 
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
-                    mensaje("Zoom a Manzanas (escala menor a 1:7500)")
-                    extent = arcpy.Describe(fc).extent
-                    # mensaje(extentFC)
-                    mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
-                    # mensaje(escala)
-                    # zoom(mxd, extentFC, escala)
+                    mensaje("Zoom a FC ListadoPoligonos")
+                    desc = arcpy.Describe(fc)
+                    extentFC = desc.extent
+                    mensaje(extentFC)
+                    mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extentFC)
+                    mensaje(escala)
+                    zoom(mxd, extentFC, escala)
                 else:
                     mensaje("Zoom a LUC")
-                    # zoom(mxd, extent_PU, escala)
-
-                mensaje("Escala final {}".format(escala))
-                zoom(mxd, extent, escala)
+                    zoom(mxd, extent_PU, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
@@ -68,7 +66,7 @@ class PlanoUbicacion:
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad[0])
                 zoom(mxd, extent_PU, escala)
                 capa = "SECCIONES_SELECCIONADAS"
-                self.preparaMapa_PU(mxd, entidad)
+                self.preparaMapa_PU(mxd, entidad[0])
 
             self.etiquetaSeccionSeleccionada(mxd, capa, query)
             self.destacaListaPoligonos(mxd, fc)
@@ -336,7 +334,6 @@ class PlanoUbicacion:
         try:
             mensaje("Limpieza de mapa 'Comuna Rural' iniciada.")
             poligonoEntrada = self.filtraComunaEnMapa(int(entidad[4]), mxd)
-
             lyr = self.creaLayerParaMascara(mxd)
             polchico = self.generaMascara(mxd, poligonoEntrada, lyr)
 
