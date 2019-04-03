@@ -409,6 +409,10 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
     actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
+        # -------------Limpia esquicio -------------
+        nombreCapa = leeNombreCapa("Rural")
+        poligono = limpiaMapaRural(mxd, datosSeccion, nombreCapa)
+        # -------------Limpia esquicio -------------
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
         lyr.visible = False
@@ -535,7 +539,7 @@ def actualizaVinetaAreaDestacada(mxd,datosSeccion, nroAnexo):
             if elm.name == "COD_CARTO":
                 elm.text = datosSeccion[9]
             if elm.name == "numeroAnexo":
-                elm.text = nroAnexo
+                elm.text = "N." + str(nroAnexo)
         mensaje("Se actualizaron las vinetas para area Destacada.")
     except:
         mensaje("No se pudo actualizar las vinetas para area Destacada.")
