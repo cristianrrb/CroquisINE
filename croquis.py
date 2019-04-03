@@ -378,7 +378,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
         nroAnexo = area[2]
         mxd, infoMxd, escala = buscaTemplateAreaDestacada(extent)
         if mxd != None:
-            if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
+            if preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
                 mensaje("Registrando la operacion.")
                 registro.formato = infoMxd['formato']
                 registro.orientacion = infoMxd['orientacion']
@@ -406,8 +406,8 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     mensajeEstado(registro)
     return
 
-def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion):
-    actualizaVinetaAreaDestacada(mxd, datosSeccion)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
+def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
+    actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr = arcpy.mapping.ListLayers(mxd, "Areas_Destacadas_Marco", df)[0]
@@ -504,13 +504,12 @@ def actualizaVinetaSeccionRural(mxd,datosRural):
     except:
         mensaje("No se pudo actualizar las vinetas para Rural.")
 
-def actualizaVinetaAreaDestacada(mxd,datosSeccion):
+def actualizaVinetaAreaDestacada(mxd,datosSeccion, nroAnexo):
     #fields = ['SHAPE@','SHAPE@AREA','REGION','PROVINCIA','COMUNA','CUT','COD_SECCION','COD_DISTRITO','EST_GEOGRAFICO','COD_CARTO','CU_SECCION']
     try:
         nombre_region = dic.nombreRegion(datosSeccion[2])
         nombre_provincia = dic.nombreProvincia(datosSeccion[3])
         nombre_comuna = dic.nombreComuna(datosSeccion[4])
-        codigo_barra = generaCodigoBarra(parametroEstrato,datosSeccion)
 
         for elm in arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT"):
             if parametroEncuesta == "ENE":
@@ -535,8 +534,8 @@ def actualizaVinetaAreaDestacada(mxd,datosSeccion):
                 elm.text = datosSeccion[8]
             if elm.name == "COD_CARTO":
                 elm.text = datosSeccion[9]
-            if elm.name == "barcode":
-                elm.text = codigo_barra
+            if elm.name == "numeroAnexo":
+                elm.text = nroAnexo
         mensaje("Se actualizaron las vinetas para area Destacada.")
     except:
         mensaje("No se pudo actualizar las vinetas para area Destacada.")
