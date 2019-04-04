@@ -32,7 +32,7 @@ class PlanoUbicacion:
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
 
-                mensaje("Escala tentativa {}".format(escala))
+                mensaje("Escala tentativa {}:".format(escala))
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
                     mensaje("Zoom a Manzanas (escala menor a 1:7500)")
@@ -41,7 +41,7 @@ class PlanoUbicacion:
                 else:
                     mensaje("Zoom a LUC")
                 mensaje("Escala final {}".format(escala))
-                zoom(mxd, extent, escala)
+                #zoom(mxd, extent, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
@@ -49,26 +49,24 @@ class PlanoUbicacion:
                 #self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
-                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
+                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
-                zoom(mxd, extent_PU, escala)
+                #zoom(mxd, extent, escala)
                 capa = "Seccion_Seleccionada"
-                self.dibujaSeudo(mxd, extent_PU)
-
-                mensaje("-----------------------a-a-a-a-a-a-aa-------------------------")
-
+                self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "Rural":
-                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
+                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad[0])
-                zoom(mxd, extent_PU, escala)
+                #zoom(mxd, extent, escala)
                 capa = "SECCIONES_SELECCIONADAS"
                 self.preparaMapa_PU(mxd, entidad[0])
 
+            zoom(mxd, extent, escala)
             self.etiquetaSeccionSeleccionada(mxd, capa, query)
             self.destacaListaPoligonos(mxd, fc)
 
@@ -115,7 +113,6 @@ class PlanoUbicacion:
             array.add(pnt2)
             array.add(pnt3)
             array.add(pnt4)
-            array.add(pnt1)
             polygon = arcpy.Polygon(array)
 
             """array = arcpy.Array()
