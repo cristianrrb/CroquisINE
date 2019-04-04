@@ -463,7 +463,35 @@ class PlanoUbicacion:
             dist = calculaDistanciaBufferRAU(ext.area)
             dist_buff = float(dist.replace(" Meters", ""))
             polchico = ext.buffer(dist_buff)
-            dibujaSeudoManzanas(mxd, "Eje_Vial", polchico)
+            self.dibujaSeudoManzanas_PU(self, mxd, "Eje_Vial", polchico)
         except Exception:
             mensaje("Error dibujaSeudo")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
+
+    def dibujaSeudoManzanas_PU(mxd, elLyr, poly):
+        try:
+            mensaje("dibujaSeudoManzanas")
+            df = arcpy.mapping.ListDataFrames(mxd)[0]
+            lyr_sal = os.path.join("in_memory", "ejes")
+            lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+            lyr.visible = False
+            mensaje("Layer encontrado {}".format(lyr.name))
+            arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
+            arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
+            cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
+            if cuantos > 0:
+                tm_path = os.path.join("in_memory", "seudo_lyr")
+                tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
+                arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
+                arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
+                tm_layer = arcpy.mapping.Layer(tm_path)
+                lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
+                arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
+                arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            else:
+                mensaje("No hay registros de {}".format(elLyr))
+            return True
+        except Exception:
+            mensaje(sys.exc_info()[1].args[0])
+            mensaje("Error en preparacion de etiquetas.")
+        return False
