@@ -98,41 +98,6 @@ class PlanoUbicacion:
 
         return rutaZip
 
-    def dibujaSeudo(self, mxd, extent):
-        try:
-            XMAX = extent.XMax
-            XMIN = extent.XMin
-            YMAX = extent.YMax
-            YMIN = extent.YMin
-            pnt1 = arcpy.Point(XMIN, YMIN)
-            pnt2 = arcpy.Point(XMIN, YMAX)
-            pnt3 = arcpy.Point(XMAX, YMAX)
-            pnt4 = arcpy.Point(XMAX, YMIN)
-            array = arcpy.Array()
-            array.add(pnt1)
-            array.add(pnt2)
-            array.add(pnt3)
-            array.add(pnt4)
-            polygon = arcpy.Polygon(array)
-
-            """array = arcpy.Array()
-            array.add(arcpy.Point(extent.XMin, extent.YMin))
-            array.add(arcpy.Point(extent.XMin, extent.YMax))
-            array.add(arcpy.Point(extent.XMax, extent.YMax))
-            array.add(arcpy.Point(extent.XMax, extent.YMin))
-            polygon = arcpy.Polygon(array)"""
-
-            df = arcpy.mapping.ListDataFrames(mxd)[0]
-            manzana = polygon # poligono
-            ext = manzana.projectAs(df.spatialReference)
-            dist = calculaDistanciaBufferRAU(ext.area)
-            dist_buff = float(dist.replace(" Meters", ""))
-            polchico = ext.buffer(dist_buff)
-            dibujaSeudoManzanas(mxd, "Eje_Vial", polchico)
-        except Exception:
-            mensaje("Error dibujaSeudo")
-            arcpy.AddMessage(sys.exc_info()[1].args[0])
-
     def obtieneInfoParaPlanoUbicacion(self, urlEstrato, urlPlano):
         try:
             condiciones = []
@@ -467,3 +432,38 @@ class PlanoUbicacion:
         if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
             return '150 Meters'
         return '500 Meters'     # valor por defecto
+
+    def dibujaSeudo(self, mxd, extent):
+        try:
+            XMAX = extent.XMax
+            XMIN = extent.XMin
+            YMAX = extent.YMax
+            YMIN = extent.YMin
+            pnt1 = arcpy.Point(XMIN, YMIN)
+            pnt2 = arcpy.Point(XMIN, YMAX)
+            pnt3 = arcpy.Point(XMAX, YMAX)
+            pnt4 = arcpy.Point(XMAX, YMIN)
+            array = arcpy.Array()
+            array.add(pnt1)
+            array.add(pnt2)
+            array.add(pnt3)
+            array.add(pnt4)
+            polygon = arcpy.Polygon(array)
+
+            """array = arcpy.Array()
+            array.add(arcpy.Point(extent.XMin, extent.YMin))
+            array.add(arcpy.Point(extent.XMin, extent.YMax))
+            array.add(arcpy.Point(extent.XMax, extent.YMax))
+            array.add(arcpy.Point(extent.XMax, extent.YMin))
+            polygon = arcpy.Polygon(array)"""
+
+            df = arcpy.mapping.ListDataFrames(mxd)[0]
+            manzana = polygon # poligono
+            ext = manzana.projectAs(df.spatialReference)
+            dist = calculaDistanciaBufferRAU(ext.area)
+            dist_buff = float(dist.replace(" Meters", ""))
+            polchico = ext.buffer(dist_buff)
+            dibujaSeudoManzanas(mxd, "Eje_Vial", polchico)
+        except Exception:
+            mensaje("Error dibujaSeudo")
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
