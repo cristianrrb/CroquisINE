@@ -209,10 +209,9 @@ def cortaEtiqueta(mxd, elLyr, poly):
 
 def dibujaSeudoManzanas(mxd, elLyr, poly):
     try:
-        #path_scratchGDB = arcpy.env.scratchGDB
+        mensaje("dibujaSeudoManzanas")
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr_sal = os.path.join("in_memory", "ejes")
-        #lyr_man = os.path.join("in_memory", "seudoman")
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")

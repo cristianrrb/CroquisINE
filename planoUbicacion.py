@@ -33,7 +33,6 @@ class PlanoUbicacion:
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
 
                 mensaje("Escala tentativa {}".format(escala))
-
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
                     mensaje("Zoom a Manzanas (escala menor a 1:7500)")
@@ -41,13 +40,13 @@ class PlanoUbicacion:
                     mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 else:
                     mensaje("Zoom a LUC")
-
                 mensaje("Escala final {}".format(escala))
                 zoom(mxd, extent, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
+                #self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -56,6 +55,10 @@ class PlanoUbicacion:
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
                 zoom(mxd, extent_PU, escala)
                 capa = "Seccion_Seleccionada"
+                self.dibujaSeudo(mxd, extent_PU)
+
+                mensaje("-----------------------a-a-a-a-a-a-aa-------------------------")
+
 
             if self.parametros.Estrato == "Rural":
                 entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
@@ -97,6 +100,42 @@ class PlanoUbicacion:
 
         return rutaZip
 
+    def dibujaSeudo(self, mxd, extent):
+        try:
+            XMAX = extent.XMax
+            XMIN = extent.XMin
+            YMAX = extent.YMax
+            YMIN = extent.YMin
+            pnt1 = arcpy.Point(XMIN, YMIN)
+            pnt2 = arcpy.Point(XMIN, YMAX)
+            pnt3 = arcpy.Point(XMAX, YMAX)
+            pnt4 = arcpy.Point(XMAX, YMIN)
+            array = arcpy.Array()
+            array.add(pnt1)
+            array.add(pnt2)
+            array.add(pnt3)
+            array.add(pnt4)
+            array.add(pnt1)
+            polygon = arcpy.Polygon(array)
+
+            """array = arcpy.Array()
+            array.add(arcpy.Point(extent.XMin, extent.YMin))
+            array.add(arcpy.Point(extent.XMin, extent.YMax))
+            array.add(arcpy.Point(extent.XMax, extent.YMax))
+            array.add(arcpy.Point(extent.XMax, extent.YMin))
+            polygon = arcpy.Polygon(array)"""
+
+            df = arcpy.mapping.ListDataFrames(mxd)[0]
+            manzana = polygon # poligono
+            ext = manzana.projectAs(df.spatialReference)
+            dist = calculaDistanciaBufferRAU(ext.area)
+            dist_buff = float(dist.replace(" Meters", ""))
+            polchico = ext.buffer(dist_buff)
+            dibujaSeudoManzanas(mxd, "Eje_Vial", polchico)
+        except Exception:
+            mensaje("Error dibujaSeudo")
+            arcpy.AddMessage(sys.exc_info()[1].args[0])
+
     def obtieneInfoParaPlanoUbicacion(self, urlEstrato, urlPlano):
         try:
             condiciones = []
@@ -124,9 +163,9 @@ class PlanoUbicacion:
             with arcpy.da.SearchCursor(fs, fields) as rows:
                 lista = [r for r in rows]
             if len(lista) > 0:
-                extent_PU = self.obtieneExtent_PU(urlPlano, lista[0][0])
+                extent, poligonoUrbano = self.obtieneExtent_PU(urlPlano, lista[0][0])
                 mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
-                return lista, extent_PU, fc, query
+                return lista, extent, fc, query
             else:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
@@ -163,7 +202,7 @@ class PlanoUbicacion:
             # ****************************************** OBTIENE EXTENT PU ****************************************
             mensaje("OK obtieneExtent_PU")
             mensaje(extentPU)
-            return extentPU
+            return extentPU, j
         except Exception:
             mensaje("Error obtieneExtent_PU")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
