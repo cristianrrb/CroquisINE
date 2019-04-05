@@ -406,6 +406,8 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     mensajeEstado(registro)
     return
 
+
+
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
     actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural
     if zoom(mxd, extent, escala):

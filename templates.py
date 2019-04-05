@@ -157,6 +157,7 @@ class Templates:
         #mensaje('** Error: No se selecciono layout para Rural.')
         return None, None, None
 
+
     def buscaTemplateAnexo(self, extent):
         try:
             ancho = extent.XMax - extent.XMin

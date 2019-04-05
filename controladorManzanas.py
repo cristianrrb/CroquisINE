@@ -178,7 +178,7 @@ class ControladorManzanas:
                 rango = self.dictRangos[viviendasEncuestar]
                 if rango[0] <= totalViviendas <= rango[1]:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango MÃ³nimo/MÃ³ximo. ({},{})".format(rango[0], rango[1]))
+                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0], rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("Se cumple con el rango de viviendas de la manzana.")
                     registro.estadoViviendas = "Correcto"
@@ -186,7 +186,7 @@ class ControladorManzanas:
                     return "Correcto"
                 else:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango MÃ³nimo/MÃ³ximo. ({},{})".format(rango[0],rango[1]))
+                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0],rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
@@ -406,7 +406,7 @@ class ControladorManzanas:
 
     def mensajeEstado(self, registro):
         homologacion = "I"
-        if registro.homologacion == 'Homologada No IdÃ©ntica' or registro.homologacion == 'Homologada No IdÃ©nticas':
+        if registro.homologacion == 'Homologada No Idéntica' or registro.homologacion == 'Homologada No Idénticas':
             homologacion = 'NI'
 
         # Mensajes para analisis
@@ -420,7 +420,7 @@ class ControladorManzanas:
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rechazado
                 print(s)
                 arcpy.AddMessage(s)
-                mensaje("Analisis: Se rechazÃ³ la manzana.")
+                mensaje("Analisis: Se rechazó la manzana.")
             if registro.estadoViviendas == "":
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
                 print(s)
@@ -454,9 +454,9 @@ class ControladorManzanas:
                 if registro.estado == "Correcto":
                     mensaje("Genera croquis: Se genera el croquis para Secciones")
                 if registro.estado == "Incorrecto":
-                    mensaje("Genera croquis: No se logrÃ³ generar el croquis para seccion.")
+                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
                 if registro.estado == "Seccion No Existe":
-                    mensaje("Genera croquis: No se logrÃ³ generar el croquis para seccion.")
+                    mensaje("Genera croquis: No se logró generar el croquis para seccion.")
             return "Croquis"
 
     def nombreZip(self):

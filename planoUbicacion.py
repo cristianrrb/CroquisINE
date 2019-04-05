@@ -32,6 +32,7 @@ class PlanoUbicacion:
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
 
+
                 mensaje("Escala tentativa {}:".format(escala))
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
@@ -53,7 +54,7 @@ class PlanoUbicacion:
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
-                #zoom(mxd, extent, escala)
+
                 capa = "Seccion_Seleccionada"
                 self.dibujaSeudo(mxd, extent)
 
@@ -62,7 +63,7 @@ class PlanoUbicacion:
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
                 self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad[0])
-                #zoom(mxd, extent, escala)
+
                 capa = "SECCIONES_SELECCIONADAS"
                 self.preparaMapa_PU(mxd, entidad[0])
 
