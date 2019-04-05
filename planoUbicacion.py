@@ -270,17 +270,23 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            mensaje("destacaListaPoligonos-------")
-            mensaje(self.parametros.Estrato)
+            mensaje("destacaListaPoligonos")
             if self.parametros.Estrato == "Manzana":
+                mensaje("aqui entro al lyr1------------------------------------")
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
+                mensaje("paso lyr1")
             if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
+            mensaje("a")
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            mensaje("b")
             tm_layer.showLabels = True
+            mensaje("c")
             arcpy.RefreshActiveView()
+            mensaje("d")
             arcpy.RefreshTOC()
+            mensaje("aaaa")
             mensaje("Entidades Destacadas")
         except:
             mensaje("No se pudo destacar entidades")
