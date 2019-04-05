@@ -46,7 +46,7 @@ class PlanoUbicacion:
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                #self.dibujaSeudo(mxd, extent)
+                self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -463,12 +463,12 @@ class PlanoUbicacion:
             dist = calculaDistanciaBufferRAU(ext.area)
             dist_buff = float(dist.replace(" Meters", ""))
             polchico = ext.buffer(dist_buff)
-            self.dibujaSeudoManzanas_PU(self, mxd, "Eje_Vial", polchico)
+            self.dibujaSeudoManzanas_PU(mxd, "Eje_Vial", polchico)
         except Exception:
             mensaje("Error dibujaSeudo")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
 
-    def dibujaSeudoManzanas_PU(mxd, elLyr, poly):
+    def dibujaSeudoManzanas_PU(self, mxd, elLyr, poly):
         try:
             mensaje("dibujaSeudoManzanas")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
