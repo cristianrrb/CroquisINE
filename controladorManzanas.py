@@ -191,7 +191,7 @@ class ControladorManzanas:
                     mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
                     registro.estadoViviendas = "Rechazado"
-                    registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana"
+                    registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
                     return "Rechazado"
             else:    # no existe el rango
                 mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
