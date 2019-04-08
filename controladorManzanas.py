@@ -483,23 +483,35 @@ class ControladorManzanas:
         msg['From'] = fromMail
         msg['To'] = toMail
 
-        html = "<html>" 
+        html = "<html>"
+        mensaje("1")
         html += self._cabeceraCorreo()
+        mensaje("2")
         html += "<body>"
+        mensaje("3")
         html += self._cuerpoTitulo(encuesta)
+        mensaje("4")
         html += self._cuerpoTabla()
+        mensaje("5")
         html += self._cuerpoPie()
+        mensaje("6")
         html += "</body>"
+        mensaje("7")
         html += "</html>"
 
         mensaje(html)
 
         try:
             msg.attach(MIMEText(html, 'html'))
+            mensaje("11")
             mailserver = smtplib.SMTP('smtp.office365.com', 587)
+            mensaje("22")
             mailserver.ehlo()
+            mensaje("33")
             mailserver.starttls()
+            mensaje("44")
             mailserver.login(fromMail, passwordFromMail)
+            mensaje("55")
             mailserver.sendmail(fromMail, toMail, msg.as_string())
             mensaje("Reporte Enviado")
             mailserver.quit()
@@ -545,6 +557,7 @@ class ControladorManzanas:
         return html
 
     def _cuerpoTabla(self):
+        mensaje("a")
         html =  '<div style="overflow-x:auto;">'
         html += '<table>'
         html += '  <tr>'
@@ -570,11 +583,17 @@ class ControladorManzanas:
         html += '    <th>Escala</th>'
         html += '    <th>Codigo barra<th/>'
         html += '  </tr>'
-        
+
         for i, r in enumerate(self.registros, 1):
+            mensaje(i)
             if self._enviaCorreo(r):
                 cut, dis, area, loc, ent = descomponeManzent(r.codigo)  # util
-                a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, r.homologacion.encode('utf8'), r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
+                homologacion = r.homologacion
+                if homologacion[0:16] == "Homologada No Id":
+                    homologacion = "Homologada No Identica"
+                if homologacion[0:13] == "Homologada Id":
+                    homologacion = "Homologada Identica"
+                a = [r.hora, r.codigo, r.estado, r.motivo, r.estadoSuperficie, r.motivoSuperficie, r.estadoViviendas, r.motivoViviendas, cut, dis, loc, ent, r.rutaPDF, r.intersectaPE, r.intersectaCRF, r.intersectaAV, homologacion, r.formato +" / "+ r.orientacion, r.escala, r.codigoBarra.encode('utf8')]
                 html += '<tr>'
                 html += "<td>{}</td>".format(i)
 
@@ -591,20 +610,20 @@ class ControladorManzanas:
     def _enviaCorreo(self, r):
         if r.estadoViviendas == "Rechazado":
             return True
-            
+
         if r.estadoSuperficie == "Alerta":
             return True
-                
+
         if r.estadoSuperficie == "Rechazada":
             return True
-            
-        if r.intersectaPE == "Si" 
+
+        if r.intersectaPE == "Si":
             return True
 
-        if r.intersectaCRF == "Si"
+        if r.intersectaCRF == "Si":
             return True
 
-        if r.intersectaAV == "Si" 
+        if r.intersectaAV == "Si":
             return True
 
         if r.homologacion != "" and r.homologacion[0:16] == 'Homologada No Id':
@@ -618,4 +637,3 @@ class ControladorManzanas:
         html += '<p>Instituto Nacional de Estadisticas</p>'
         html += '<p>Fono: 232461860</p>'
         return html
-

@@ -29,50 +29,49 @@ class PlanoUbicacion:
         registro = Registro(self.listaCodigos)
         try:
             if self.parametros.Estrato == "Manzana":
-                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
 
-                mensaje("Escala tentativa {}:".format(escala))
-                # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
+                # validacion escala
                 if escala > 7500:
-                    mensaje("Zoom a Manzanas (escala menor a 1:7500)")
-                    extent = arcpy.Describe(fc).extent
-                    mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                    mensaje("Escala es > 7500, Zoom a FC ListadoPoligonos")
+                    desc = arcpy.Describe(fc)
+                    extentFC = desc.extent
+                    mensaje(extentFC)
+                    mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extentFC)
+                    mensaje(escala)
+                    zoom(mxd, extentFC, escala)
                 else:
-                    mensaje("Zoom a LUC")
-                mensaje("Escala final {}".format(escala))
-
-                capa = "Marco_Manzana"
+                    mensaje("Escala es < 7500, Zoom a Urbano")
+                    mensaje(escala)
+                    zoom(mxd, extent_PU, escala)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
-                self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                #self.dibujaSeudo(mxd, extent)
+                self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad)
 
             if self.parametros.Estrato == "RAU":
-                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosRAU']}
-                self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
-
+                self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad)
+                zoom(mxd, extent_PU, escala)
                 capa = "Seccion_Seleccionada"
-                self.dibujaSeudo(mxd, extent)
+                self.etiquetaSeccionSeleccionada(mxd, capa, query)
 
             if self.parametros.Estrato == "Rural":
-                entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
-                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
+                entidad, extent_PU, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
+                mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent_PU)
                 self.dic.dictComunas = {r['codigo']:r['nombre'] for r in self.config['comunas']}
-                self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad[0])
-
+                self.actualizaVinetaSeccionRural_PlanoUbicacion(mxd, entidad)
+                zoom(mxd, extent_PU, escala)
                 capa = "SECCIONES_SELECCIONADAS"
-                self.preparaMapa_PU(mxd, entidad[0])
+                self.etiquetaSeccionSeleccionada(mxd, capa, query)
+                self.preparaMapa_PU(mxd, entidad)
 
             self.destacaListaPoligonos(mxd, fc)
-            zoom(mxd, extent, escala)
-            #self.etiquetaSeccionSeleccionada(mxd, capa, query)
 
-
-            nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad[0])
+            nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad)
             mensaje(nombrePDF)
-            rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad[0])
+            rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad)
             mensaje(rutaPDF)
             registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
 
@@ -125,14 +124,14 @@ class PlanoUbicacion:
             with arcpy.da.SearchCursor(fs, fields) as rows:
                 lista = [r for r in rows]
             if len(lista) > 0:
-                extent, poligonoUrbano = self.obtieneExtent_PU(urlPlano, lista[0][0])
+                extent_PU = self.obtieneExtent_PU(urlPlano, lista[0][0])
                 mensaje("** OK en obtieneInfoPara_PlanoUbicacion")
-                return lista, extent, fc, query
+                return lista[0], extent_PU, fc, query
             else:
                 mensaje("** Advertencia en obtieneInfoPara_PlanoUbicacion")
         except:
             mensaje("** Error en obtieneInfoPara_PlanoUbicacion")
-        return None, None, None, None
+        return None, None, None
 
     def obtieneExtent_PU(self, urlPlano, poligono):
         try:
@@ -164,7 +163,7 @@ class PlanoUbicacion:
             # ****************************************** OBTIENE EXTENT PU ****************************************
             mensaje("OK obtieneExtent_PU")
             mensaje(extentPU)
-            return extentPU, j
+            return extentPU
         except Exception:
             mensaje("Error obtieneExtent_PU")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
@@ -432,66 +431,3 @@ class PlanoUbicacion:
         if area <= 1000000:     # 932000 .. 1000000  # VALIDAR ESTE VALOR
             return '150 Meters'
         return '500 Meters'     # valor por defecto
-
-    def dibujaSeudo(self, mxd, extent):
-        try:
-            XMAX = extent.XMax
-            XMIN = extent.XMin
-            YMAX = extent.YMax
-            YMIN = extent.YMin
-            pnt1 = arcpy.Point(XMIN, YMIN)
-            pnt2 = arcpy.Point(XMIN, YMAX)
-            pnt3 = arcpy.Point(XMAX, YMAX)
-            pnt4 = arcpy.Point(XMAX, YMIN)
-            array = arcpy.Array()
-            array.add(pnt1)
-            array.add(pnt2)
-            array.add(pnt3)
-            array.add(pnt4)
-            polygon = arcpy.Polygon(array)
-
-            """array = arcpy.Array()
-            array.add(arcpy.Point(extent.XMin, extent.YMin))
-            array.add(arcpy.Point(extent.XMin, extent.YMax))
-            array.add(arcpy.Point(extent.XMax, extent.YMax))
-            array.add(arcpy.Point(extent.XMax, extent.YMin))
-            polygon = arcpy.Polygon(array)"""
-
-            df = arcpy.mapping.ListDataFrames(mxd)[0]
-            manzana = polygon # poligono
-            ext = manzana.projectAs(df.spatialReference)
-            dist = calculaDistanciaBufferRAU(ext.area)
-            dist_buff = float(dist.replace(" Meters", ""))
-            polchico = ext.buffer(dist_buff)
-            self.dibujaSeudoManzanas_PU(mxd, "Eje_Vial", polchico)
-        except Exception:
-            mensaje("Error dibujaSeudo")
-            arcpy.AddMessage(sys.exc_info()[1].args[0])
-
-    def dibujaSeudoManzanas_PU(self, mxd, elLyr, poly):
-        try:
-            mensaje("dibujaSeudoManzanas")
-            df = arcpy.mapping.ListDataFrames(mxd)[0]
-            lyr_sal = os.path.join("in_memory", "ejes")
-            lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-            lyr.visible = False
-            mensaje("Layer encontrado {}".format(lyr.name))
-            arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
-            arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
-            cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
-            if cuantos > 0:
-                tm_path = os.path.join("in_memory", "seudo_lyr")
-                tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
-                arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
-                arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
-                tm_layer = arcpy.mapping.Layer(tm_path)
-                lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
-                arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
-                arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            else:
-                mensaje("No hay registros de {}".format(elLyr))
-            return True
-        except Exception:
-            mensaje(sys.exc_info()[1].args[0])
-            mensaje("Error en preparacion de etiquetas.")
-        return False
