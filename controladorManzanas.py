@@ -492,6 +492,8 @@ class ControladorManzanas:
         html += "</body>"
         html += "</html>"
 
+        mensaje(html)
+
         try:
             msg.attach(MIMEText(html, 'html'))
             mailserver = smtplib.SMTP('smtp.office365.com', 587)
@@ -612,8 +614,8 @@ class ControladorManzanas:
 
     def _cuerpoPie(self):
         html =  '</br>'
-        html += '<p><b>Departamento de Geografía</b></p>'
-        html += '<p>Instituto Nacional de Estadísticas</p>'
+        html += '<p><b>Departamento de Geografia</b></p>'
+        html += '<p>Instituto Nacional de Estadisticas</p>'
         html += '<p>Fono: 232461860</p>'
         return html
 
