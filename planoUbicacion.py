@@ -32,7 +32,6 @@ class PlanoUbicacion:
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
 
-
                 mensaje("Escala tentativa {}:".format(escala))
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
@@ -42,12 +41,11 @@ class PlanoUbicacion:
                 else:
                     mensaje("Zoom a LUC")
                 mensaje("Escala final {}".format(escala))
-                #zoom(mxd, extent, escala)
 
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                self.dibujaSeudo(mxd, extent)
+                #self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -67,9 +65,10 @@ class PlanoUbicacion:
                 capa = "SECCIONES_SELECCIONADAS"
                 self.preparaMapa_PU(mxd, entidad[0])
 
-            zoom(mxd, extent, escala)
-            self.etiquetaSeccionSeleccionada(mxd, capa, query)
             self.destacaListaPoligonos(mxd, fc)
+            zoom(mxd, extent, escala)
+            #self.etiquetaSeccionSeleccionada(mxd, capa, query)
+
 
             nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad[0])
             mensaje(nombrePDF)
@@ -270,23 +269,17 @@ class PlanoUbicacion:
                     cursor.updateRow(a)
             arcpy.MakeFeatureLayer_management(fc, tm_path)
             tm_layer = arcpy.mapping.Layer(tm_path)
-            mensaje("destacaListaPoligonos")
+            mensaje("destacaListaPoligonos-------")
+            mensaje(self.parametros.Estrato)
             if self.parametros.Estrato == "Manzana":
-                mensaje("aqui entro al lyr1------------------------------------")
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
-                mensaje("paso lyr1")
             if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
                 sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
             arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-            mensaje("a")
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            mensaje("b")
             tm_layer.showLabels = True
-            mensaje("c")
             arcpy.RefreshActiveView()
-            mensaje("d")
             arcpy.RefreshTOC()
-            mensaje("aaaa")
             mensaje("Entidades Destacadas")
         except:
             mensaje("No se pudo destacar entidades")
