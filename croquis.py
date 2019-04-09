@@ -33,6 +33,11 @@ def mensajeEstado(registro):
             print(s)
             arcpy.AddMessage(s)
             mensaje("Analisis: Se rechazó la manzana.")
+        if registro.estadoViviendas == "Rango No definido":
+            s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rango No definido
+            print(s)
+            arcpy.AddMessage(s)
+            mensaje("Analisis: Rango No definido.")
         if registro.estadoViviendas == "":
             s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado) #Manzana no existe
             print(s)
@@ -64,6 +69,11 @@ def mensajeEstado(registro):
                 print(s)
                 arcpy.AddMessage(s)
                 mensaje("Genera croquis: Se rechazo la manzana.")
+            if registro.estadoViviendas == "Rango No definido":
+                s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estadoViviendas) #Rango No definido
+                print(s)
+                arcpy.AddMessage(s)
+                mensaje("Genera croquis: Rango No definido.")
             if registro.estadoViviendas == "":
                 s = "#{}#:{},{},{},{},{}".format(registro.codigo, registro.intersectaPE, registro.intersectaCRF, registro.intersectaAV, homologacion, registro.estado)
                 print(s)
@@ -386,7 +396,9 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 registro.codigoBarra = generaCodigoBarra(parametroEstrato,datosSeccion)
 
                 nombrePDF = generaNombrePDFAreaDestacada(parametroEstrato, datosSeccion, nroAnexo, infoMxd, parametroEncuesta, parametroMarco)
+                mensaje(nombrePDF)
                 rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosSeccion)
+                mensaje(rutaPDF)
                 registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
 
                 if registro.rutaPDF != "":
@@ -405,8 +417,6 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
     registros.append(registro)
     mensajeEstado(registro)
     return
-
-
 
 def preparaMapaAreaDestacada(mxd, extent, escala, datosSeccion, nroAnexo):
     actualizaVinetaAreaDestacada(mxd, datosSeccion, nroAnexo)   # Se actualiza vióeta de MXD de manzana con datos RAU o Rural

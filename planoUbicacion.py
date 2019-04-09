@@ -45,7 +45,7 @@ class PlanoUbicacion:
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                #self.dibujaSeudo(mxd, extent)
+                self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -65,10 +65,8 @@ class PlanoUbicacion:
                 capa = "SECCIONES_SELECCIONADAS"
                 self.preparaMapa_PU(mxd, entidad[0])
 
-            self.destacaListaPoligonos(mxd, fc)
             zoom(mxd, extent, escala)
-            #self.etiquetaSeccionSeleccionada(mxd, capa, query)
-
+            self.etiquetaSeccionSeleccionada(mxd, capa, query)
 
             nombrePDF = self.generaNombrePDFPlanoUbicacion(entidad[0])
             mensaje(nombrePDF)
@@ -168,7 +166,7 @@ class PlanoUbicacion:
         except Exception:
             mensaje("Error obtieneExtent_PU")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
-        return None
+        return None, None
 
     def etiquetaSeccionSeleccionada(self, mxd, capa, query):
         try:
@@ -256,33 +254,6 @@ class PlanoUbicacion:
             mensaje("Se actualizaron las vinetas para Rural Plano Ubicacion.")
         except:
             mensaje("No se pudo actualizar las vinetas para Rural Plano Ubicacion.")
-
-    def destacaListaPoligonos(self, mxd, fc):
-        try:
-            mensaje("Destacando entidades")
-            df = arcpy.mapping.ListDataFrames(mxd)[0]
-            arcpy.AddField_management(fc, "tipo", "LONG")
-            tm_path = os.path.join("in_memory", "graphic_lyr")
-            with arcpy.da.UpdateCursor(fc, ["TIPO"]) as cursor:
-                for a in cursor:
-                    a[0] = 2
-                    cursor.updateRow(a)
-            arcpy.MakeFeatureLayer_management(fc, tm_path)
-            tm_layer = arcpy.mapping.Layer(tm_path)
-            mensaje("destacaListaPoligonos-------")
-            mensaje(self.parametros.Estrato)
-            if self.parametros.Estrato == "Manzana":
-                sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr1.lyr")
-            if self.parametros.Estrato == "RAU" or self.parametros.Estrato == "Rural":
-                sourceLayer = arcpy.mapping.Layer(r"C:\CROQUIS_ESRI\Scripts\graphic_lyr2.lyr")
-            arcpy.mapping.UpdateLayer(df, tm_layer, sourceLayer, True)
-            arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-            tm_layer.showLabels = True
-            arcpy.RefreshActiveView()
-            arcpy.RefreshTOC()
-            mensaje("Entidades Destacadas")
-        except:
-            mensaje("No se pudo destacar entidades")
 
     def generaNombrePDFPlanoUbicacion(self, datosEntidad):
         try:
