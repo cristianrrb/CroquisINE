@@ -445,7 +445,7 @@ class PlanoUbicacion:
             df = arcpy.mapping.ListDataFrames(mxd)[0]
             lyr_sal = os.path.join("in_memory", "ejes")
             lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
-            lyr.visible = False
+            #lyr.visible = False
             mensaje("Layer encontrado {}".format(lyr.name))
             arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
             arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
