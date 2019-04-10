@@ -450,6 +450,7 @@ class PlanoUbicacion:
             arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
             arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
             cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
+            mensaje(cuantos)
             if cuantos > 0:
                 tm_path = os.path.join("in_memory", "seudo_lyr")
                 tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
