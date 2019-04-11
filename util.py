@@ -213,6 +213,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
         df = arcpy.mapping.ListDataFrames(mxd)[0]
         lyr_sal = os.path.join("in_memory", "ejes")
         lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+        lyr.visible = False
         mensaje("Layer encontrado {}".format(lyr.name))
         arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
         arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
@@ -226,6 +227,7 @@ def dibujaSeudoManzanas(mxd, elLyr, poly):
             lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
             arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
             arcpy.mapping.AddLayer(df, tm_layer, "TOP")
+            arcpy.SelectLayerByAttribute_management(lyr.name, "CLEAR_SELECTION")
         else:
             mensaje("No hay registros de {}".format(elLyr))
         return True
@@ -357,7 +359,7 @@ class GeneraPDF:
             data_frame = 'PAGE_LAYOUT'
             df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
             df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-            resolution = 189
+            resolution = 150
             image_quality = 'BETTER' #'BEST' 'FASTER'
             color_space = 'RGB'
             compress_vectors = True
