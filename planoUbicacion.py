@@ -74,7 +74,7 @@ class PlanoUbicacion:
             mensaje(nombrePDF)
             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, entidad[0])
             mensaje(rutaPDF)
-            registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+            registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF, 150)
 
             registro.formato = infoMxd['formato']
             registro.orientacion = infoMxd['orientacion']
@@ -449,7 +449,7 @@ class PlanoUbicacion:
             mensaje("1")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
             mensaje("2")
-            lyr_sal = os.path.join("in_memory", "ejes")
+            lyr_sal = os.path.join(path_scratchGDB, "ejes")
             mensaje("3")
             lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
             mensaje("4")

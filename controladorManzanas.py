@@ -81,7 +81,7 @@ class ControladorManzanas:
                             mensaje(nombrePDF)
                             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosManzana)
                             mensaje(rutaPDF)
-                            registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF)
+                            registro.rutaPDF = self.controlPDF.generaPDF(mxd, rutaPDF, 250)
 
                             if registro.rutaPDF != "":
                                 registro.estado = "Genera PDF"
@@ -178,7 +178,7 @@ class ControladorManzanas:
                 rango = self.dictRangos[viviendasEncuestar]
                 if rango[0] <= totalViviendas <= rango[1]:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0], rango[1]))
+                    mensaje("Rango Minimo/Maximo. ({},{})".format(rango[0], rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("Se cumple con el rango de viviendas de la manzana.")
                     registro.estadoViviendas = "Correcto"
@@ -186,7 +186,7 @@ class ControladorManzanas:
                     return "Correcto"
                 else:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
-                    mensaje("Rango Mónimo/Móximo. ({},{})".format(rango[0],rango[1]))
+                    mensaje("Rango Minimo/Maximo. ({},{})".format(rango[0],rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
                     mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
 
@@ -235,22 +235,20 @@ class ControladorManzanas:
             req = urllib2.Request(queryURL, urllib.urlencode(params))
             response = urllib2.urlopen(req)
             ids = json.load(response)
+            #mensaje(ids["features"])
 
             pols = []
             polygonOriginal = polygonBufferNew.buffer(-10)
             for pol in ids["features"]:
                 polygon = arcpy.AsShape(pol["geometry"], True)
                 area_polygon2017 = polygon.area
-                mensaje(polygonOriginal.contains(polygon, "PROPER"))
-                if polygonOriginal.contains(polygon, "PROPER"):
-                    pols.append(polygon)
-            if len(pols) > 0:
-                mensaje("polygono2016 Intersecta con {} en censo2017".format(len(pols)))
-                return area_polygon2017
-            else:
-                return None
+                #mensaje(polygonOriginal.contains(polygon, "PROPER"))
+                #if polygonOriginal.contains(polygon, "PROPER"):
+                    #pols.append(polygon)
+            return area_polygon2017
         except:
-            mensaje('** Error en intersectaManzanaCenso2017.')
+            mensaje('No existe Manzana Censo 2017')
+            return None
         return ""
 
     def comparaManzanas(self, manzana2016, manzana2017, registro):
