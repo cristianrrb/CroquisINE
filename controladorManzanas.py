@@ -77,6 +77,7 @@ class ControladorManzanas:
                             registro.escala = escala
                             registro.codigoBarra = self.generaCodigoBarra(datosManzana)
 
+
                             nombrePDF = self.generaNombrePDF(datosManzana, infoMxd)
                             mensaje(nombrePDF)
                             rutaPDF = self.controlPDF.generaRutaPDF(nombrePDF, datosManzana)
@@ -188,10 +189,10 @@ class ControladorManzanas:
                     mensaje("Viviendas a Encuestar. ({})".format(viviendasEncuestar))
                     mensaje("Rango Minimo/Maximo. ({},{})".format(rango[0],rango[1]))
                     mensaje("Total Viviendas. ({})".format(totalViviendas))
-                    mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1]))
+                    mensaje("No se cumple con el rango de viviendas de la manzana. ({} => [{}-{}])".format(totalViviendas, rango[0], rango[1]))
 
                     registro.estadoViviendas = "Rechazado"
-                    registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana. ({} => [{},{}])".format(totalViviendas, rango[0], rango[1])
+                    registro.motivoViviendas = "No se cumple con el rango de viviendas de la manzana. ({} => [{}-{}])".format(totalViviendas, rango[0], rango[1])
                     return "Rechazado"
             else:    # no existe el rango
                 mensaje("No esta definido el rango para evaluacion de cantidad de viviendas a encuestar. ({})".format(viviendasEncuestar))
