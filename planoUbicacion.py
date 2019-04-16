@@ -47,7 +47,7 @@ class PlanoUbicacion:
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                self.dibujaSeudo(mxd, extent)
+                #self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -56,7 +56,7 @@ class PlanoUbicacion:
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
 
                 capa = "Seccion_Seleccionada"
-                self.dibujaSeudo(mxd, extent)
+                #self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "Rural":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
@@ -444,7 +444,7 @@ class PlanoUbicacion:
 
     def dibujaSeudoManzanas_PU(self, mxd, elLyr, poly):
         try:
-            mensaje("dibujaSeudoManzanas")
+            mensaje("inicio dibujaSeudoManzanas")
             path_scratchGDB = arcpy.env.scratchGDB
             mensaje("1")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
@@ -452,6 +452,7 @@ class PlanoUbicacion:
             lyr_sal = os.path.join(path_scratchGDB, "ejes")
             mensaje("3")
             lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
+            lyr.visible = False
             mensaje("4")
             mensaje("Layer encontrado {}".format(lyr.name))
             mensaje("5")
@@ -492,7 +493,7 @@ class PlanoUbicacion:
                 arcpy.SelectLayerByAttribute_management(lyr, "CLEAR_SELECTION")
                 mensaje("23")
                 arcpy.RefreshActiveView()
-                mensaje("24")
+                mensaje("fin dibujaSeudoManzanas")
             else:
                 mensaje("No hay registros de {}".format(elLyr))
             return True
