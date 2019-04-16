@@ -150,15 +150,18 @@ def areasExcluidas(poligono, url):
 
 def intersectaConArea(poligono, urlServicio):
     try:
+        token = obtieneToken(usuario, clave, urlPortal)
         queryURL = "{}/query".format(urlServicio)
-        params = {'token':self.token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
+        params = {'token':token, 'f':'json', 'where':'1=1', 'outFields':'*', 'returnIdsOnly':'true', 'geometry':poligono.JSON, 'geometryType':'esriGeometryPolygon'}
         req = urllib2.Request(queryURL, urllib.urlencode(params))
         response = urllib2.urlopen(req)
         ids = json.load(response)
         if ids['objectIds'] != None:
+            mensaje("Intersecta con area = {}".format(ids['objectIds']))
             return "Si"
     except:
         pass
+    mensaje("No Intersecta con area")
     return "No"
 
 def descomponeManzent(codigo):
@@ -354,12 +357,12 @@ class GeneraPDF:
             mensaje("No se pudo crear el destino PDF")
             return None
 
-    def generaPDF(self, mxd, destinoPDF):
+    def generaPDF(self, mxd, destinoPDF, resolu):
         try:
             data_frame = 'PAGE_LAYOUT'
             df_export_width = 640 #not actually used when data_fram is set to 'PAGE_LAYOUT'
             df_export_height = 480 #not actually used when data_fram is set to 'PAGE_LAYOUT'
-            resolution = 150
+            resolution = resolu
             image_quality = 'BETTER' #'BEST' 'FASTER'
             color_space = 'RGB'
             compress_vectors = True
@@ -400,3 +403,7 @@ class GeneraPDF:
         for a, b in replacements:
             s = s.replace(a, b).replace(a.upper(), b.upper())
         return s
+
+urlPortal = 'https://gis.ine.cl/portal'
+usuario = 'esri_chile'
+clave = '(esrichile2018)'

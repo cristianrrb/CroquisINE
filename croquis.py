@@ -310,7 +310,7 @@ def procesaRAU(codigo):
                         mensaje(nombrePDF)
                         rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosRAU)
                         mensaje(rutaPDF)
-                        registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
+                        registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF, 250)
 
                         procesaAreasDestacadas(codigo, datosRAU, token)
 
@@ -350,7 +350,7 @@ def procesaRural(codigo):
                     mensaje(nombrePDF)
                     rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosRural)
                     mensaje(rutaPDF)
-                    registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
+                    registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF, 200)
 
                     procesaAreasDestacadas(codigo, datosRural, token)
 
@@ -399,7 +399,7 @@ def procesaAreaDestacada(codigoSeccion, area, datosSeccion):
                 mensaje(nombrePDF)
                 rutaPDF = controlPDF.generaRutaPDF(nombrePDF, datosSeccion)
                 mensaje(rutaPDF)
-                registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF)
+                registro.rutaPDF = controlPDF.generaPDF(mxd, rutaPDF, 200)
 
                 if registro.rutaPDF != "":
                     registro.estado = "Correcto"
