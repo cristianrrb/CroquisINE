@@ -198,7 +198,6 @@ class ControladorManzanas:
                 registro.estadoViviendas = "Rango No definido"
                 registro.motivoViviendas = "No esta definido el rango para evaluacion de cantidad de viviendas a encuestar."
 
-
     def obtieneInfoManzana(self, codigo):
         try:
             url = '{}/query?token={}&where=MANZENT+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
@@ -223,13 +222,14 @@ class ControladorManzanas:
             mensaje("** Error en obtieneInfoManzana")
             return None, None
 
-    # comprueba si poligono2016 intersecta con poligono2017
+    """ # comprueba si poligono2016 intersecta con poligono2017
     def intersectaManzanaCenso2017(self, poligono2016):
         try:
             polygonBuffer = poligono2016.buffer(10)
+
             polygonBufferNew = arcpy.Polygon(polygonBuffer.getPart(0), poligono2016.spatialReference)
             params = {'f':'json', 'where':'1=1', 'outFields':'*',  'geometry':polygonBufferNew.JSON, 'geometryType':'esriGeometryPolygon',
-                    'spatialRel':'esriSpatialRelContains', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
+                    'spatialRel':'esriSpatialRelIntersects', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
                     'outSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere'}
             queryURL = "{}/query".format(self.infoMarco.urlManzanasCenso2017)
             req = urllib2.Request(queryURL, urllib.urlencode(params))
@@ -238,6 +238,7 @@ class ControladorManzanas:
 
             pols = []
             polygonOriginal = polygonBufferNew.buffer(-10)
+
             for pol in ids["features"]:
                 polygon = arcpy.AsShape(pol["geometry"], True)
                 area_polygon2017 = polygon.area
@@ -247,6 +248,36 @@ class ControladorManzanas:
             if len(pols) > 0:
                 mensaje("polygono2016 Intersecta con {} en censo2017".format(len(pols)))
                 return area_polygon2017
+            else:
+                return None
+        except:
+            mensaje('** Error en intersectaManzanaCenso2017.')
+        return "" """
+
+    # comprueba si poligono2016 intersecta con poligono2017
+    def intersectaManzanaCenso2017(self, poligono2016):
+        try:
+
+            area = arcpy.Polygon(poligono2016.buffer(10).getPart(0), poligono2016.spatialReference)
+
+            params = {'f':'json', 'where':'1=1', 'outFields':'*',  'geometry':area.JSON, 'geometryType':'esriGeometryPolygon',
+                    'spatialRel':'esriSpatialRelContains', 'inSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere',
+                    'outSR':'WGS_1984_Web_Mercator_Auxiliary_Sphere'}
+            queryURL = "{}/query".format(self.infoMarco.urlManzanasCenso2017)
+            req = urllib2.Request(queryURL, urllib.urlencode(params))
+            response = urllib2.urlopen(req)
+            features = json.load(response)["features"]
+
+            listaPoligonos = []
+            for feature in features:
+                poligono2017 = arcpy.AsShape(feature["geometry"], True)
+                areaPoligono2017 = poligono2017.area
+                mensaje(poligono2016.contains(poligono2017, "PROPER"))
+                if poligono2016.contains(poligono2017, "PROPER"):
+                    listaPoligonos.append(poligono2017)
+            if len(listaPoligonos) > 0:
+                mensaje("Manzana 2016 intersecta con {} manzana(s) en Censo 2017".format(len(listaPoligonos)))
+                return areaPoligono2017
             else:
                 return None
         except:
@@ -599,7 +630,6 @@ class ControladorManzanas:
             mailserver.quit()
         except:
             mensaje("No se envia correo electronico de Alertas y Rechazo, Verificar cuentas de correo")
-
 
     def enviarMail_new(self):
         fromMail = "COMPLETAR"
