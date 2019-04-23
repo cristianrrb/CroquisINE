@@ -32,7 +32,6 @@ class PlanoUbicacion:
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlManzanas, self.infoMarco.urlLUC)
                 mxd, infoMxd, escala = self.controlTemplates.buscaTemplatePlanoUbicacion(self.parametros.Estrato, extent)
 
-
                 mensaje("Escala tentativa {}:".format(escala))
                 # validacion escala (A MAYOR NUMERO MENOR ES LA ESCALA)
                 if escala > 7500:
@@ -47,7 +46,7 @@ class PlanoUbicacion:
                 capa = "Marco_Manzana"
                 self.dic.dictUrbano = {r['codigo']:r['nombre'] for r in self.config['urbanosManzana']}
                 self.actualizaVinetaManzanas_PlanoUbicacion(mxd, entidad[0])
-                #self.dibujaSeudo(mxd, extent)
+                self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "RAU":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_RAU, self.infoMarco.urlLUC)
@@ -56,7 +55,7 @@ class PlanoUbicacion:
                 self.actualizaVinetaSeccionRAU_PlanoUbicacion(mxd, entidad[0])
 
                 capa = "Seccion_Seleccionada"
-                #self.dibujaSeudo(mxd, extent)
+                self.dibujaSeudo(mxd, extent)
 
             if self.parametros.Estrato == "Rural":
                 entidad, extent, fc, query = self.obtieneInfoParaPlanoUbicacion(self.infoMarco.urlSecciones_Rural, self.infoMarco.urlComunas)
@@ -436,8 +435,8 @@ class PlanoUbicacion:
             dist = calculaDistanciaBufferRAU(ext.area)
             dist_buff = float(dist.replace(" Meters", ""))
             polchico = ext.buffer(dist_buff)
+            mensaje("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
             self.dibujaSeudoManzanas_PU(mxd, "Eje_Vial", polchico)
-            mxd.saveACopy(r"D:\CROQUIScopia.mxd")
         except Exception:
             mensaje("Error dibujaSeudo")
             arcpy.AddMessage(sys.exc_info()[1].args[0])
@@ -445,54 +444,24 @@ class PlanoUbicacion:
     def dibujaSeudoManzanas_PU(self, mxd, elLyr, poly):
         try:
             mensaje("inicio dibujaSeudoManzanas")
-            path_scratchGDB = arcpy.env.scratchGDB
-            mensaje("1")
             df = arcpy.mapping.ListDataFrames(mxd)[0]
-            mensaje("2")
-            lyr_sal = os.path.join(path_scratchGDB, "ejes")
-            mensaje("3")
+            lyr_sal = os.path.join("in_memory", "ejes")
             lyr = arcpy.mapping.ListLayers(mxd, elLyr, df)[0]
             lyr.visible = False
-            mensaje("4")
             mensaje("Layer encontrado {}".format(lyr.name))
-            mensaje("5")
             arcpy.SelectLayerByLocation_management(lyr, "INTERSECT", poly, "", "NEW_SELECTION")
-            mensaje("6")
             arcpy.Clip_analysis(lyr, poly.buffer(10), lyr_sal)
-            mensaje("7")
             cuantos = int(arcpy.GetCount_management(lyr_sal).getOutput(0))
-            mensaje("8")
             if cuantos > 0:
-                buf = "3 Meters"
-                mensaje("9")
-                tm_path = os.path.join(path_scratchGDB, "seudo_lyr")
-                mensaje("10")
-                tm_path_buff = os.path.join(path_scratchGDB, "seudo_buff_lyr")
-                mensaje("11")
-                if arcpy.Exists(os.path.join(path_scratchGDB, "seudo_lyr")):
-                    mensaje("12")
-                    arcpy.Delete_management(os.path.join(path_scratchGDB, "seudo_lyr"))
-                    mensaje("13")
-                if arcpy.Exists(os.path.join(path_scratchGDB, "seudo_buff_lyr")):
-                    mensaje("14")
-                    arcpy.Delete_management(os.path.join(path_scratchGDB, "seudo_buff_lyr"))
-                    mensaje("15")
-                mensaje("16")
-                arcpy.Buffer_analysis(lyr_sal, tm_path_buff, buf, "FULL", "FLAT", "ALL")
-                mensaje("17")
+                tm_path = os.path.join("in_memory", "seudo_lyr")
+                tm_path_buff = os.path.join("in_memory", "seudo_buff_lyr")
+                arcpy.Buffer_analysis(lyr_sal, tm_path_buff, "3 Meters", "FULL", "FLAT", "ALL")
                 arcpy.MakeFeatureLayer_management(tm_path_buff, tm_path)
-                mensaje("18")
                 tm_layer = arcpy.mapping.Layer(tm_path)
-                mensaje("19")
                 lyr_seudo = r"C:\CROQUIS_ESRI\Scripts\seudo_lyr.lyr"
-                mensaje("20")
                 arcpy.ApplySymbologyFromLayer_management(tm_layer, lyr_seudo)
-                mensaje("21")
                 arcpy.mapping.AddLayer(df, tm_layer, "TOP")
-                mensaje("22")
                 arcpy.SelectLayerByAttribute_management(lyr, "CLEAR_SELECTION")
-                mensaje("23")
-                arcpy.RefreshActiveView()
                 mensaje("fin dibujaSeudoManzanas")
             else:
                 mensaje("No hay registros de {}".format(elLyr))
