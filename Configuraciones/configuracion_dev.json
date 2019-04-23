@@ -11,6 +11,7 @@
       {
          "id": "2016",
          "config": {
+            "titulo"                : "2019",
             "urlManzanas"           : "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/0",
             "urlSecciones_RAU"      : "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/1",
             "urlSecciones_Rural"    : "https://gis.ine.cl/public/rest/services/ESRI/servicios/MapServer/2",
